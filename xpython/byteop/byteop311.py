@@ -8,7 +8,7 @@
 """
 
 import inspect
-from typing import Any
+from typing import Any, Dict
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -19,7 +19,7 @@ from xpython.byteop.byteop36 import (
     MAKE_FUNCTION_SLOTS,
 )
 from xpython.byteop.byteop310 import ByteOp310
-from xpython.pyobj import Function, traceback_from_frame
+from xpython.pyobj import Function
 
 
 def fmt_make_function(vm, arg=None, repr_fn=repr) -> str:
@@ -39,13 +39,12 @@ class ByteOp311(ByteOp310):
         self.version = "3.11.0 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(3, 11, 0, "final", 0)
 
-    def call_function38(self, argc: int) -> Any:
-        func = self.vm.peek(argc + 1)
-        named_args = self.vm.pop()
-        pos_args = self.vm.popn(argc - 1)
-
-        func = self.vm.pop()
-        return self.call_function_with_args_resolved(func, pos_args, named_args)
+    def is_method(self, argc: int) -> bool:
+        """
+        Translation of ceval.c is_method() macro:
+        #define is_method(stack_pointer, args) (PEEK((args)+2) != NULL)
+        """
+        return self.vm.peek(argc + 2) is not None
 
     # Changed in 3.11...
 
@@ -109,12 +108,18 @@ class ByteOp311(ByteOp310):
         Replaces CALL_FUNCTION
 
         """
-        try:
-            return self.call_function38(argc)
-        except TypeError as exc:
-            tb = self.vm.last_traceback = traceback_from_frame(self.vm.frame)
-            self.vm.last_exception = (TypeError, exc, tb)
-            return "exception"
+        total_args = argc + 1 if self.is_method(argc) else argc
+        # FIXME: figure out how to set this
+        kw_names_len = 0
+        named_args: Dict[str, Any] = {}
+        positional_args = total_args - kw_names_len
+        pos_args = self.vm.popn(positional_args)
+        function = self.vm.pop()
+        # C interpreter checks for inlining here.
+        # We will skip this.
+        self.vm.pop()  # Remove NULL
+
+        return self.call_function_with_args_resolved(function, pos_args, named_args)
 
     def KW_NAMES(self, consti: int):
         """
@@ -224,7 +229,13 @@ class ByteOp311(ByteOp310):
          make it accept the `self` as a first argument.
 
         """
-        raise self.vm.PyVMError("PRECALL not implemented")
+        if argc == 0:
+            breakpoint()
+        n_args = argc + 1 if self.is_method(argc) else argc
+        function = self.vm.peek(n_args + 1)
+        if inspect.ismethod(function):
+            pass
+        return
 
     def PUSH_NULL(self):
         """Pushes a NULL to the stack. Used in the call sequence to
