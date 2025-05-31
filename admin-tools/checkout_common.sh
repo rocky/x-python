@@ -4,6 +4,15 @@ bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 
+function checkout_version {
+    local repo=$1
+    version=${2:-python-3.12}
+    echo Checking out $version on $repo ...
+    (cd ../$repo && git checkout $version && pyenv local $PYTHON_VERSION) && \
+	git pull
+    return $?
+}
+
 function setup_version {
     local repo=$1
     version=$2
