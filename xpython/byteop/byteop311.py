@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2023-2024 Rocky Bernstein
+# Copyright (C) 2023-2025 Rocky Bernstein
 # This program comes with ABSOLUTELY NO WARRANTY.
 # This is free software, and you are welcome to redistribute it
 # under certain conditions.
@@ -8,7 +8,7 @@
 """
 
 import inspect
-from typing import Any
+from typing import Tuple
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -18,20 +18,24 @@ from xpython.byteop.byteop36 import (
     MAKE_FUNCTION_SLOT_NAMES,
     MAKE_FUNCTION_SLOTS,
 )
+from xpython.byteop.byteop37 import NULL
 from xpython.byteop.byteop310 import ByteOp310
-from xpython.pyobj import Function, traceback_from_frame
+from xpython.pyobj import Function
 
 
 def fmt_make_function(vm, arg=None, repr_fn=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
-    fn_item = vm.top()
+    fn_item = vm.top
     name = fn_item.co_name
     return f" ({name})"
 
 
 class ByteOp311(ByteOp310):
+    """
+    Python 3.11 Opcodes
+    """
     def __init__(self, vm):
         super(ByteOp310, self).__init__(vm)
         self.stack_fmt["MAKE_FUNCTION"] = fmt_make_function
@@ -39,15 +43,16 @@ class ByteOp311(ByteOp310):
         self.version = "3.11.0 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(3, 11, 0, "final", 0)
 
-    def call_function38(self, argc: int) -> Any:
-        func = self.vm.peek(argc + 1)
-        named_args = self.vm.pop()
-        pos_args = self.vm.popn(argc - 1)
+    def is_method(self, argc: int) -> bool:
+        """
+        Translation of ceval.c is_method() macro:
+            #define is_method(stack_pointer, args) (PEEK((args)+2) != NULL)
+        and Py_TYPE(function) == &PyMethod_Type)
+        """
+        function = self.vm.peek(argc + 1)
+        return self.vm.peek(argc + 2) is not NULL and inspect.ismethod(function)
 
-        func = self.vm.pop()
-        return self.call_function_with_args_resolved(func, pos_args, named_args)
-
-    # Changed in 3.11...
+    # Added in 3.11...
 
     # New in 3.11.  Note: below, when the parameter is "delta", the
     # value has been adjusted from a relative number into and absolute
@@ -109,24 +114,62 @@ class ByteOp311(ByteOp310):
         Replaces CALL_FUNCTION
 
         """
-        try:
-            return self.call_function38(argc)
-        except TypeError as exc:
-            tb = self.vm.last_traceback = traceback_from_frame(self.vm.frame)
-            self.vm.last_exception = (TypeError, exc, tb)
-            return "exception"
+        total_args = argc + 1 if self.is_method(argc) else argc
+        # FIXME: figure out how to set this
+        kw_names_len = len(self.vm.frame.call_shape_kwnames)
+        named_args = self.vm.frame.call_shape_kwnames
+        positional_args = total_args - kw_names_len
+        pos_args = self.vm.popn(positional_args)
+        function = self.vm.pop()
+        # C interpreter checks for inlining here.
+        # We will skip this.
 
-    def KW_NAMES(self, consti: int):
+        if not self.vm.is_empty_stack:
+            if self.vm.top is NULL:
+                self.vm.pop()  # Remove NULL
+            # else ???
+
+        ret_val = self.call_function_with_args_resolved(function, pos_args, named_args)
+
+        # Clear names set by KW_NAMES
+        self.vm.frame.call_shape_kwnames = {}
+        return ret_val
+
+    def KW_NAMES(self, names: Tuple[str]):
         """
-        Prefixes CALL. Stores a reference to co_consts[consti] into an internal variable
-        for use by CALL. co_consts[consti] must be a tuple of strings.
+        Prefixes CALL. Stores a reference to co_consts[consti] into an internal frame variable
+        call_shape.
+        for use by CALL. names is a tuple of strings.
 
         Replaces CALL_FUNCTION_KW
         """
-        # FIXME
-        raise self.vm.PyVMError("KW_NAMES not implemented")
+
+        for name in names:
+            self.vm.frame.call_shape_kwnames[name] = self.vm.pop()
+        return
 
     # Changed in 3.11...
+    def LOAD_GLOBAL(self, name, push_null: bool=False):
+        """
+        Loads the global named co_names[namei>>1] onto the stack.
+
+        Note: name = co_names[namei] set in parse_byte_and_args()
+
+        If the low bit of namei is set, then a NULL is pushed to the stack before the global variable.
+        """
+        f = self.vm.frame
+        if name in f.f_globals:
+            val = f.f_globals[name]
+        elif name in f.f_builtins:
+            val = f.f_builtins[name]
+        else:
+            raise NameError(f"global name '{name}' is not defined")
+
+        if push_null:
+            self.vm.push(NULL)
+
+        self.vm.push(val)
+
     def MAKE_FUNCTION(self, argc: int):
         """
         Pushes a new function object on the stack. From bottom to top,
@@ -224,14 +267,18 @@ class ByteOp311(ByteOp310):
          make it accept the `self` as a first argument.
 
         """
-        raise self.vm.PyVMError("PRECALL not implemented")
+        n_args = argc + 1 if self.is_method(argc) else argc
+        function = self.vm.peek(n_args + 1)
+        if inspect.ismethod(function):
+            pass
+        return
 
     def PUSH_NULL(self):
         """Pushes a NULL to the stack. Used in the call sequence to
         match the NULL pushed by LOAD_METHOD for non-method calls.
 
         """
-        self.vm.push(None)
+        self.vm.push(NULL)
 
     def COPY(self, i: int):
         """
@@ -245,7 +292,7 @@ class ByteOp311(ByteOp310):
         """
         Swap TOS with the item at position i.
         """
-        tos = self.vm.top()
+        tos = self.vm.top
         stack_i = self.vm.peek(i)
         self.vm.set(i, tos)
         self.vm.set(0, stack_i)
@@ -255,7 +302,7 @@ class ByteOp311(ByteOp310):
         To be continued...
         """
         # FIXME
-        raise self.vm.PyVMError("KW_NAMES not implemented")
+        raise self.vm.PyVMError("CHECK_EXC_MATCH not implemented")
 
     def JUMP_BACKWARD(self, delta: int):
         """
@@ -343,7 +390,7 @@ class ByteOp311(ByteOp310):
 
         The oparg is now a relative delta rather than an absolute target.
         """
-        val = self.vm.top()
+        val = self.vm.top
         if val == True:  # noqa
             self.vm.jump(delta)
         self.vm.pop()

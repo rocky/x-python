@@ -85,7 +85,7 @@ class ByteOp35(ByteOp34):
         If TOS is a generator iterator or coroutine object it is left as
         is. Otherwise, implements TOS = iter(TOS).
         """
-        TOS = self.vm.top()
+        TOS = self.vm.top
         if isgeneratorfunction(TOS) or iscoroutinefunction(TOS):
             return
         TOS = self.vm.pop()
@@ -151,7 +151,7 @@ class ByteOp35(ByteOp34):
         exits. TOS is the context manager's `__exit__()` bound method.
         """
         second = third = fourth = None
-        TOS = self.vm.top()
+        TOS = self.vm.topn
         if TOS is None:
             exit_method = self.vm.pop(1)
         elif isinstance(TOS, str):
