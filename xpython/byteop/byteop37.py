@@ -25,7 +25,7 @@ class NullClass:
     We create a new type for this. Note: Python's builtin None
     can't be used, because that is a valid value.
     """
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return "NULL"
 
 
@@ -76,15 +76,16 @@ class ByteOp37(ByteOp36):
         """
         TOS = self.vm.pop()
 
-        # FIXME: Figure out how to check if the method is correct and a how to
-        # get an unbound methond and how to get self. Until then, we'll take
-        # the slow path.
-        if hasattr(TOS, name) and False:
+        if hasattr(TOS, name):
+            # FIXME: Figure out how to get an unbound method and self from a callable function.
+            # Until then, we need to push NULL and the callable (the default slow path).
+            function = getattr(TOS, name)
+            if not callable(function):
+                raise self.vm.PyVMError(f"LOAD_METHOD {name} off of {TOS} of type {type(TOS)} is not callable.")
             self.vm.push(NULL)
-            self.vm.push(getattr(TOS, name))
+            self.vm.push(function)
         else:
-            self.vm.push(NULL)
-            self.vm.push(TOS)
+            raise self.vm.PyVMError(f"LOAD_METHOD can't find {name} off of {TOS} of type {type(TOS)}")
 
     def CALL_METHOD(self, count):
         """Calls a method. argc is the number of positional
@@ -102,10 +103,10 @@ class ByteOp37(ByteOp36):
         In effect, this is what NULL in C is.
         """
         posargs = self.vm.popn(count)
-        is_success = self.vm.pop()
-        if is_success:
-            func = self.vm.pop()
-            self.call_function_with_args_resolved(func, posargs, {})
+        null_or_meth, self_or_fn = self.vm.popn(2)
+        if null_or_meth is NULL:
+            function = self_or_fn
+            self.call_function_with_args_resolved(function, posargs, {})
         else:
-            # FIXME: do something else
-            raise self.vm.PyVMError("CALL_METHOD not implemented yet")
+            # FIXME:
+            raise self.vm.PyVMError("CALL_METHOD with self and unbound method not implemented yet")

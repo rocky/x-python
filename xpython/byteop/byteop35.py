@@ -151,7 +151,7 @@ class ByteOp35(ByteOp34):
         exits. TOS is the context manager's `__exit__()` bound method.
         """
         second = third = fourth = None
-        TOS = self.vm.topn
+        TOS = self.vm.top
         if TOS is None:
             exit_method = self.vm.pop(1)
         elif isinstance(TOS, str):
