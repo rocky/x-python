@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2023-2024 Rocky Bernstein
+# Copyright (C) 2023-2025 Rocky Bernstein
 # This program comes with ABSOLUTELY NO WARRANTY.
 # This is free software, and you are welcome to redistribute it
 # under certain conditions.
@@ -18,6 +18,7 @@ from xpython.byteop.byteop36 import (
     MAKE_FUNCTION_SLOT_NAMES,
     MAKE_FUNCTION_SLOTS,
 )
+from xpython.byteop.byteop37 import NULL
 from xpython.byteop.byteop310 import ByteOp310
 from xpython.pyobj import Function
 
@@ -32,6 +33,9 @@ def fmt_make_function(vm, arg=None, repr_fn=repr) -> str:
 
 
 class ByteOp311(ByteOp310):
+    """
+    Python 3.11 Opcodes
+    """
     def __init__(self, vm):
         super(ByteOp310, self).__init__(vm)
         self.stack_fmt["MAKE_FUNCTION"] = fmt_make_function
@@ -46,9 +50,9 @@ class ByteOp311(ByteOp310):
         and Py_TYPE(function) == &PyMethod_Type)
         """
         function = self.vm.peek(argc + 1)
-        return self.vm.peek(argc + 2) is not None and inspect.ismethod(function)
+        return self.vm.peek(argc + 2) is not NULL and inspect.ismethod(function)
 
-    # Changed in 3.11...
+    # Added in 3.11...
 
     # New in 3.11.  Note: below, when the parameter is "delta", the
     # value has been adjusted from a relative number into and absolute
@@ -121,7 +125,7 @@ class ByteOp311(ByteOp310):
         # We will skip this.
 
         if not self.vm.is_empty_stack:
-            if self.vm.top is None:
+            if self.vm.top is NULL:
                 self.vm.pop()  # Remove NULL
             # else ???
 
@@ -139,12 +143,33 @@ class ByteOp311(ByteOp310):
 
         Replaces CALL_FUNCTION_KW
         """
-        # FIXME
+
         for name in names:
             self.vm.frame.call_shape_kwnames[name] = self.vm.pop()
         return
 
     # Changed in 3.11...
+    def LOAD_GLOBAL(self, name, push_null: bool=False):
+        """
+        Loads the global named co_names[namei>>1] onto the stack.
+
+        Note: name = co_names[namei] set in parse_byte_and_args()
+
+        If the low bit of namei is set, then a NULL is pushed to the stack before the global variable.
+        """
+        f = self.vm.frame
+        if name in f.f_globals:
+            val = f.f_globals[name]
+        elif name in f.f_builtins:
+            val = f.f_builtins[name]
+        else:
+            raise NameError(f"global name '{name}' is not defined")
+
+        if push_null:
+            self.vm.push(NULL)
+
+        self.vm.push(val)
+
     def MAKE_FUNCTION(self, argc: int):
         """
         Pushes a new function object on the stack. From bottom to top,
@@ -253,7 +278,7 @@ class ByteOp311(ByteOp310):
         match the NULL pushed by LOAD_METHOD for non-method calls.
 
         """
-        self.vm.push(None)
+        self.vm.push(NULL)
 
     def COPY(self, i: int):
         """
