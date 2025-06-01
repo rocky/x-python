@@ -17,6 +17,23 @@ del ByteOp24.CALL_FUNCTION_VAR_KW
 # del ByteOp36.SETUP_ASYNC_WITH
 
 
+# pylint: disable=too-few-public-methods
+class NullClass:
+    """
+    Python 3.11 can push a NULL onto the evaluation stack.
+    This is used in method lookup, and strings.
+    We create a new type for this. Note: Python's builtin None
+    can't be used, because that is a valid value.
+    """
+    def __str__(self) -> str:
+        return "NULL"
+
+
+# Singleton NULL object. Testing for this should use
+# "is" not "=="
+NULL = NullClass()
+
+
 class ByteOp37(ByteOp36):
     def __init__(self, vm):
         super(ByteOp37, self).__init__(vm)
@@ -56,21 +73,18 @@ class ByteOp37(ByteOp36):
         method and TOS. TOS will be used as the first argument (self)
         by CALL_METHOD when calling the unbound method. Otherwise,
         NULL and the object return by the attribute lookup are pushed.
-
-        rocky: In our implementation in Python we don't have NULL: all
-        stack entries have *some* value. So instead we'll push another
-        item: the status. Also, instead of pushing the unbound method
-        and self, we will pass the bound method, since that is what we
-        have here. So TOS (self) is not pushed back onto the stack.
         """
         TOS = self.vm.pop()
-        if hasattr(TOS, name):
-            # FIXME: check that gettr(TO, name) is a method
+
+        # FIXME: Figure out how to check if the method is correct and a how to
+        # get an unbound methond and how to get self. Until then, we'll take
+        # the slow path.
+        if hasattr(TOS, name) and False:
+            self.vm.push(NULL)
             self.vm.push(getattr(TOS, name))
-            self.vm.push("LOAD_METHOD lookup success")
         else:
-            self.vm.push("fill in attribute method lookup")
-            self.vm.push(None)
+            self.vm.push(NULL)
+            self.vm.push(TOS)
 
     def CALL_METHOD(self, count):
         """Calls a method. argc is the number of positional
