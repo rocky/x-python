@@ -14,13 +14,13 @@ del ByteOp24.JUMP_IF_TRUE
 
 
 def fmt_set_add(vm, arg, repr_fn=repr):
-    return f" set.add({repr_fn(vm.peek(arg))}, {repr_fn(vm.top())})"
+    return f" set.add({repr_fn(vm.peek(arg))}, {repr_fn(vm.top)})"
 
 
 def fmt_map_add(vm, arg, repr_fn=repr):
     return " dict.setitem(%s, %s, %s)" % (
         repr_fn(vm.peek(arg)),
-        repr_fn(vm.top()),
+        repr_fn(vm.top),
         repr_fn(vm.peek(2)),
     )
 
@@ -170,7 +170,7 @@ class ByteOp27(ByteOp26):
         If TOS is true, sets the bytecode counter to target and leaves TOS
         on the stack. Otherwise, (TOS is false), TOS is popped.
         """
-        val = self.vm.top()
+        val = self.vm.top
         if val:
             self.vm.jump(target)
         else:
@@ -181,7 +181,7 @@ class ByteOp27(ByteOp26):
         If TOS is false, sets the bytecode counter to target and leaves TOS
         on the stack. Otherwise, (TOS is true), TOS is popped.
         """
-        val = self.vm.top()
+        val = self.vm.top
         if not val:
             self.vm.jump(target)
         else:

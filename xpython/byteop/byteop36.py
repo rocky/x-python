@@ -61,7 +61,7 @@ def fmt_call_function_kw(vm, argc, repr=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
-    namedargs_tup = vm.top()
+    namedargs_tup = vm.top
     func = vm.peek(argc + 2)
     return f" (keyword: {namedargs_tup}, function: {func})"
 

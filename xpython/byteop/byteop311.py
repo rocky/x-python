@@ -8,7 +8,7 @@
 """
 
 import inspect
-from typing import Any, Dict
+from typing import Tuple
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -26,7 +26,7 @@ def fmt_make_function(vm, arg=None, repr_fn=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
-    fn_item = vm.top()
+    fn_item = vm.top
     name = fn_item.co_name
     return f" ({name})"
 
@@ -42,9 +42,11 @@ class ByteOp311(ByteOp310):
     def is_method(self, argc: int) -> bool:
         """
         Translation of ceval.c is_method() macro:
-        #define is_method(stack_pointer, args) (PEEK((args)+2) != NULL)
+            #define is_method(stack_pointer, args) (PEEK((args)+2) != NULL)
+        and Py_TYPE(function) == &PyMethod_Type)
         """
-        return self.vm.peek(argc + 2) is not None
+        function = self.vm.peek(argc + 1)
+        return self.vm.peek(argc + 2) is not None and inspect.ismethod(function)
 
     # Changed in 3.11...
 
@@ -110,26 +112,37 @@ class ByteOp311(ByteOp310):
         """
         total_args = argc + 1 if self.is_method(argc) else argc
         # FIXME: figure out how to set this
-        kw_names_len = 0
-        named_args: Dict[str, Any] = {}
+        kw_names_len = len(self.vm.frame.call_shape_kwnames)
+        named_args = self.vm.frame.call_shape_kwnames
         positional_args = total_args - kw_names_len
         pos_args = self.vm.popn(positional_args)
         function = self.vm.pop()
         # C interpreter checks for inlining here.
         # We will skip this.
-        self.vm.pop()  # Remove NULL
 
-        return self.call_function_with_args_resolved(function, pos_args, named_args)
+        if not self.vm.is_empty_stack:
+            if self.vm.top is None:
+                self.vm.pop()  # Remove NULL
+            # else ???
 
-    def KW_NAMES(self, consti: int):
+        ret_val = self.call_function_with_args_resolved(function, pos_args, named_args)
+
+        # Clear names set by KW_NAMES
+        self.vm.frame.call_shape_kwnames = {}
+        return ret_val
+
+    def KW_NAMES(self, names: Tuple[str]):
         """
-        Prefixes CALL. Stores a reference to co_consts[consti] into an internal variable
-        for use by CALL. co_consts[consti] must be a tuple of strings.
+        Prefixes CALL. Stores a reference to co_consts[consti] into an internal frame variable
+        call_shape.
+        for use by CALL. names is a tuple of strings.
 
         Replaces CALL_FUNCTION_KW
         """
         # FIXME
-        raise self.vm.PyVMError("KW_NAMES not implemented")
+        for name in names:
+            self.vm.frame.call_shape_kwnames[name] = self.vm.pop()
+        return
 
     # Changed in 3.11...
     def MAKE_FUNCTION(self, argc: int):
@@ -229,8 +242,6 @@ class ByteOp311(ByteOp310):
          make it accept the `self` as a first argument.
 
         """
-        if argc == 0:
-            breakpoint()
         n_args = argc + 1 if self.is_method(argc) else argc
         function = self.vm.peek(n_args + 1)
         if inspect.ismethod(function):
@@ -256,7 +267,7 @@ class ByteOp311(ByteOp310):
         """
         Swap TOS with the item at position i.
         """
-        tos = self.vm.top()
+        tos = self.vm.top
         stack_i = self.vm.peek(i)
         self.vm.set(i, tos)
         self.vm.set(0, stack_i)
@@ -266,7 +277,7 @@ class ByteOp311(ByteOp310):
         To be continued...
         """
         # FIXME
-        raise self.vm.PyVMError("KW_NAMES not implemented")
+        raise self.vm.PyVMError("CHECK_EXC_MATCH not implemented")
 
     def JUMP_BACKWARD(self, delta: int):
         """
@@ -354,7 +365,7 @@ class ByteOp311(ByteOp310):
 
         The oparg is now a relative delta rather than an absolute target.
         """
-        val = self.vm.top()
+        val = self.vm.top
         if val == True:  # noqa
             self.vm.jump(delta)
         self.vm.pop()
