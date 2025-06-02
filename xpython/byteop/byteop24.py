@@ -8,7 +8,6 @@ import logging
 import operator
 import sys
 from collections import namedtuple
-from typing import Any, Optional
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -130,7 +129,7 @@ class ByteOp24(ByteOpBase):
         """
         return " (%s)" % vm.peek(1)
 
-    def BRKPT(self) -> Optional[Any]:
+    def BRKPT(self):
         """Pseudo opcode: breakpoint. We added this. TODO: call callback, then run
         instruction that should have gotten run.
         """
