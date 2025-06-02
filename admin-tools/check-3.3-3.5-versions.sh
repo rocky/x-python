@@ -16,7 +16,7 @@ fi
 cd ..
 [[ -f test/.python-version ]] && rm -v test/.python-version
 (cd ../python-xdis/admin-tools && source ./setup-python-3.3.sh)
-git checkout python-3.3
+git checkout python-3.3-to-3.5
 
 for version in $PYVERSIONS; do
     echo --- $version ---
