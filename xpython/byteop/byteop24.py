@@ -86,9 +86,13 @@ def fmt_make_function(vm, arg=None, repr=repr):
     return ""
 
 
+# pylint: disable=too-many-public-methods
 class ByteOp24(ByteOpBase):
+    """
+    Python 3.7 opcodes
+    """
     def __init__(self, vm):
-        super(ByteOp24, self).__init__(vm)
+        super().__init__(vm)
 
         # Superclasses can overwrite this. But default to not PyPy.
         self.is_pypy = False
@@ -633,11 +637,11 @@ class ByteOp24(ByteOpBase):
 
         Note: name = co_names[namei] set in parse_byte_and_args()
         """
-        f = self.vm.frame
-        if name in f.f_globals:
-            val = f.f_globals[name]
-        elif name in f.f_builtins:
-            val = f.f_builtins[name]
+        vm_frame = self.vm.frame
+        if name in vm_frame.f_globals:
+            val = vm_frame.f_globals[name]
+        elif name in vm_frame.f_builtins:
+            val = vm_frame.f_builtins[name]
         else:
             raise NameError("global name '%s' is not defined" % name)
         self.vm.push(val)

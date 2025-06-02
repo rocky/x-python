@@ -1,4 +1,4 @@
-# Copyright (C) 2021, 2023, 2024 Rocky Bernstein
+# Copyright (C) 2021, 2023, 2025 Rocky Bernstein
 # This program comes with ABSOLUTELY NO WARRANTY.
 # This is free software, and you are welcome to redistribute it
 # under certain conditions.
@@ -66,6 +66,7 @@ def fmt_call_function_kw(vm, argc, repr=repr):
     return " (keyword: %s, function: %s)" % (namedargs_tup, func)
 
 
+# pylint: disable=too-many-public-methods
 class ByteOp36(ByteOp35):
     def __init__(self, vm):
         super(ByteOp36, self).__init__(vm)
