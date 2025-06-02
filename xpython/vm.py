@@ -206,7 +206,7 @@ class PyVM(object):
         return self.frame.stack[-1 - i]
 
     @property
-    def is_empty_stack(self) -> bool:
+    def is_empty_stack(self):
         return len(self.frame.stack) == 0
 
     def peek(self, n):

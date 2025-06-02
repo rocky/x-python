@@ -73,14 +73,14 @@ def fmt_binary_op(vm, arg=None, repr=repr):
     elements of evaluation stack
 
     """
-    return " (%s, %s)" % (repr(vm.peek(2)), repr(vm.top()))
+    return " (%s, %s)" % (repr(vm.peek(2)), repr(vm.top))
 
 
 def fmt_ternary_op(vm, arg=None, repr=repr):
     """returns string of the repr() for each of the first three
     elements of evaluation stack
     """
-    return " (%s, %s, %s)" % (repr(vm.peek(3)), repr(vm.peek(2)), repr(vm.top()))
+    return " (%s, %s, %s)" % (repr(vm.peek(3)), repr(vm.peek(2)), repr(vm.top))
 
 
 def fmt_unary_op(vm, arg=None, repr=repr):
@@ -92,7 +92,7 @@ def fmt_unary_op(vm, arg=None, repr=repr):
     # been popped, and if the return values was the only one on the
     # stack, it will be empty here.
     if len(vm.frame.stack):
-        return " (%s)" % (repr(vm.top()),)
+        return " (%s)" % repr(vm.top)
     else:
         raise vm.PyVMError("Empty stack in unary op")
 

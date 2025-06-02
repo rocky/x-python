@@ -49,7 +49,7 @@ def get_cell_name(vm, i):
 
 
 def fmt_store_deref(vm, int_arg, repr=repr):
-    return " (%s)" % (vm.top())
+    return " (%s)" % (vm.top)
 
 
 def fmt_load_deref(vm, int_arg, repr=repr):
