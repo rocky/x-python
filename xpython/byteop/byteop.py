@@ -92,7 +92,7 @@ def fmt_unary_op(vm: PyVM, arg=None, repr=repr):
     # been popped, and if the return values was the only one on the
     # stack, it will be empty here.
     if len(vm.frame.stack):
-        return f" ({repr(vm.top)}"
+        return f" ({repr(vm.top)})"
     else:
         raise vm.PyVMError("Empty stack in unary op")
 
