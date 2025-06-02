@@ -133,7 +133,7 @@ class ByteOp33(ByteOp32):
         Pops TOS and delegates to it as a subiterator from a generator.
         """
         u = self.vm.pop()
-        x = self.vm.top()
+        x = self.vm.top
 
         try:
             if not isinstance(x, Generator) or u is None:

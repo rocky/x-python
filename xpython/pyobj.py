@@ -474,6 +474,10 @@ class Frame(object):
 
         # Keep a cache of line starts for this frame
         self.line_starts = list(findlinestarts(self.f_code))
+
+        # Python 3.11 adds call_shape structure which
+        # has only one item, kwnames.
+        self.call_shape_kwnames = {}
         return
 
     def __repr__(self):  # pragma: no cover

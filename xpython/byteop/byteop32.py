@@ -209,7 +209,7 @@ class ByteOp32(ByteOp27):
         # Note: the code is derived from byterun where it had to handle
         # both 2.7 and 3.3.
         v = w = None
-        u = self.vm.top()
+        u = self.vm.top
         if u is None:
             exit_func = self.vm.pop(1)
         elif isinstance(u, str):
