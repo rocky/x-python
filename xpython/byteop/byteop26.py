@@ -4,7 +4,6 @@
 Note: this is subclassed so later versions may use operations from here.
 """
 
-import os
 import sys
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE

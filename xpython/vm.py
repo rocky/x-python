@@ -123,7 +123,9 @@ def format_instruction(
         stack_args = ""
 
     if hasattr(opc, "opcode_arg_fmt") and bytecode_name in opc.opcode_arg_fmt:
-        argrepr = opc.opcode_arg_fmt[bytecode_name](int_arg)
+        argrepr = "[%s] %s" % (
+            opc.opcode_arg_fmt[bytecode_name](int_arg), int_arg
+            )
     elif int_arg is None:
         argrepr = ""
     elif byte_code in opc.COMPARE_OPS:

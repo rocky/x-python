@@ -22,8 +22,12 @@ if PYTHON_VERSION_TRIPLE >= (3, 0):
 else:
     import_fn = __import__
 
-from xpython.byteop.byteop import (ByteOpBase, fmt_binary_op, fmt_ternary_op,
-                                   fmt_unary_op)
+from xpython.byteop.byteop import (
+    ByteOpBase,
+    fmt_binary_op,
+    fmt_ternary_op,
+    fmt_unary_op,
+)
 from xpython.pyobj import Cell, Function, traceback_from_frame
 from xpython.vmtrace import PyVMEVENT_RETURN, PyVMEVENT_YIELD
 
@@ -65,6 +69,9 @@ def fmt_call_function(vm, argc, repr=repr):
         if hasattr(code, attr):
             return " (%s)" % getattr(code, attr)
 
+    if hasattr(code, "_func") and hasattr(code._func, "__name__"):
+        return " (%s)" % code._func.__name__
+
     # Nothing found.
     return ""
 
@@ -87,6 +94,7 @@ class ByteOp24(ByteOpBase):
     """
     Python 3.7 opcodes
     """
+
     def __init__(self, vm):
         super(ByteOp24, self).__init__(vm)
 
