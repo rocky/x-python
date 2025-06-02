@@ -8,12 +8,12 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=2.7.18
+PYTHON_VERSION=2.7
 
 xpython_owd=$(pwd)
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 cd $mydir
 . ./checkout_common.sh
-(cd $fulldir/.. && checkout_version python-xdis python-2.4)
+(cd $fulldir/.. && setup_version python-xdis python-2.4)
 checkout_finish python-2.4-to-2.7
