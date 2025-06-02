@@ -34,9 +34,13 @@ class NullClass:
 NULL = NullClass()
 
 
+# pylint: disable=too-many-public-methods
 class ByteOp37(ByteOp36):
+    """
+    Python 3.7 opcodes
+    """
     def __init__(self, vm):
-        super(ByteOp37, self).__init__(vm)
+        super().__init__(vm)
 
         # Fake up version information
         self.hexversion = 0x3070BF0

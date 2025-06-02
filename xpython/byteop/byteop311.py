@@ -32,6 +32,7 @@ def fmt_make_function(vm, arg=None, repr_fn=repr) -> str:
     return f" ({name})"
 
 
+# pylint: disable=too-many-public-methods
 class ByteOp311(ByteOp310):
     """
     Python 3.11 Opcodes
