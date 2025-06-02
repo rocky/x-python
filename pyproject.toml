@@ -59,5 +59,8 @@ dev = [
 [project.scripts]
 xpython   = "xpython.__main__:main"
 
+[tool.pylint]
+disable = ["W0511", "C103"]
+
 [tool.setuptools.dynamic]
 version = {attr = "xpython.version.__version__"}
