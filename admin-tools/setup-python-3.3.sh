@@ -7,12 +7,12 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=3.3.7
+PYTHON_VERSION=3.3
 
 xpython_owd=$(pwd)
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 cd $mydir
 . ./checkout_common.sh
-(cd $fulldir/.. && checkout_version python-xdis python-3.3)
+(cd $fulldir/.. && setup_version python-xdis python-3.3)
 checkout_finish python-3.3-to-3.5
