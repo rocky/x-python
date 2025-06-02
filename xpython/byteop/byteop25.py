@@ -44,7 +44,7 @@ class ByteOp25(ByteOp24):
         # Pull out the exit function, and leave the rest in place.
         # In Python 3.x this is fixed up so that the __exit__ function is TOS
         v = w = None
-        u = self.vm.top()
+        u = self.vm.top
         if u is None:
             exit_func = self.vm.pop(1)
         elif isinstance(u, str):

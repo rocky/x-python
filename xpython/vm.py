@@ -195,6 +195,10 @@ class PyVM(object):
         """
         return self.frame.stack[-1 - i]
 
+    @property
+    def is_empty_stack(self) -> bool:
+        return len(self.frame.stack) == 0
+
     def peek(self, n):
         if n <= 0:
             raise PyVMError("Peek value must be greater than 0")
@@ -240,6 +244,7 @@ class PyVM(object):
         """Set a value at stack position i."""
         self.frame.stack[-i] = value
 
+    @property
     def top(self):
         """Return the value at the top of the stack, with no changes."""
         return self.frame.stack[-1]
