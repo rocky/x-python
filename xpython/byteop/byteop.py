@@ -14,8 +14,6 @@ from xdis.version_info import PYTHON_VERSION_TRIPLE, version_tuple_to_str
 
 from xpython.builtins import build_class, builtin_super
 from xpython.pyobj import Function
-from xpython.vm import PyVM
-
 
 log = logging.getLogger(__name__)
 

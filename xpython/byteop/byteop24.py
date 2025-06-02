@@ -9,7 +9,6 @@ import operator
 import sys
 from collections import namedtuple
 
-import six
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 # FIXME: we should use:
@@ -53,7 +52,7 @@ def fmt_store_deref(vm, int_arg, repr=repr):
 
 
 def fmt_load_deref(vm, int_arg, repr=repr):
-    return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].get())
+    return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].cell_contents)
 
 
 def fmt_call_function(vm, argc, repr=repr):
@@ -701,13 +700,13 @@ class ByteOp24(ByteOpBase):
         """Deletes local co_varnames[var_num]."""
         del self.vm.frame.f_locals[var_num]
 
-    def LOAD_CLOSURE(self, i):
+    def LOAD_CLOSURE(self, namei):
         """Pushes a reference to the cell contained in slot i of the
         cell and free variable storage. The name of the variable is
         co_cellvars[i] if i is less than the length of
         co_cellvars. Otherwise it is co_freevars[i -len(co_cellvars)].
         """
-        self.vm.push(self.vm.frame.cells[i])
+        self.vm.push(self.vm.frame.cells[namei])
 
     def LOAD_DEREF(self, name):
         """
@@ -715,10 +714,7 @@ class ByteOp24(ByteOpBase):
         storage. Pushes a reference to the object the cell contains on the
         stack.
         """
-        cell_obj = self.vm.frame.cells[name]
-        if hasattr(cell_obj, "get"):
-            cell_obj = cell_obj.get()
-        self.vm.push(cell_obj)
+        self.vm.push(self.vm.frame.cells[name])
 
     def STORE_DEREF(self, name):
         """Stores TOS into the cell contained in slot i of the cell
