@@ -17,6 +17,23 @@ del ByteOp24.CALL_FUNCTION_VAR_KW
 # del ByteOp36.SETUP_ASYNC_WITH
 
 
+# pylint: disable=too-few-public-methods
+class NullClass:
+    """
+    Python 3.11 can push a NULL onto the evaluation stack.
+    This is used in method lookup, and strings.
+    We create a new type for this. Note: Python's builtin None
+    can't be used, because that is a valid value.
+    """
+    def __repr__(self) -> str:
+        return "NULL"
+
+
+# Singleton NULL object. Testing for this should use
+# "is" not "=="
+NULL = NullClass()
+
+
 class ByteOp37(ByteOp36):
     def __init__(self, vm):
         super(ByteOp37, self).__init__(vm)
@@ -56,21 +73,19 @@ class ByteOp37(ByteOp36):
         method and TOS. TOS will be used as the first argument (self)
         by CALL_METHOD when calling the unbound method. Otherwise,
         NULL and the object return by the attribute lookup are pushed.
-
-        rocky: In our implementation in Python we don't have NULL: all
-        stack entries have *some* value. So instead we'll push another
-        item: the status. Also, instead of pushing the unbound method
-        and self, we will pass the bound method, since that is what we
-        have here. So TOS (self) is not pushed back onto the stack.
         """
         TOS = self.vm.pop()
+
         if hasattr(TOS, name):
-            # FIXME: check that gettr(TO, name) is a method
-            self.vm.push(getattr(TOS, name))
-            self.vm.push("LOAD_METHOD lookup success")
+            # FIXME: Figure out how to get an unbound method and self from a callable function.
+            # Until then, we need to push NULL and the callable (the default slow path).
+            function = getattr(TOS, name)
+            if not callable(function):
+                raise self.vm.PyVMError(f"LOAD_METHOD {name} off of {TOS} of type {type(TOS)} is not callable.")
+            self.vm.push(NULL)
+            self.vm.push(function)
         else:
-            self.vm.push("fill in attribute method lookup")
-            self.vm.push(None)
+            raise self.vm.PyVMError(f"LOAD_METHOD can't find {name} off of {TOS} of type {type(TOS)}")
 
     def CALL_METHOD(self, count):
         """Calls a method. argc is the number of positional
@@ -88,10 +103,10 @@ class ByteOp37(ByteOp36):
         In effect, this is what NULL in C is.
         """
         posargs = self.vm.popn(count)
-        is_success = self.vm.pop()
-        if is_success:
-            func = self.vm.pop()
-            self.call_function_with_args_resolved(func, posargs, {})
+        null_or_meth, self_or_fn = self.vm.popn(2)
+        if null_or_meth is NULL:
+            function = self_or_fn
+            self.call_function_with_args_resolved(function, posargs, {})
         else:
-            # FIXME: do something else
-            raise self.vm.PyVMError("CALL_METHOD not implemented yet")
+            # FIXME:
+            raise self.vm.PyVMError("CALL_METHOD with self and unbound method not implemented yet")

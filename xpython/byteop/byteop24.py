@@ -74,7 +74,7 @@ def fmt_make_function(vm, arg=None, repr=repr):
     """
     returns the name of the function from the code object in the stack
     """
-    TOS = vm.top()
+    TOS = vm.top
     for attr in ("co_name", "func_name", "__name__"):
         if hasattr(TOS, attr):
             return " (%s)" % getattr(TOS, attr)
@@ -203,7 +203,7 @@ class ByteOp24(ByteOpBase):
 
     def DUP_TOP(self):
         """Duplicates the reference on top of the stack."""
-        self.vm.push(self.vm.top())
+        self.vm.push(self.vm.top)
 
     # Unary operators are handled elsewhere
 
@@ -550,7 +550,7 @@ class ByteOp24(ByteOpBase):
 
         Note: name = co_names[namei] set in parse_byte_and_args()
         """
-        mod = self.vm.top()
+        mod = self.vm.top
         if not hasattr(mod, name):
             if not hasattr(mod, "__file__"):
                 # Builtins don't have a __file__ attribute
@@ -585,7 +585,7 @@ class ByteOp24(ByteOpBase):
 
         Note: jump = delta + f.f_lasti set in parse_byte_and_args()
         """
-        val = self.vm.top()
+        val = self.vm.top
         if val:
             self.vm.jump(jump_offset)
 
@@ -596,7 +596,7 @@ class ByteOp24(ByteOpBase):
 
         Note: jump = delta + f.f_lasti set in parse_byte_and_args()
         """
-        val = self.vm.top()
+        val = self.vm.top
         if not val:
             self.vm.jump(jump_offset)
 
@@ -616,7 +616,7 @@ class ByteOp24(ByteOpBase):
         Note: jump = delta + f.f_lasti set in parse_byte_and_args()
         """
 
-        iterobj = self.vm.top()
+        iterobj = self.vm.top
         try:
             v = next(iterobj)
             self.vm.push(v)
