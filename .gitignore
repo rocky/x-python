@@ -8,6 +8,8 @@
 /.cache
 /.mypy.ini
 /.python-version
+/.venv-2.7
+/.venv-3.11
 /activate
 /build
 /dist
