@@ -7,7 +7,7 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=3.3.7
+PYTHON_VERSION=3.3
 
 xpython_owd=$(pwd)
 mydir=$(dirname $bs)
