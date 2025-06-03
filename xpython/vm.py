@@ -411,7 +411,7 @@ class PyVM(object):
                 tail = ""
                 if le1:
                     if hasattr(le1, "args"):
-                        tail = "\n".join(le1.args)
+                        tail = "\n".join(str(le1.args))
                     else:
                         tail = "\n".join(le1)
                 print(tail)
