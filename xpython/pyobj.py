@@ -276,6 +276,15 @@ class Function:
             # Python 2.7 is like this
             func = self._func
 
+        # FIXME: when running on Python 2.7, we are not setting closure properly.
+        # __closure__ is a tuple of cells for integer name indices. We can
+        # associate the name for that using f_code.co_freevars, but what we
+        # needs is its *value*, a dynamic property, should be found in *frame*
+        # locals somewhere, but I am not sure where.
+
+        # Somehow in the Python 3.x interpreters the cell values rather than
+        # index gets put in closure.
+
         frame = self._vm.make_frame(
             func.func_code, callargs, func.func_globals, {}, func.__closure__
         )
