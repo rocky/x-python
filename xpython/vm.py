@@ -496,9 +496,15 @@ class PyVM(object):
                         var_idx = int_arg - len(f.f_code.co_cellvars)
                         arg = f_code.co_freevars[var_idx]
                 elif byte_code in self.opc.NAME_OPS:
-                    arg = f_code.co_names[int_arg]
-                    if isinstance(arg, UnicodeForPython3):
-                        arg = str(arg)
+                    if self.version >= (3, 11) and bytecode_name == "LOAD_GLOBAL":
+                        namei =  f_code.co_names[int_arg >> 1]
+                        push_NULL = bool(int_arg & 1)
+                        arguments = [namei, push_NULL]
+                    else:
+                        arg = f_code.co_names[int_arg]
+                        if isinstance(arg, UnicodeForPython3):
+                            arg = str(arg)
+
                 elif byte_code in self.opc.JREL_OPS:
                     # Many relative jumps are conditional,
                     # so setting f.fallthrough is wrong.
@@ -518,7 +524,8 @@ class PyVM(object):
                         arg = str(arg)
                 else:
                     arg = int_arg
-                arguments = [arg]
+                if len(arguments) == 0:
+                    arguments = [arg]
             break
 
         return bytecode_name, byte_code, int_arg, arguments, offset, line_number
