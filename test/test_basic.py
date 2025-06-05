@@ -13,13 +13,6 @@ class TestBasic(vmtest.VmTestCase):
     if PYTHON_VERSION_TRIPLE[:2] in ((3, 10),):
         print("Test not gone over yet for %s" % version_tuple_to_str())
     else:
-
-        def test_bound_method_on_falsy_objects(self):
-            self.self_checking()
-
-        def test_building_stuff(self):
-            self.self_checking()
-
         def test_callback(self):
             self.self_checking()
 

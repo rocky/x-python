@@ -17,6 +17,7 @@ from xdis.opcodes.opcode_311 import _nb_ops
 
 from xpython.byteop import get_byteop
 from xpython.pyobj import Block, Frame, Traceback, traceback_from_frame
+from types import TracebackType
 
 PY2 = not PYTHON3
 log = logging.getLogger(__name__)
@@ -59,7 +60,10 @@ class PyVMUncaughtException(Exception):
     def __init__(self, name, args, traceback=None):
         self.__name__ = name
         self.traceback = traceback
-        self.args = args
+        try:
+            self.args = args
+        except Exception:
+            self.args = []
 
     def __getattr__(self, name):
         if name == "__traceback__":
@@ -594,12 +598,7 @@ class PyVM(object):
                             bytecode_name,
                         )
                     )
-                try:
-                    why = bytecode_fn(*arguments)
-                except:
-                    breakpoint()
-                    bytecode_fn(*arguments)
-                    raise
+                why = bytecode_fn(*arguments)
 
         except Exception:
             # Deal with exceptions encountered while executing the op.
@@ -782,7 +781,7 @@ class PyVM(object):
         if why == "exception":
             last_exception = self.last_exception
             if last_exception and last_exception[0]:
-                if isinstance(last_exception[2], Traceback):
+                if isinstance(last_exception[2], (Traceback, TracebackType)):
                     if not self.frame:
                         if isinstance(last_exception, tuple):
                             self.last_exception = PyVMUncaughtException.from_tuple(
