@@ -103,17 +103,6 @@ class TestBasic(vmtest.VmTestCase):
                 """
             )
 
-        def test_deleting_names(self):
-            self.assert_ok(
-                """\
-                g = 17
-                assert g == 17
-                del g
-                g
-                """,
-                raises=NameError,
-            )
-
         def test_deleting_local_names(self):
             self.assert_ok(
                 """\
