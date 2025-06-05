@@ -122,6 +122,9 @@ class ByteOpBase(object):
         self.cross_bytecode_exec_warning_shown = False
 
     def binaryOperator(self, op):
+        if self.version_info[0:2] >= (3, 12) and op not in BINARY_OPERATORS:
+            if op.startswith("INPLACE_"):
+                return self.inplaceOperator(op[len("INPLACE_"):])
         x, y = self.vm.popn(2)
         self.vm.push(BINARY_OPERATORS[op](x, y))
 

@@ -594,7 +594,12 @@ class PyVM(object):
                             bytecode_name,
                         )
                     )
-                why = bytecode_fn(*arguments)
+                try:
+                    why = bytecode_fn(*arguments)
+                except:
+                    breakpoint()
+                    bytecode_fn(*arguments)
+                    raise
 
         except Exception:
             # Deal with exceptions encountered while executing the op.
