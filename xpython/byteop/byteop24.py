@@ -52,7 +52,7 @@ def get_cell_name(vm, i: int):
         return f_code.co_freevars[var_idx]
 
 
-def fmt_store_deref(vm, int_arg, repr=repr):
+def fmt_store_deref(vm, _, repr=repr):
     return f" ({vm.top})"
 
 

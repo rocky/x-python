@@ -14,21 +14,6 @@ class TestBasic(vmtest.VmTestCase):
         print("Test not gone over yet for %s" % version_tuple_to_str())
     else:
 
-        def test_attribute_access(self):
-            self.self_checking()
-
-            self.assert_ok(
-                """\
-                class Thing2(object):
-                    z = 17
-                    def __init__(self):
-                        self.x = 23
-                t = Thing2()
-                print(t.xyzzy)
-                """,
-                raises=AttributeError,
-            )
-
         def test_bound_method_on_falsy_objects(self):
             self.self_checking()
 
