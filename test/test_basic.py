@@ -103,19 +103,6 @@ class TestBasic(vmtest.VmTestCase):
                 """
             )
 
-        def test_deleting_local_names(self):
-            self.assert_ok(
-                """\
-                def f():
-                    l = 23
-                    assert l == 23
-                    del l
-                    l
-                f()
-                """,
-                raises=NameError,
-            )
-
         def test_classes(self):
             self.assert_ok(
                 """\

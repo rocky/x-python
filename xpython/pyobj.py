@@ -529,6 +529,7 @@ class Traceback(object):
             tb = tb.tb_next
 
 
+# FIXME: Remove from here and specialize under specific bytecode classses
 def traceback_from_frame(frame):
     tb = None
 
