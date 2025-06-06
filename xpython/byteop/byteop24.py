@@ -124,6 +124,14 @@ class ByteOp24(ByteOpBase):
         self.version = "2.4.6 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(2, 4, 6, "final", 0)
 
+    def create_exception(self, exception: Exception, *args):
+        """
+        Creates a Python 2.4ish style exception
+        """
+        tb = self.vm.last_traceback = traceback_from_frame(self.vm.frame)
+        self.vm.last_exception = (exception, exception(*args), tb)
+
+
     def fmt_unary_op(vm, arg=None):
         """
         returns string of the first two elements of stack
@@ -440,24 +448,18 @@ class ByteOp24(ByteOpBase):
         self.vm.push(const)
 
     def LOAD_NAME(self, name):
-        """Pushes the value associated with co_names[namei] onto the stack."""
-        # Running this opcode can raise a NameError.
+        """Pushes the value associated with co_names[namei] onto the stack.
+        Running this opcode can raise a NameError.
+        """
         #
-        # FIXME: Better would be to separate NameErrors caused by
-        # interpreting bytecode versus NameErrors that are caused as a result of bugs
-        # in the interpreter.
-        self.vm.push(self.lookup_name(name))
-        # try:
-        #     self.lookup_name(name)
-        # except NameError:
-        #     self.vm.last_traceback = traceback_from_frame(self.vm.frame)
-        #     tb  = traceback_from_frame(self.vm.frame)
-        #     self.vm.last_exception = (NameError,
-        #                               NameError("name '%s' is not defined" % name),
-        #                               tb)
-        #     return "exception"
-        # else:
-        #     self.vm.push(self.lookup_name(name))
+        try:
+            self.lookup_name(name)
+        except NameError:
+            self.vm.last_traceback = traceback_from_frame(self.vm.frame)
+            self.create_exception(NameError, NameError(f"name '{name}' is not defined"))
+            return "exception"
+        else:
+            self.vm.push(self.lookup_name(name))
 
     # Building
 
