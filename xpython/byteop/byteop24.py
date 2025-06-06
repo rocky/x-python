@@ -53,17 +53,13 @@ def get_cell_name(vm, i):
 
 def fmt_store_deref(vm, _, repr=repr):
     return " (%s)" % (vm.top())
-=======
-def fmt_store_deref(vm, _, repr=repr):
-    return f" ({vm.top})"
->>>>>>> master
 
 
-def fmt_load_deref(vm, int_arg, repr=repr):
+def fmt_load_deref(vm, int_arg, _=repr):
     return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].get())
 
 
-def fmt_call_function(vm, argc, repr=repr):
+def fmt_call_function(vm, argc, _=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -77,7 +73,7 @@ def fmt_call_function(vm, argc, repr=repr):
     return ""
 
 
-def fmt_make_function(vm, arg=None, repr=repr):
+def fmt_make_function(vm, arg=None, _=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -459,7 +455,7 @@ class ByteOp24(ByteOpBase):
             self.lookup_name(name)
         except NameError:
             self.vm.last_traceback = traceback_from_frame(self.vm.frame)
-            self.create_exception(NameError, NameError(f"name '{name}' is not defined"))
+            self.create_exception(NameError, NameError("name '%s' is not defined" % name))
             return "exception"
         else:
             self.vm.push(self.lookup_name(name))
