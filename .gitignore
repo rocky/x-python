@@ -10,6 +10,8 @@
 /.python-version
 /.venv-2.7
 /.venv-3.11
+/.venv-3.3
+/.venv-3.6
 /activate
 /build
 /dist

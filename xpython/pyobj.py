@@ -29,6 +29,7 @@ def make_cell(value):
     # Construct an actual cell object by creating a closure right here,
     # and grabbing the cell object out of the function we create.
     fn = (lambda x: lambda: x)(value)
+    # pylint: disable=no-else-return
     if PYTHON3:
         return fn.__closure__[0]
     else:
@@ -527,6 +528,7 @@ class Traceback(object):
             tb = tb.tb_next
 
 
+# FIXME: Remove from here and specialize under specific bytecode classses
 def traceback_from_frame(frame):
     tb = None
 
