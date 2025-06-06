@@ -737,8 +737,6 @@ class PyVM(object):
             why = self.dispatch(bytecode_name, int_arg, arguments, offset, line_number)
             if why == "exception":
                 # TODO: ceval calls PyTraceBack_Here, not sure what that does.
-
-                # Deal with exceptions encountered while executing the op.
                 if not self.in_exception_processing:
                     # FIXME: DRY code
                     if self.last_exception[0] != SystemExit:

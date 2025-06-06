@@ -4,23 +4,18 @@
 Note: this is subclassed. Later versions use operations from here.
 """
 
+import collections
 import logging
 import operator
 import sys
 from collections import namedtuple
+<<<<<<< HEAD
+=======
+from copy import copy
+from typing import Any, Optional
+>>>>>>> master
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
-
-# FIXME: we should use:
-# from copy import deepcopy
-
-
-if PYTHON_VERSION_TRIPLE >= (3, 0):
-    import importlib
-
-    import_fn = importlib.__import__
-else:
-    import_fn = __import__
 
 from xpython.byteop.byteop import (
     ByteOpBase,
@@ -28,8 +23,12 @@ from xpython.byteop.byteop import (
     fmt_ternary_op,
     fmt_unary_op,
 )
-from xpython.pyobj import Cell, Function, traceback_from_frame
+from xpython.pyobj import Cell, Function, Traceback, copy_module
+from xpython.vm import PyVM
 from xpython.vmtrace import PyVMEVENT_RETURN, PyVMEVENT_YIELD
+
+import importlib
+import_fn = importlib.__import__
 
 Version_info = namedtuple("version_info", "major minor micro releaselevel serial")
 
@@ -73,7 +72,11 @@ def fmt_call_function(vm, argc, _=repr):
     return ""
 
 
+<<<<<<< HEAD
 def fmt_make_function(vm, arg=None, _=repr):
+=======
+def fmt_make_function(vm, _=None, repr=repr):
+>>>>>>> master
     """
     returns the name of the function from the code object in the stack
     """
@@ -84,6 +87,13 @@ def fmt_make_function(vm, arg=None, _=repr):
 
     # Nothing found.
     return ""
+
+class Traceback24(Traceback):
+    """
+    Python 2.4ish traceback opject
+    """
+    pass
+
 
 
 # pylint: disable=too-many-public-methods
@@ -127,17 +137,42 @@ class ByteOp24(ByteOpBase):
         """
         Creates a Python 2.4ish style exception
         """
-        tb = self.vm.last_traceback = traceback_from_frame(self.vm.frame)
-        self.vm.last_exception = (exception, exception(*args), tb)
+        self.vm.last_traceback = self.traceback_from_frame()
+
+        # FIXME: this should set sys.last_type, sys.last_value, sys.last_traceback,
+        # and sys.exc_type
+        self.vm.last_type = exception
+        self.vm.last_value = exception(*args)
+        self.vm.last_exception = (self.vm.last_type, self.vm.last_value, self.vm.last_traceback)
 
 
-    def fmt_unary_op(vm, arg=None):
+    def exc_info(self) -> tuple:
+        """
+        Python 2.4ish style sys.exc_info() function.
+        """
+        return self.vm.last_exception
+
+    def fmt_unary_op(vm: PyVM, _=None):
         """
         returns string of the first two elements of stack
         """
         return " (%s)" % vm.peek(1)
 
+<<<<<<< HEAD
     def BRKPT(self):
+=======
+    def traceback_from_frame(self):
+        frame = self.vm.frame
+        tb = None
+
+        while frame:
+            next_tb = Traceback24(copy(frame))
+            tb = next_tb
+            frame = frame.f_back
+        return tb
+
+    def BRKPT(self) -> Optional[Any]:
+>>>>>>> master
         """Pseudo opcode: breakpoint. We added this. TODO: call callback, then run
         instruction that should have gotten run.
         """
@@ -534,10 +569,11 @@ class ByteOp24(ByteOpBase):
         """
         frame = self.vm.frame
 
-        module = import_fn(
+        orig_module = import_fn(
             name, frame.f_globals, frame.f_locals, fromlist=None, level=0
         )
 
+        module = copy_module(orig_module)
         # FIXME: generalize this
         if name in sys.builtin_module_names:
             # FIXME: do more here.
@@ -545,11 +581,10 @@ class ByteOp24(ByteOpBase):
                 if name == "sys":
                     module.hexversion = self.hexversion
                     module.version_info = self.version_info
+                    module.exc_info = self.exc_info
                     pass
                 pass
-        # FIXME:
-        # self.vm.push(deepcopy(module))
-        self.vm.push(module)
+        self.vm.push()
 
     def IMPORT_FROM(self, name):
         """
@@ -868,7 +903,7 @@ class ByteOp24(ByteOpBase):
         try:
             return self.call_function(argc, var_args=[], keyword_args={})
         except TypeError as exc:
-            tb = self.vm.last_traceback = traceback_from_frame(self.vm.frame)
+            tb = self.vm.last_traceback = self.traceback_from_frame()
             self.vm.last_exception = (TypeError, exc, tb)
             return "exception"
 
