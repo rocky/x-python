@@ -51,15 +51,15 @@ def get_cell_name(vm, i):
         return f_code.co_freevars[var_idx]
 
 
-def fmt_store_deref(vm, int_arg, repr=repr):
+def fmt_store_deref(vm, _, repr=repr):
     return " (%s)" % (vm.top())
 
 
-def fmt_load_deref(vm, int_arg, repr=repr):
+def fmt_load_deref(vm, int_arg, _=repr):
     return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].get())
 
 
-def fmt_call_function(vm, argc, repr=repr):
+def fmt_call_function(vm, argc, _=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -73,7 +73,7 @@ def fmt_call_function(vm, argc, repr=repr):
     return ""
 
 
-def fmt_make_function(vm, arg=None, repr=repr):
+def fmt_make_function(vm, arg=None, _=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -122,6 +122,14 @@ class ByteOp24(ByteOpBase):
         self.hexversion = 0x20406F0
         self.version = "2.4.6 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(2, 4, 6, "final", 0)
+
+    def create_exception(self, exception: Exception, *args):
+        """
+        Creates a Python 2.4ish style exception
+        """
+        tb = self.vm.last_traceback = traceback_from_frame(self.vm.frame)
+        self.vm.last_exception = (exception, exception(*args), tb)
+
 
     def fmt_unary_op(vm, arg=None):
         """
@@ -439,24 +447,18 @@ class ByteOp24(ByteOpBase):
         self.vm.push(const)
 
     def LOAD_NAME(self, name):
-        """Pushes the value associated with co_names[namei] onto the stack."""
-        # Running this opcode can raise a NameError.
+        """Pushes the value associated with co_names[namei] onto the stack.
+        Running this opcode can raise a NameError.
+        """
         #
-        # FIXME: Better would be to separate NameErrors caused by
-        # interpreting bytecode versus NameErrors that are caused as a result of bugs
-        # in the interpreter.
-        self.vm.push(self.lookup_name(name))
-        # try:
-        #     self.lookup_name(name)
-        # except NameError:
-        #     self.vm.last_traceback = traceback_from_frame(self.vm.frame)
-        #     tb  = traceback_from_frame(self.vm.frame)
-        #     self.vm.last_exception = (NameError,
-        #                               NameError("name '%s' is not defined" % name),
-        #                               tb)
-        #     return "exception"
-        # else:
-        #     self.vm.push(self.lookup_name(name))
+        try:
+            self.lookup_name(name)
+        except NameError:
+            self.vm.last_traceback = traceback_from_frame(self.vm.frame)
+            self.create_exception(NameError, NameError("name '%s' is not defined" % name))
+            return "exception"
+        else:
+            self.vm.push(self.lookup_name(name))
 
     # Building
 

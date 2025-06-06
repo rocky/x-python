@@ -16,6 +16,7 @@ from xdis.opcodes.opcode_311 import _nb_ops
 
 from xpython.byteop import get_byteop
 from xpython.pyobj import Block, Frame, Traceback, traceback_from_frame
+from types import TracebackType
 
 PY2 = not PYTHON3
 log = logging.getLogger(__name__)
@@ -58,7 +59,10 @@ class PyVMUncaughtException(Exception):
     def __init__(self, name, args, traceback=None):
         self.__name__ = name
         self.traceback = traceback
-        self.args = args
+        try:
+            self.args = args
+        except Exception:
+            self.args = []
 
     def __getattr__(self, name):
         if name == "__traceback__":
@@ -495,9 +499,15 @@ class PyVM(object):
                         var_idx = int_arg - len(f.f_code.co_cellvars)
                         arg = f_code.co_freevars[var_idx]
                 elif byte_code in self.opc.NAME_OPS:
-                    arg = f_code.co_names[int_arg]
-                    if isinstance(arg, UnicodeForPython3):
-                        arg = str(arg)
+                    if self.version >= (3, 11) and bytecode_name == "LOAD_GLOBAL":
+                        namei =  f_code.co_names[int_arg >> 1]
+                        push_NULL = bool(int_arg & 1)
+                        arguments = [namei, push_NULL]
+                    else:
+                        arg = f_code.co_names[int_arg]
+                        if isinstance(arg, UnicodeForPython3):
+                            arg = str(arg)
+
                 elif byte_code in self.opc.JREL_OPS:
                     # Many relative jumps are conditional,
                     # so setting f.fallthrough is wrong.
@@ -517,7 +527,8 @@ class PyVM(object):
                         arg = str(arg)
                 else:
                     arg = int_arg
-                arguments = [arg]
+                if len(arguments) == 0:
+                    arguments = [arg]
             break
 
         return bytecode_name, byte_code, int_arg, arguments, offset, line_number
@@ -769,7 +780,7 @@ class PyVM(object):
         if why == "exception":
             last_exception = self.last_exception
             if last_exception and last_exception[0]:
-                if isinstance(last_exception[2], Traceback):
+                if isinstance(last_exception[2], (Traceback, TracebackType)):
                     if not self.frame:
                         if isinstance(last_exception, tuple):
                             self.last_exception = PyVMUncaughtException.from_tuple(

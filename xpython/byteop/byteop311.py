@@ -23,7 +23,15 @@ from xpython.byteop.byteop310 import ByteOp310
 from xpython.pyobj import Function
 
 
-def fmt_make_function(vm, arg=None, repr_fn=repr) -> str:
+def fmt_load_global(vm, arg=None, repr_fn=repr) -> str:
+    """
+    returns the name of the function from the code object in the stack
+    """
+    namei =  vm.f_code.co_names[arg >> 1]
+    return f' ({("NULL + " + namei) if arg & 1 else namei})'
+
+
+def fmt_make_function(vm, _=None, repr_fn=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
@@ -39,6 +47,7 @@ class ByteOp311(ByteOp310):
     """
     def __init__(self, vm):
         super(ByteOp310, self).__init__(vm)
+        self.stack_fmt["LOAD_GLOBAL"] = fmt_load_global
         self.stack_fmt["MAKE_FUNCTION"] = fmt_make_function
         self.hexversion = 0x30A00F0
         self.version = "3.11.0 (default, Oct 27 1955, 00:00:00)\n[x-python]"
