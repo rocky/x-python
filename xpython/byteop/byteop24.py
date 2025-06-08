@@ -4,16 +4,11 @@
 Note: this is subclassed. Later versions use operations from here.
 """
 
-import collections
 import logging
 import operator
 import sys
-from collections import namedtuple
-<<<<<<< HEAD
-=======
 from copy import copy
-from typing import Any, Optional
->>>>>>> master
+from collections import namedtuple
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -72,11 +67,7 @@ def fmt_call_function(vm, argc, _=repr):
     return ""
 
 
-<<<<<<< HEAD
 def fmt_make_function(vm, arg=None, _=repr):
-=======
-def fmt_make_function(vm, _=None, repr=repr):
->>>>>>> master
     """
     returns the name of the function from the code object in the stack
     """
@@ -158,9 +149,6 @@ class ByteOp24(ByteOpBase):
         """
         return " (%s)" % vm.peek(1)
 
-<<<<<<< HEAD
-    def BRKPT(self):
-=======
     def traceback_from_frame(self):
         frame = self.vm.frame
         tb = None
@@ -171,8 +159,7 @@ class ByteOp24(ByteOpBase):
             frame = frame.f_back
         return tb
 
-    def BRKPT(self) -> Optional[Any]:
->>>>>>> master
+    def BRKPT(self):
         """Pseudo opcode: breakpoint. We added this. TODO: call callback, then run
         instruction that should have gotten run.
         """
