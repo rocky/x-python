@@ -1,5 +1,5 @@
-"""Bytecode Interpreter operations for Python 3.7
-"""
+"""Bytecode Interpreter operations for Python 3.7"""
+
 from xpython.byteop.byteop24 import ByteOp24, Version_info
 from xpython.byteop.byteop36 import ByteOp36
 
@@ -25,6 +25,7 @@ class NullClass:
     We create a new type for this. Note: Python's builtin None
     can't be used, because that is a valid value.
     """
+
     def __repr__(self) -> str:
         return "NULL"
 
@@ -39,6 +40,7 @@ class ByteOp37(ByteOp36):
     """
     Python 3.7 opcodes
     """
+
     def __init__(self, vm):
         super().__init__(vm)
 
@@ -85,11 +87,17 @@ class ByteOp37(ByteOp36):
             # Until then, we need to push NULL and the callable (the default slow path).
             function = getattr(TOS, name)
             if not callable(function):
-                raise self.vm.PyVMError(f"LOAD_METHOD {name} off of {TOS} of type {type(TOS)} is not callable.")
+                raise self.vm.PyVMError(
+                    "LOAD_METHOD %s off of %s of type {%s} is not callable."
+                    % (name, TOS, type(TOS))
+                )
             self.vm.push(NULL)
             self.vm.push(function)
         else:
-            raise self.vm.PyVMError(f"LOAD_METHOD can't find {name} off of {TOS} of type {type(TOS)}")
+            raise self.vm.PyVMError(
+                "LOAD_METHOD can't find %s off of %s of type %s"
+                % (name, TOS, type(TOS))
+            )
 
     def CALL_METHOD(self, count):
         """Calls a method. argc is the number of positional
@@ -113,4 +121,6 @@ class ByteOp37(ByteOp36):
             self.call_function_with_args_resolved(function, posargs, {})
         else:
             # FIXME:
-            raise self.vm.PyVMError("CALL_METHOD with self and unbound method not implemented yet")
+            raise self.vm.PyVMError(
+                "CALL_METHOD with self and unbound method not implemented yet"
+            )
