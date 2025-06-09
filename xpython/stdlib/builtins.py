@@ -6,21 +6,15 @@ from typing import Any, Callable
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
-if PYTHON_VERSION_TRIPLE >= (3, 0):
-    import importlib
-    from builtins import input
-    from functools import reduce
+import importlib
+from builtins import input
+from functools import reduce
 
-    if PYTHON_VERSION_TRIPLE >= (3, 4):
-        from importlib import reload
-    else:
-        from imp import reload
+from importlib import reload
 
-    import_fn = importlib.__import__
-    from io import open
-    from sys import intern
-else:
-    import_fn = __import__
+import_fn = importlib.__import__
+from io import open
+from sys import intern
 
 
 def make_compatible_builtins(builtins: dict, target_python: tuple):
@@ -50,8 +44,12 @@ def make_compatible_builtins(builtins: dict, target_python: tuple):
                     builtins[builtin_name] = compatable_fns[builtin_name]
                 else:
                     print(
-                        "FIXME: add %s-compatible builtin function for %s Python %s\n"
-                        % (target_python, target_python, PYTHON_VERSION_TRIPLE[:2])
+                        "FIXME: add %s-compatible builtin function for %s from Python %s"
+                        % (
+                            ".".join([str(i) for i in target_python[:2]]),
+                            builtin_name,
+                            PYTHON_VERSION_TRIPLE[:2],
+                        )
                     )
 
 
@@ -116,7 +114,7 @@ compatable_fns = {
     "coerce": coerce,  # Python 1.x-2.x
     "execfile": execfile,  # Python 1.x-2.x
     "file": open,  # Python 1.x-2.x. Do we eneed to worry about open() mode "rb",
-                   # vs "rt"?
+    # vs "rt"?
     "intern": intern,  # Python 1.x-2.x
     "long": int,  # Python 1.x-2.x
     "reduce": reduce,  # Python 1.x-2.x
