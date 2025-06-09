@@ -24,7 +24,7 @@ from xpython.pyobj import Function
 
 class ByteOp26(ByteOp25):
     def __init__(self, vm):
-        super(ByteOp26, self).__init__(vm)
+        super().__init__(vm)
         self.stack_fmt["IMPORT_NAME"] = fmt_binary_op
         self.stack_fmt["MAKE_CLOSURE"] = fmt_make_function
 
@@ -104,15 +104,9 @@ class ByteOp26(ByteOp25):
         if module is None:
             module = __import__(name, frame.f_globals, frame.f_locals, fromlist, level)
 
-        # FIXME: generalize this
-        if name in sys.builtin_module_names:
-            # FIXME: do more here.
-            if PYTHON_VERSION_TRIPLE[:2] != self.version_info[:2]:
-                if name == "sys":
-                    module.version_info = self.version_info
-                    module.version = self.version
-                    pass
-                pass
+        if module is sys:
+            module = self.setup_sys_module()
+
         self.vm.push(module)
 
     def MAKE_CLOSURE(self, argc: int):
