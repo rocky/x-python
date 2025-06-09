@@ -599,8 +599,10 @@ class PyVM(object):
                     )
                 why = bytecode_fn(*arguments)
 
-        except Exception:
+        except Exception as e:
             # Deal with exceptions encountered while executing the op.
+            e
+            self.last_traceback = byteop.traceback_from_frame()
             self.last_exception = sys.exc_info()
 
             # FIXME: dry code
@@ -622,8 +624,6 @@ class PyVM(object):
                             )
                         )
                     )
-                if not self.last_traceback:
-                    self.last_traceback = traceback_from_frame(self.frame)
                 self.in_exception_processing = True
 
             why = "exception"
@@ -672,12 +672,19 @@ class PyVM(object):
         else:
             if why == "exception" and block.type in ["setup-except", "finally"]:
                 self.push_block("except-handler")
-                exctype, value, tb = self.last_exception
-                self.push(tb, value, exctype)
-                # PyErr_Normalize_Exception goes here
-                self.push(tb, value, exctype)
+                exc_type, exc_value, exc_traceback = self.last_exception
+                # FIXME: start here - is this right? for 3.6? for 3.3? for 2.7? For 3.8, For 3.11?
+                self.push(exc_traceback, exc_value, exc_type)
                 why = None
+
+                # Make the raw exception data available to the
+                # handler, so a program can emulate the Python main
+                # loop.
+
+                # PyErr_NormalizeException goes here
                 self.jump(block.handler)
+                self.last_traceback = exc_traceback
+                self.push(exc_traceback, exc_value, exc_type)
                 return why
 
             elif block.type == "finally":
