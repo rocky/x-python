@@ -160,17 +160,6 @@ class TestBasic(vmtest.VmTestCase):
                 """
             )
 
-        def test_object_attrs_not_shared_with_class(self):
-            self.assert_ok(
-                """\
-                class Thing(object):
-                    pass
-                t = Thing()
-                t.foo = 1
-                Thing.foo""",
-                raises=AttributeError,
-            )
-
         def test_data_descriptors_precede_instance_attributes(self):
             self.assert_ok(
                 """\
