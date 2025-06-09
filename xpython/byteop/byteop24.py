@@ -4,7 +4,6 @@
 Note: this is subclassed. Later versions use operations from here.
 """
 
-import collections
 import logging
 import operator
 import sys
@@ -12,15 +11,13 @@ from collections import namedtuple
 from copy import copy
 from typing import Any, Optional
 
-from xdis.version_info import PYTHON_VERSION_TRIPLE
-
 from xpython.byteop.byteop import (
     ByteOpBase,
     fmt_binary_op,
     fmt_ternary_op,
     fmt_unary_op,
 )
-from xpython.pyobj import Cell, Function, Traceback, copy_module
+from xpython.pyobj import Cell, Function, Traceback
 from xpython.vm import PyVM
 from xpython.vmtrace import PyVMEVENT_RETURN, PyVMEVENT_YIELD
 
@@ -92,7 +89,7 @@ class Traceback24(Traceback):
 # pylint: disable=too-many-public-methods
 class ByteOp24(ByteOpBase):
     """
-    Python 3.7 opcodes
+    Python 2.4 opcodes
     """
     def __init__(self, vm):
         super().__init__(vm)
@@ -558,22 +555,14 @@ class ByteOp24(ByteOpBase):
         """
         frame = self.vm.frame
 
-        orig_module = import_fn(
+        module = import_fn(
             name, frame.f_globals, frame.f_locals, fromlist=None, level=0
         )
 
-        module = copy_module(orig_module)
-        # FIXME: generalize this
-        if name in sys.builtin_module_names:
-            # FIXME: do more here.
-            if PYTHON_VERSION_TRIPLE[:2] != self.version_info[:2]:
-                if name == "sys":
-                    module.hexversion = self.hexversion
-                    module.version_info = self.version_info
-                    module.exc_info = self.exc_info
-                    pass
-                pass
-        self.vm.push()
+        if module is sys:
+            module = self.setup_sys_module()
+
+        self.vm.push(module)
 
     def IMPORT_FROM(self, name):
         """
