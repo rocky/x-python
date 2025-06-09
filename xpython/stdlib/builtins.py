@@ -48,8 +48,8 @@ def make_compatible_builtins(builtins: dict, target_python: tuple):
                     builtins[builtin_name] = compatable_fns[builtin_name]
                 else:
                     print(
-                        "FIXME: add %s-compatible builtin function for %s Python %s\n"
-                        % (target_python, target_python, PYTHON_VERSION_TRIPLE[:2])
+                        "FIXME: add %s-compatible builtin function for %s from Python %s"
+                        % (".".join([str(i) for i in target_python[:2]]), builtin_name, PYTHON_VERSION_TRIPLE[:2])
                     )
 
 
