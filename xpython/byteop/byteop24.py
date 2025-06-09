@@ -17,11 +17,9 @@ from xpython.byteop.byteop import (
     fmt_unary_op,
 )
 from xpython.pyobj import Cell, Function, Traceback
-from xpython.vm import PyVM
 from xpython.vmtrace import PyVMEVENT_RETURN, PyVMEVENT_YIELD
 
-import importlib
-import_fn = importlib.__import__
+import_fn = __import__
 
 Version_info = namedtuple("version_info", "major minor micro releaselevel serial")
 
@@ -47,16 +45,8 @@ def fmt_store_deref(vm, _, repr=repr):
     return " (%s)" % (vm.top)
 
 
-def fmt_load_deref(vm, int_arg, repr=repr):
-    return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].cell_contents)
-=======
-def fmt_store_deref(vm, _, repr=repr):
-    return " (%s)" % (vm.top())
-
-
 def fmt_load_deref(vm, int_arg, _=repr):
-    return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].get())
->>>>>>> python-3.1-to-3.2
+    return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].cell_contents)
 
 
 def fmt_call_function(vm, argc, _=repr):
@@ -134,7 +124,7 @@ class ByteOp24(ByteOpBase):
         self.version = "2.4.6 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(2, 4, 6, "final", 0)
 
-    def create_exception(self, exception: Exception, *args):
+    def create_exception(self, exception):
         """
         Creates a Python 2.4ish style exception
         """
@@ -147,13 +137,13 @@ class ByteOp24(ByteOpBase):
         self.vm.last_exception = (self.vm.last_type, self.vm.last_value, self.vm.last_traceback)
 
 
-    def exc_info(self) -> tuple:
+    def exc_info(self):
         """
         Python 2.4ish style sys.exc_info() function.
         """
         return self.vm.last_exception
 
-    def fmt_unary_op(vm: PyVM, _=None):
+    def fmt_unary_op(vm, _=None):
         """
         returns string of the first two elements of stack
         """

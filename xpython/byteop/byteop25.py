@@ -9,7 +9,7 @@ from xpython.byteop.byteop24 import ByteOp24, Version_info
 
 class ByteOp25(ByteOp24):
     def __init__(self, vm):
-        super().__init__(vm)
+        super(ByteOp25, self).__init__(vm)
         self.version = "2.5.6 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(2, 5, 6, "final", 0)
 

@@ -29,7 +29,7 @@ from xpython.pyobj import Function
 
 class ByteOp26(ByteOp25):
     def __init__(self, vm):
-        super().__init__(vm)
+        super(ByteOp26, self).__init__(vm)
         self.stack_fmt["IMPORT_NAME"] = fmt_binary_op
         self.stack_fmt["MAKE_CLOSURE"] = fmt_make_function
 

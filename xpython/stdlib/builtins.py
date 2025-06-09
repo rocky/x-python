@@ -4,16 +4,9 @@ Compatibility of built-in functions between different Python versions.
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
-import importlib
-from builtins import input
-from functools import reduce
-
-# from importlib import reload
-
-import_fn = importlib.__import__
 from io import open
-from sys import intern
 
+import_fn = __import__
 
 def make_compatible_builtins(builtins, target_python):
     """
@@ -113,7 +106,7 @@ compatable_fns = {
     "execfile": execfile,  # Python 1.x-2.x
     "file": open,  # Python 1.x-2.x. Do we eneed to worry about open() mode "rb",
     # vs "rt"?
-    "intern": intern,  # Python 1.x-2.x
+    # "intern": intern,  # Python 1.x-2.x
     "long": int,  # Python 1.x-2.x
     "reduce": reduce,  # Python 1.x-2.x
     # "reload": reload,  # Python 1.x-2.x
