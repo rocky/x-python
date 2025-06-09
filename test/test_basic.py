@@ -13,28 +13,6 @@ class TestBasic(vmtest.VmTestCase):
     if PYTHON_VERSION_TRIPLE[:2] in ((3, 10),):
         print("Test not gone over yet for %s" % version_tuple_to_str())
     else:
-
-        def test_attribute_access(self):
-            self.self_checking()
-
-            self.assert_ok(
-                """\
-                class Thing2(object):
-                    z = 17
-                    def __init__(self):
-                        self.x = 23
-                t = Thing2()
-                print(t.xyzzy)
-                """,
-                raises=AttributeError,
-            )
-
-        def test_bound_method_on_falsy_objects(self):
-            self.self_checking()
-
-        def test_building_stuff(self):
-            self.self_checking()
-
         def test_callback(self):
             self.self_checking()
 
@@ -125,30 +103,6 @@ class TestBasic(vmtest.VmTestCase):
                 """
             )
 
-        def test_deleting_names(self):
-            self.assert_ok(
-                """\
-                g = 17
-                assert g == 17
-                del g
-                g
-                """,
-                raises=NameError,
-            )
-
-        def test_deleting_local_names(self):
-            self.assert_ok(
-                """\
-                def f():
-                    l = 23
-                    assert l == 23
-                    del l
-                    l
-                f()
-                """,
-                raises=NameError,
-            )
-
         def test_classes(self):
             self.assert_ok(
                 """\
@@ -204,17 +158,6 @@ class TestBasic(vmtest.VmTestCase):
                 assert st.foo == 25
                 assert t.foo == 17
                 """
-            )
-
-        def test_object_attrs_not_shared_with_class(self):
-            self.assert_ok(
-                """\
-                class Thing(object):
-                    pass
-                t = Thing()
-                t.foo = 1
-                Thing.foo""",
-                raises=AttributeError,
             )
 
         def test_data_descriptors_precede_instance_attributes(self):

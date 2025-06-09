@@ -26,6 +26,7 @@ from xdis.opcodes.opcode_311 import _nb_ops
 
 from xpython.byteop import get_byteop
 from xpython.pyobj import Block, Frame, Traceback, traceback_from_frame
+from types import TracebackType
 
 PY2 = not PYTHON3
 log = logging.getLogger(__name__)
@@ -68,7 +69,10 @@ class PyVMUncaughtException(Exception):
     def __init__(self, name, args, traceback=None):
         self.__name__ = name
         self.traceback = traceback
-        self.args = args
+        try:
+            self.args = args
+        except Exception:
+            self.args = []
 
     def __getattr__(self, name):
         if name == "__traceback__":
@@ -510,9 +514,15 @@ class PyVM(object):
                         var_idx = int_arg - len(f.f_code.co_cellvars)
                         arg = f_code.co_freevars[var_idx]
                 elif byte_code in self.opc.NAME_OPS:
-                    arg = f_code.co_names[int_arg]
-                    if isinstance(arg, UnicodeForPython3):
-                        arg = str(arg)
+                    if self.version >= (3, 11) and bytecode_name == "LOAD_GLOBAL":
+                        namei =  f_code.co_names[int_arg >> 1]
+                        push_NULL = bool(int_arg & 1)
+                        arguments = [namei, push_NULL]
+                    else:
+                        arg = f_code.co_names[int_arg]
+                        if isinstance(arg, UnicodeForPython3):
+                            arg = str(arg)
+
                 elif byte_code in self.opc.JREL_OPS:
                     # Many relative jumps are conditional,
                     # so setting f.fallthrough is wrong.
@@ -532,7 +542,8 @@ class PyVM(object):
                         arg = str(arg)
                 else:
                     arg = int_arg
-                arguments = [arg]
+                if len(arguments) == 0:
+                    arguments = [arg]
             break
 
         return bytecode_name, byte_code, int_arg, arguments, offset, line_number
@@ -603,8 +614,10 @@ class PyVM(object):
                     )
                 why = bytecode_fn(*arguments)
 
-        except Exception:
+        except Exception as e:
             # Deal with exceptions encountered while executing the op.
+            e
+            self.last_traceback = byteop.traceback_from_frame()
             self.last_exception = sys.exc_info()
 
             # FIXME: dry code
@@ -626,8 +639,6 @@ class PyVM(object):
                             )
                         )
                     )
-                if not self.last_traceback:
-                    self.last_traceback = traceback_from_frame(self.frame)
                 self.in_exception_processing = True
 
             why = "exception"
@@ -676,12 +687,19 @@ class PyVM(object):
         else:
             if why == "exception" and block.type in ["setup-except", "finally"]:
                 self.push_block("except-handler")
-                exctype, value, tb = self.last_exception
-                self.push(tb, value, exctype)
-                # PyErr_Normalize_Exception goes here
-                self.push(tb, value, exctype)
+                exc_type, exc_value, exc_traceback = self.last_exception
+                # FIXME: start here - is this right? for 3.6? for 3.3? for 2.7? For 3.8, For 3.11?
+                self.push(exc_traceback, exc_value, exc_type)
                 why = None
+
+                # Make the raw exception data available to the
+                # handler, so a program can emulate the Python main
+                # loop.
+
+                # PyErr_NormalizeException goes here
                 self.jump(block.handler)
+                self.last_traceback = exc_traceback
+                self.push(exc_traceback, exc_value, exc_type)
                 return why
 
             elif block.type == "finally":
@@ -741,8 +759,6 @@ class PyVM(object):
             why = self.dispatch(bytecode_name, int_arg, arguments, offset, line_number)
             if why == "exception":
                 # TODO: ceval calls PyTraceBack_Here, not sure what that does.
-
-                # Deal with exceptions encountered while executing the op.
                 if not self.in_exception_processing:
                     # FIXME: DRY code
                     if self.last_exception[0] != SystemExit:
@@ -784,7 +800,7 @@ class PyVM(object):
         if why == "exception":
             last_exception = self.last_exception
             if last_exception and last_exception[0]:
-                if isinstance(last_exception[2], Traceback):
+                if isinstance(last_exception[2], (Traceback, TracebackType)):
                     if not self.frame:
                         if isinstance(last_exception, tuple):
                             self.last_exception = PyVMUncaughtException.from_tuple(

@@ -7,20 +7,8 @@ Note: this is subclassed. Later versions use operations from here.
 import logging
 import operator
 import sys
+from copy import copy
 from collections import namedtuple
-
-from xdis.version_info import PYTHON_VERSION_TRIPLE
-
-# FIXME: we should use:
-# from copy import deepcopy
-
-
-if PYTHON_VERSION_TRIPLE >= (3, 0):
-    import importlib
-
-    import_fn = importlib.__import__
-else:
-    import_fn = __import__
 
 from xpython.byteop.byteop import (
     ByteOpBase,
@@ -28,8 +16,12 @@ from xpython.byteop.byteop import (
     fmt_ternary_op,
     fmt_unary_op,
 )
-from xpython.pyobj import Cell, Function, traceback_from_frame
+from xpython.pyobj import Cell, Function, Traceback
+from xpython.vm import PyVM
 from xpython.vmtrace import PyVMEVENT_RETURN, PyVMEVENT_YIELD
+
+import importlib
+import_fn = importlib.__import__
 
 Version_info = namedtuple("version_info", "major minor micro releaselevel serial")
 
@@ -51,15 +43,23 @@ def get_cell_name(vm, i):
         return f_code.co_freevars[var_idx]
 
 
-def fmt_store_deref(vm, int_arg, repr=repr):
+def fmt_store_deref(vm, _, repr=repr):
     return " (%s)" % (vm.top)
 
 
 def fmt_load_deref(vm, int_arg, repr=repr):
     return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].cell_contents)
+=======
+def fmt_store_deref(vm, _, repr=repr):
+    return " (%s)" % (vm.top())
 
 
-def fmt_call_function(vm, argc, repr=repr):
+def fmt_load_deref(vm, int_arg, _=repr):
+    return " (%s)" % (vm.frame.cells[get_cell_name(vm, int_arg)].get())
+>>>>>>> python-3.1-to-3.2
+
+
+def fmt_call_function(vm, argc, _=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -76,7 +76,7 @@ def fmt_call_function(vm, argc, repr=repr):
     return ""
 
 
-def fmt_make_function(vm, arg=None, repr=repr):
+def fmt_make_function(vm, arg=None, _=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -88,11 +88,18 @@ def fmt_make_function(vm, arg=None, repr=repr):
     # Nothing found.
     return ""
 
+class Traceback24(Traceback):
+    """
+    Python 2.4ish traceback opject
+    """
+    pass
+
+
 
 # pylint: disable=too-many-public-methods
 class ByteOp24(ByteOpBase):
     """
-    Python 3.7 opcodes
+    Python 2.4 opcodes
     """
 
     def __init__(self, vm):
@@ -127,11 +134,40 @@ class ByteOp24(ByteOpBase):
         self.version = "2.4.6 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(2, 4, 6, "final", 0)
 
-    def fmt_unary_op(vm, arg=None):
+    def create_exception(self, exception: Exception, *args):
+        """
+        Creates a Python 2.4ish style exception
+        """
+        self.vm.last_traceback = self.traceback_from_frame()
+
+        # FIXME: this should set sys.last_type, sys.last_value, sys.last_traceback,
+        # and sys.exc_type
+        self.vm.last_type = exception
+        self.vm.last_value = exception(*args)
+        self.vm.last_exception = (self.vm.last_type, self.vm.last_value, self.vm.last_traceback)
+
+
+    def exc_info(self) -> tuple:
+        """
+        Python 2.4ish style sys.exc_info() function.
+        """
+        return self.vm.last_exception
+
+    def fmt_unary_op(vm: PyVM, _=None):
         """
         returns string of the first two elements of stack
         """
         return " (%s)" % vm.peek(1)
+
+    def traceback_from_frame(self):
+        frame = self.vm.frame
+        tb = None
+
+        while frame:
+            next_tb = Traceback24(copy(frame))
+            tb = next_tb
+            frame = frame.f_back
+        return tb
 
     def BRKPT(self):
         """Pseudo opcode: breakpoint. We added this. TODO: call callback, then run
@@ -443,24 +479,18 @@ class ByteOp24(ByteOpBase):
         self.vm.push(const)
 
     def LOAD_NAME(self, name):
-        """Pushes the value associated with co_names[namei] onto the stack."""
-        # Running this opcode can raise a NameError.
+        """Pushes the value associated with co_names[namei] onto the stack.
+        Running this opcode can raise a NameError.
+        """
         #
-        # FIXME: Better would be to separate NameErrors caused by
-        # interpreting bytecode versus NameErrors that are caused as a result of bugs
-        # in the interpreter.
-        self.vm.push(self.lookup_name(name))
-        # try:
-        #     self.lookup_name(name)
-        # except NameError:
-        #     self.vm.last_traceback = traceback_from_frame(self.vm.frame)
-        #     tb  = traceback_from_frame(self.vm.frame)
-        #     self.vm.last_exception = (NameError,
-        #                               NameError("name '%s' is not defined" % name),
-        #                               tb)
-        #     return "exception"
-        # else:
-        #     self.vm.push(self.lookup_name(name))
+        try:
+            self.lookup_name(name)
+        except NameError:
+            self.vm.last_traceback = traceback_from_frame(self.vm.frame)
+            self.create_exception(NameError, NameError("name '%s' is not defined" % name))
+            return "exception"
+        else:
+            self.vm.push(self.lookup_name(name))
 
     # Building
 
@@ -540,17 +570,9 @@ class ByteOp24(ByteOpBase):
             name, frame.f_globals, frame.f_locals, fromlist=None, level=0
         )
 
-        # FIXME: generalize this
-        if name in sys.builtin_module_names:
-            # FIXME: do more here.
-            if PYTHON_VERSION_TRIPLE[:2] != self.version_info[:2]:
-                if name == "sys":
-                    module.hexversion = self.hexversion
-                    module.version_info = self.version_info
-                    pass
-                pass
-        # FIXME:
-        # self.vm.push(deepcopy(module))
+        if module is sys:
+            module = self.setup_sys_module()
+
         self.vm.push(module)
 
     def IMPORT_FROM(self, name):
@@ -870,7 +892,7 @@ class ByteOp24(ByteOpBase):
         try:
             return self.call_function(argc, var_args=[], keyword_args={})
         except TypeError as exc:
-            tb = self.vm.last_traceback = traceback_from_frame(self.vm.frame)
+            tb = self.vm.last_traceback = self.traceback_from_frame()
             self.vm.last_exception = (TypeError, exc, tb)
             return "exception"
 

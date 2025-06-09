@@ -26,11 +26,22 @@ import xpython.stdlib.inspect3 as inspect3
 PY2 = not PYTHON3
 
 
+def copy_module(old_module):
+    """
+    Use to make copy of system modules like "sys" which should be
+    distinct.
+    """
+    new_module = types.ModuleType(old_module.__name__)
+    new_module.__dict__.update(old_module.__dict__)
+    return new_module
+
+
 def make_cell(value):
     # Thanks to Alex Gaynor for help with this bit of twistiness.
     # Construct an actual cell object by creating a closure right here,
     # and grabbing the cell object out of the function we create.
     fn = (lambda x: lambda: x)(value)
+    # pylint: disable=no-else-return
     if PYTHON3:
         return fn.__closure__[0]
     else:
@@ -519,7 +530,7 @@ class Frame(object):
         return last_line_number
 
 
-class Traceback(object):
+class Traceback:
     def __init__(self, frame):
         self.tb_next = frame.f_back
         self.tb_lasti = frame.f_lasti
@@ -545,12 +556,13 @@ class Traceback(object):
             tb = tb.tb_next
 
 
+# FIXME: Remove from here and specialize under specific bytecode classses
 def traceback_from_frame(frame):
     tb = None
 
     while frame:
-        next_tb = Traceback(copy(frame))
-        next_tb.tb_next = tb
+        copy_frame = copy(frame)
+        next_tb = Traceback(copy_frame)
         tb = next_tb
         frame = frame.f_back
     return tb

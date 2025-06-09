@@ -9,11 +9,15 @@ import inspect
 import logging
 import operator
 import sys
+import types
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE, version_tuple_to_str
 
 from xpython.builtins import build_class, builtin_super
-from xpython.pyobj import Function
+from xpython.pyobj import Function, copy_module
+from xpython.vm import PyVM
+
+>>>>>>> python-3.1-to-3.2
 
 log = logging.getLogger(__name__)
 
@@ -119,7 +123,16 @@ class ByteOpBase(object):
         self.cross_bytecode_eval_warning_shown = False
         self.cross_bytecode_exec_warning_shown = False
 
+    def exc_info(self) -> tuple:
+        """
+        Default exc_info()
+        """
+        return sys.exc_info()
+
     def binaryOperator(self, op):
+        if self.version_info[0:2] >= (3, 12) and op not in BINARY_OPERATORS:
+            if op.startswith("INPLACE_"):
+                return self.inplaceOperator(op[len("INPLACE_"):])
         x, y = self.vm.popn(2)
         self.vm.push(BINARY_OPERATORS[op](x, y))
 
@@ -505,6 +518,24 @@ class ByteOpBase(object):
         print("", file=to)
         if hasattr(to, "softspace"):
             to.softspace = 0
+
+    def setup_sys_module(self) -> types.ModuleType:
+        """If this has not previously been done, make a *copy* of the
+        running sys module, add it in the frame, and adapt it for the
+        interpreter we are simulating.
+        """
+
+        if "sys" not in self.vm.frame.f_globals:
+            sys_module = copy_module(sys)
+            self.vm.frame.f_globals["sys"] = sys_module
+
+            sys_module.hexversion = self.hexversion
+            sys_module.version_info = self.version_info
+            sys_module.exc_info = self.exc_info
+        else:
+            sys_module = self.vm.frame.f_globals["sys"]
+        return sys_module
+
 
     def unaryOperator(self, op):
         x = self.vm.pop()
