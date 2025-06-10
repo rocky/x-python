@@ -129,7 +129,7 @@ class ByteOpBase(object):
         return sys.exc_info()
 
     def binaryOperator(self, op):
-        if self.version_info[0:2] >= (3, 12) and op not in BINARY_OPERATORS:
+        if self.version_info[:2] >= (3, 11) and op not in BINARY_OPERATORS:
             if op.startswith("INPLACE_"):
                 return self.inplaceOperator(op[len("INPLACE_"):])
         x, y = self.vm.popn(2)
