@@ -19,6 +19,7 @@ from xdis import (
     next_offset,
     op_has_argument,
 )
+from xdis.bytecode import parse_exception_table
 from xdis.cross_types import UnicodeForPython3
 from xdis.op_imports import get_opcode_module
 from xdis.opcodes.opcode_311 import _nb_ops
