@@ -1,4 +1,5 @@
 """A pure-Python Python bytecode interpreter."""
+
 # Based on:
 # pyvm2 by Paul Swartz (z3p), from http://www.twistedmatrix.com/users/z3p/
 import linecache
@@ -9,8 +10,16 @@ import sys
 import six
 from typing import List
 from six.moves import reprlib
-from xdis import (CO_NEWLOCALS, IS_PYPY, PYTHON3, PYTHON_VERSION_TRIPLE,
-                  code2num, next_offset, op_has_argument)
+from xdis import (
+    CO_NEWLOCALS,
+    IS_PYPY,
+    PYTHON3,
+    PYTHON_VERSION_TRIPLE,
+    code2num,
+    next_offset,
+    op_has_argument,
+)
+from xdis.bytecode import parse_exception_table
 from xdis.cross_types import UnicodeForPython3
 from xdis.op_imports import get_opcode_module
 from xdis.opcodes.opcode_311 import _nb_ops
@@ -240,8 +249,10 @@ class PyVM(object):
 
         if XPYTHON_STACKCHECK:
             if new_size > self.frame.f_code.co_stacksize:
-                print(f"***Warning: exceeding declared max stacksize; have {new_size}, "
-                      f"max size: {self.f_code.co_stacksize}")
+                print(
+                    f"***Warning: exceeding declared max stacksize; have {new_size}, "
+                    f"max size: {self.f_code.co_stacksize}"
+                )
 
         self.frame.stack.extend(vals)
 
@@ -417,6 +428,10 @@ class PyVM(object):
         return val
 
     def unwind_block(self, block):
+        """
+        Pop any extra stack entries needed to clean up or
+        finish a block.
+        """
         if block.type == "except-handler":
             offset = 3
         else:
@@ -425,7 +440,9 @@ class PyVM(object):
         while len(self.frame.stack) > block.level + offset:
             self.pop()
 
-        if block.type == "except-handler":
+        # Set self.last_exception which will filter its way to
+        # sys.last_exception. 3.11 has a already set this.
+        if block.type == "except-handler" and self.version < (3, 11):
             tb, value, exctype = self.popn(3)
             self.last_exception = exctype, value, tb
 
@@ -501,7 +518,7 @@ class PyVM(object):
                         arg = f_code.co_freevars[var_idx]
                 elif byte_code in self.opc.NAME_OPS:
                     if self.version >= (3, 11) and bytecode_name == "LOAD_GLOBAL":
-                        namei =  f_code.co_names[int_arg >> 1]
+                        namei = f_code.co_names[int_arg >> 1]
                         push_NULL = bool(int_arg & 1)
                         arguments = [namei, push_NULL]
                     else:
@@ -600,9 +617,8 @@ class PyVM(object):
                     )
                 why = bytecode_fn(*arguments)
 
-        except Exception as e:
+        except Exception:
             # Deal with exceptions encountered while executing the op.
-            e
             self.last_traceback = byteop.traceback_from_frame()
             self.last_exception = sys.exc_info()
 
@@ -652,6 +668,7 @@ class PyVM(object):
             self.jump(block.handler)
             return why
 
+        # FIXME: put this a function based on self.version
         if self.version < (3, 0):
             if (
                 block.type == "finally"
@@ -674,7 +691,7 @@ class PyVM(object):
             if why == "exception" and block.type in ["setup-except", "finally"]:
                 self.push_block("except-handler")
                 exc_type, exc_value, exc_traceback = self.last_exception
-                # FIXME: start here - is this right? for 3.6? for 3.3? for 2.7? For 3.8, For 3.11?
+                # FIXME: start here - is this right for 2.7?
                 self.push(exc_traceback, exc_value, exc_type)
                 why = None
 
@@ -686,6 +703,20 @@ class PyVM(object):
                 self.jump(block.handler)
                 self.last_traceback = exc_traceback
                 self.push(exc_traceback, exc_value, exc_type)
+                return why
+
+            if why == "exception" and block.type == "setup-except311":
+                # FIXME: Is this right?
+                self.push(self.last_exception)
+                self.push_block("except-handler")
+                why = None
+
+                # Make the raw exception data available to the
+                # handler, so a program can emulate the Python main
+                # loop.
+
+                # PyErr_NormalizeException goes here
+                self.jump(block.handler)
                 return why
 
             elif block.type == "finally":
@@ -709,11 +740,13 @@ class PyVM(object):
     # Interpreter main loop
     # This is analogous to CPython's _PyEval_EvalFrameDefault() (in 3.x newer Python)
     # or eval_frame() in older 2.x code.
-    def eval_frame(self, frame):
+    def eval_frame(self, frame: Frame):
         """Run a frame until it returns (somehow).
 
         Exceptions are raised, the return value is returned.
 
+        This code does includes frame tracing (ftrace) support used in debugging. For that,
+        see the corresponding code in vmtrace.py
         """
         self.f_code = frame.f_code
         if frame.f_lasti == -1:
@@ -737,13 +770,16 @@ class PyVM(object):
                 offset,
                 line_number,
             ) = self.parse_byte_and_args(byte_code)
+
             if log.isEnabledFor(logging.INFO):
                 self.log(bytecode_name, int_arg, arguments, offset, line_number)
 
             # When unwinding the block stack, we need to keep track of why we
             # are doing it.
             why = self.dispatch(bytecode_name, int_arg, arguments, offset, line_number)
+
             if why == "exception":
+                # Deal with exceptions encountered while executing the op.
                 # TODO: ceval calls PyTraceBack_Here, not sure what that does.
                 if not self.in_exception_processing:
                     # FIXME: DRY code
@@ -764,9 +800,23 @@ class PyVM(object):
                                 )
                             )
                         )
-                    if self.last_traceback is None:
-                        self.last_traceback = traceback_from_frame(frame)
+                    self.last_traceback = traceback_from_frame(frame)
                     self.in_exception_processing = True
+                elif self.version >= (3, 11):
+                    # Find and add a block frame
+                    frame = self.frame
+                    lasti = frame.f_lasti
+                    encoded_exception_table = frame.f_code.co_exceptiontable
+                    exception_entries = parse_exception_table(encoded_exception_table)
+                    for exception_entry in exception_entries:
+                        if exception_entry.start <= lasti <= exception_entry.end:
+                            self.push_block(
+                                "setup-except311",
+                                exception_entry.target,
+                                exception_entry.depth,
+                            )
+                            break
+                    pass
 
             elif why == "reraise":
                 why = "exception"
