@@ -128,10 +128,10 @@ class ByteOpBase(object):
         """
         return sys.exc_info()
 
-    def binaryOperator(self, op):
+    def binary_operator(self, op):
         if self.version_info[:2] >= (3, 11) and op not in BINARY_OPERATORS:
             if op.startswith("INPLACE_"):
-                return self.inplaceOperator(op[len("INPLACE_"):])
+                return self.inplace_operator(op[len("INPLACE_"):])
         x, y = self.vm.popn(2)
         self.vm.push(BINARY_OPERATORS[op](x, y))
 
@@ -426,7 +426,7 @@ class ByteOpBase(object):
         self.vm.last_exception = exc_type, val, val.__traceback__
         return "exception"
 
-    def inplaceOperator(self, op):
+    def inplace_operator(self, op):
         x, y = self.vm.popn(2)
         if op == "POWER":
             x **= y

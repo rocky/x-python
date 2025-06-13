@@ -584,12 +584,12 @@ class PyVM(object):
                 byteop.unaryOperator(bytecode_name[6:])
             elif bytecode_name.startswith("BINARY_"):
                 if self.version < (3, 11):
-                    byteop.binaryOperator(bytecode_name[7:])
+                    byteop.binary_operator(bytecode_name[7:])
                 else:
-                    byteop.binaryOperator(_nb_ops[int_arg][0][3:])
+                    byteop.binary_operator(_nb_ops[int_arg][0][3:])
 
             elif bytecode_name.startswith("INPLACE_"):
-                byteop.inplaceOperator(bytecode_name[8:])
+                byteop.inplace_operator(bytecode_name[8:])
             elif "SLICE+" in bytecode_name:
                 self.sliceOperator(bytecode_name)
             else:
