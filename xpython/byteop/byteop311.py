@@ -406,19 +406,6 @@ class ByteOp311(ByteOp310):
         self.vm.push(self.vm.last_exception)
         self.vm.push(val)
 
-    def JUMP_IF_TRUE_OR_POP(self, delta: int):
-        """
-        If TOS is true, increments the bytecode counter by delta
-        and leaves TOS on the stack. Otherwise (TOS is false), TOS is
-        popped.
-
-
-        The oparg is now a relative delta rather than an absolute target.
-        """
-        val = self.vm.top
-        if val == True:  # noqa
-            self.vm.jump(delta)
-        self.vm.pop()
 
     def RESUME(self, where: int):
         """
