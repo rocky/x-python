@@ -8,8 +8,6 @@ import importlib
 from builtins import input
 from functools import reduce
 
-# from importlib import reload
-
 import_fn = importlib.__import__
 from io import open
 from sys import intern
