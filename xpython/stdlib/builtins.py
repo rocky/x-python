@@ -8,8 +8,6 @@ import importlib
 from builtins import input
 from functools import reduce
 
-from importlib import reload
-
 import_fn = importlib.__import__
 from io import open
 from sys import intern
@@ -116,7 +114,7 @@ compatable_fns = {
     "intern": intern,  # Python 1.x-2.x
     "long": int,  # Python 1.x-2.x
     "reduce": reduce,  # Python 1.x-2.x
-    "reload": reload,  # Python 1.x-2.x
+    # "reload": reload,  # Python 1.x-2.x
     "raw_input": input,  # Python 1.x-2.x
     "unichr": chr,  # Python 1.x-2.x
     "unicode": str,  # Python 1.x-2.x
