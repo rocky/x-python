@@ -1,3 +1,4 @@
+"""This program is self-checking!"""
 class NullContext(object):
     def __enter__(self):
         l.append("i")
@@ -19,5 +20,4 @@ for i in range(3):
 
 l.append("r")
 s = "".join(l)
-print("Look: %r" % s)
 assert s == "iwzoeiwor"
