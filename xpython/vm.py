@@ -262,10 +262,6 @@ class PyVM(object):
         self.frame.stack.extend(vals)
 
     def set(self, i, value):
-        """Set a value at stack position i."""
-        self.frame.stack[-i] = value
-=======
-    def set(self, i: int, value):
         """Set a value at stack position i from the TOS.
         0 sets TOS, 1 sets TOS1, etc.
         """
@@ -274,7 +270,6 @@ class PyVM(object):
         else:
             raise PyVMError("set value must be between 0 and %s" % (i-1))
 
->>>>>>> python-3.1-to-3.2
 
     @property
     def top(self):
@@ -759,7 +754,7 @@ class PyVM(object):
     # Interpreter main loop
     # This is analogous to CPython's _PyEval_EvalFrameDefault() (in 3.x newer Python)
     # or eval_frame() in older 2.x code.
-    def eval_frame(self, frame: Frame):
+    def eval_frame(self, frame):
         """Run a frame until it returns (somehow).
 
         Exceptions are raised, the return value is returned.

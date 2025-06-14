@@ -164,7 +164,7 @@ class ByteOp27(ByteOp26):
         if not val:
             self.vm.jump(target)
 
-    def JUMP_IF_TRUE_OR_POP(self, delta: int):
+    def JUMP_IF_TRUE_OR_POP(self, delta):
         """
         If TOS is true, sets the bytecode counter to target and leaves TOS
         on the stack. Otherwise, (TOS is false), TOS is popped.

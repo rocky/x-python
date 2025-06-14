@@ -539,7 +539,7 @@ class ByteOp24(ByteOpBase):
         and issubclass(x, y),  # exception-match
     ]
 
-    def COMPARE_OP(self, opname: int):
+    def COMPARE_OP(self, opname):
         """Performs a Boolean operation. The operation name can be
         found in cmp_op[opname].
 
