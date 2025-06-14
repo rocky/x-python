@@ -368,8 +368,10 @@ class PyVMTraced(PyVM):
                                 last_exception
                             )
                         raise self.last_exception
-                else:
-                    six.reraise(*self.last_exception)
+                    else:
+                        raise last_exception[0]
+                    pass
+                pass
             else:
                 raise PyVMError("Borked exception recording")
             # if self.exception and .... ?

@@ -257,8 +257,14 @@ class PyVM(object):
         self.frame.stack.extend(vals)
 
     def set(self, i: int, value):
-        """Set a value at stack position i."""
-        self.frame.stack[-i] = value
+        """Set a value at stack position i from the TOS.
+        0 sets TOS, 1 sets TOS1, etc.
+        """
+        if 0 <= i < len(self.frame.stack):
+            self.frame.stack[i-1] = value
+        else:
+            raise PyVMError(f"set value must be between 0 and {i-1}")
+
 
     @property
     def top(self):
