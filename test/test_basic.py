@@ -16,6 +16,9 @@ class TestBasic(vmtest.VmTestCase):
         def test_callback(self):
             self.self_checking()
 
+    def test_building_stuff(self):
+        self.self_checking()
+
     def test_calling_methods_wrong(self):
         self.self_checking()
 

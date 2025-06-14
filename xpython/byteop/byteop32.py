@@ -186,7 +186,6 @@ class ByteOp32(ByteOp27):
 
         self.vm.push(fn)
 
-    # This opcode disappears starting in 3.5
     def WITH_CLEANUP(self):
         """Cleans up the stack when a `with` statement block exits. TOS is the
         context manager's `__exit__()` bound method.
@@ -207,6 +206,8 @@ class ByteOp32(ByteOp27):
         replaced with a single WHY_SILENCED to prevent END_FINALLY
         from re-raising the exception. (But non-local gotos will still
         be resumed.)
+
+        Removed in 3.5.
         """
         # Note: the code is derived from byterun where it had to handle
         # both 2.7 and 3.3.
@@ -238,10 +239,12 @@ class ByteOp32(ByteOp27):
             # An error occurred, and was suppressed
             self.vm.push("silenced")
 
-    # Note: this is gone in 3.4
     def STORE_LOCALS(self):
         """Pops TOS from the stack and stores it as the current frames
-        f_locals. This is used in class construction."""
+        f_locals. This is used in class construction.
+
+        Removed in 3.4.
+        """
         self.vm.frame.f_locals = self.vm.pop()
 
     def RAISE_VARARGS(self, argc):

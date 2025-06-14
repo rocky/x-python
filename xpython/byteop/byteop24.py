@@ -307,6 +307,8 @@ class ByteOp24(ByteOpBase):
     def LIST_APPEND(self):
         """Calls list.append(TOS1, TOS). Used to implement list
         comprehensions.
+
+        Changed in 2.7.
         """
         val = self.vm.pop()
         the_list = self.vm.pop()
@@ -537,9 +539,12 @@ class ByteOp24(ByteOpBase):
         and issubclass(x, y),  # exception-match
     ]
 
-    def COMPARE_OP(self, opname):
+    def COMPARE_OP(self, opname: int):
         """Performs a Boolean operation. The operation name can be
-        found in cmp_op[opname]."""
+        found in cmp_op[opname].
+
+        Changed in 3.12
+        """
         x, y = self.vm.popn(2)
         self.vm.push(self.COMPARE_OPERATORS[opname](x, y))
 
@@ -553,6 +558,8 @@ class ByteOp24(ByteOpBase):
         modifies the namespace.
 
         Note: name = co_names[namei] set in parse_byte_and_args()
+
+        Changed in 2.6
         """
         frame = self.vm.frame
 
@@ -785,6 +792,8 @@ class ByteOp24(ByteOpBase):
         items on the stack are the cells for these variables. The
         function also has argc default parameters, where are found
         before the cells.
+
+        Changed in 2.6
         """
         code = self.vm.pop()
         defaults = self.vm.popn(argc)
@@ -823,6 +832,8 @@ class ByteOp24(ByteOpBase):
         raise statement, ranging from 0 to 3. The handler will find
         the traceback as TOS2, the parameter as TOS1, and the
         exception as TOS.
+
+        Changed in 3.2.
         """
         # NOTE: the dis docs quoted above are completely wrong about the order of the
         # operands on the stack!

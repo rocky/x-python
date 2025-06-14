@@ -23,12 +23,12 @@ from xpython.byteop.byteop310 import ByteOp310
 from xpython.pyobj import Function
 
 
-def fmt_load_global(vm, arg=None, repr_fn=repr) -> str:
+def fmt_load_global(vm, arg, repr_fn=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
     namei =  vm.f_code.co_names[arg >> 1]
-    return f' ({("NULL + " + namei) if arg & 1 else namei})'
+    return ' (%s)' % ("NULL + " + namei) if arg & 1 else namei
 
 
 def fmt_make_function(vm, _=None, repr_fn=repr) -> str:
@@ -37,7 +37,7 @@ def fmt_make_function(vm, _=None, repr_fn=repr) -> str:
     """
     fn_item = vm.top
     name = fn_item.co_name
-    return f" ({name})"
+    return " (%s)" % name
 
 
 # pylint: disable=too-many-public-methods
@@ -173,7 +173,7 @@ class ByteOp311(ByteOp310):
         elif name in f.f_builtins:
             val = f.f_builtins[name]
         else:
-            raise NameError(f"global name '{name}' is not defined")
+            raise NameError("global name '%s' is not defined" % name)
 
         if push_null:
             self.vm.push(NULL)
@@ -301,18 +301,27 @@ class ByteOp311(ByteOp310):
     def SWAP(self, i: int):
         """
         Swap TOS with the item at position i.
+        2 sets TOS1?
         """
         tos = self.vm.top
         stack_i = self.vm.peek(i)
-        self.vm.set(i, tos)
+
+        # 2 sets TOS1 so we have to subtract 1
+        self.vm.set(i-1, tos)
         self.vm.set(0, stack_i)
 
     def CHECK_EXC_MATCH(self):
+        """Performs exception matching for except. Tests whether the
+        TOS1 is an exception matching TOS. Pops TOS and pushes the
+        boolean result of the test.
+
+        TOS is usually the exception in an `except` cluase of a `try` block,
+        while TOS1 is usually the exception that got raised.
+
+        For "exception matching" use isinstance(TOS1 TOS.__class__) so superclasses
         """
-        To be continued...
-        """
-        # FIXME
-        raise self.vm.PyVMError("CHECK_EXC_MATCH not implemented")
+        tos1, tos = self.vm.popn(2)
+        self.vm.push(isinstance(tos, tos.__class__))
 
     def JUMP_BACKWARD(self, delta: int):
         """
@@ -391,19 +400,15 @@ class ByteOp311(ByteOp310):
         if val is None:
             self.vm.jump(-delta)
 
-    def JUMP_IF_TRUE_OR_POP(self, delta: int):
+    def PUSH_EXC_INFO(self):
+        """Pops a value from the stack. Pushes the current exception
+        to the top of the stack. Pushes the value originally popped
+        back to the stack. Used in exception handlers.
         """
-        If TOS is true, increments the bytecode counter by delta
-        and leaves TOS on the stack. Otherwise (TOS is false), TOS is
-        popped.
+        val = self.vm.pop()
+        self.vm.push(self.vm.last_exception)
+        self.vm.push(val)
 
-
-        The oparg is now a relative delta rather than an absolute target.
-        """
-        val = self.vm.top
-        if val == True:  # noqa
-            self.vm.jump(delta)
-        self.vm.pop()
 
     def RESUME(self, where: int):
         """

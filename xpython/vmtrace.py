@@ -3,14 +3,16 @@ This can be used in a debugger or profiler.
 """
 
 import logging
+from types import TracebackType
 
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, codeType2Portable
 
 # We will add a new "DEBUG" opcode
+from xdis.bytecode import parse_exception_table
 from xdis.opcodes.base import def_op
 
-from xpython.pyobj import Frame, traceback_from_frame
-from xpython.vm import PyVM, PyVMError, byteint, format_instruction
+from xpython.pyobj import Frame, Traceback, traceback_from_frame
+from xpython.vm import PyVM, PyVMError, PyVMUncaughtException, byteint, format_instruction
 
 log = logging.getLogger(__name__)
 
@@ -132,12 +134,19 @@ class PyVMTraced(PyVM):
         code.co_code = bytes(bytecode)
 
     # FIXME: put callback in f_trace, and update it accordingly
+    # Interpreter main loop
+    # This is analogous to CPython's _PyEval_EvalFrameDefault() (in 3.x newer Python)
+    # or eval_frame() in older 2.x code.
     def eval_frame(self, frame):
         """Run a frame until it returns (somehow).
 
         Exceptions are raised, the return value is returned.
 
+        This code includes frame tracing (ftrace) support used in debugging. For code
+        without tracing see the corresponding code in vm.py.
         """
+
+        # Extra tracing code
         if self.frame:
             # Inherit values from self.frame
             frame.f_trace = self.frame.f_trace
@@ -151,13 +160,17 @@ class PyVMTraced(PyVM):
             frame.event_flags = PyVMEVENT_NONE
 
         result = None
+        # End extra tracing code
+
+        self.f_code = frame.f_code
         if frame.f_lasti == -1:
-            # We were started new, not yielded back from
+            # We were started new, not yielded back from.
             frame.f_lasti = 0
-            frame.fallthrough = (
-                False  # Don't increment before fetching next instruction
-            )
+            # Don't increment before fetching next instruction.
+            frame.fallthrough = False
             byte_code = None
+
+            # Extra tracing code #
             last_i = frame.f_back.f_lasti if frame.f_back else -1
             self.push_frame(frame)
             if frame.f_trace and (frame.event_flags & PyVMEVENT_CALL):
@@ -178,6 +191,7 @@ class PyVMTraced(PyVM):
                         self,
                     )
                 pass
+            # End extra tracing code #
         else:
             byte_code = byteint(frame.f_code.co_code[frame.f_lasti])
             self.push_frame(frame)
@@ -207,19 +221,19 @@ class PyVMTraced(PyVM):
             self.opc.findlinestarts(frame.f_code, dup_lines=True)
         )
 
-        opoffset = 0
+        offset = 0
         while True:
             (
-                byte_name,
+                bytecode_name,
                 byte_code,
-                intArg,
+                int_arg,
                 arguments,
-                opoffset,
+                offset,
                 line_number,
             ) = self.parse_byte_and_args(byte_code)
 
             if log.isEnabledFor(logging.INFO):
-                self.log(byte_name, intArg, arguments, opoffset, line_number)
+                self.log(bytecode_name, int_arg, arguments, offset, line_number)
 
             if (
                 frame.f_trace
@@ -228,22 +242,22 @@ class PyVMTraced(PyVM):
             ):
                 result = frame.f_trace(
                     "line",
-                    opoffset,
-                    byte_name,
+                    offset,
+                    bytecode_name,
                     byte_code,
                     line_number,
-                    intArg,
+                    int_arg,
                     arguments,
                     self,
                 )
             elif frame.f_trace and frame.event_flags & PyVMEVENT_INSTRUCTION:
                 result = frame.f_trace(
                     "instruction",
-                    opoffset,
-                    byte_name,
+                    offset,
+                    bytecode_name,
                     byte_code,
                     line_number,
-                    intArg,
+                    int_arg,
                     arguments,
                     self,
                 )
@@ -272,13 +286,29 @@ class PyVMTraced(PyVM):
 
             # When unwinding the block stack, we need to keep track of why we
             # are doing it.
-            why = self.dispatch(byte_name, intArg, arguments, opoffset, line_number)
+            why = self.dispatch(bytecode_name, int_arg, arguments, offset, line_number)
 
             if why == "exception":
                 # Deal with exceptions encountered while executing the op.
+                # TODO: ceval calls PyTraceBack_Here, not sure what that does.
                 if not self.in_exception_processing:
                     self.last_traceback = traceback_from_frame(self.frame)
                     self.in_exception_processing = True
+                elif self.version >= (3, 11):
+                    # Find and add a block frame
+                    frame = self.frame
+                    lasti = frame.f_lasti
+                    encoded_exception_table = frame.f_code.co_exceptiontable
+                    exception_entries = parse_exception_table(encoded_exception_table)
+                    for exception_entry in exception_entries:
+                        if exception_entry.start <= lasti <= exception_entry.end:
+                            self.push_block(
+                                "setup-except311",
+                                exception_entry.target,
+                                exception_entry.depth,
+                            )
+                            break
+                    pass
 
             elif why == "reraise":
                 why = "exception"
@@ -293,6 +323,7 @@ class PyVMTraced(PyVM):
 
             pass  # while True
 
+        # Extra tracing code...
         callback = frame.f_trace or self.callback
         if why == "exception":
             if (
@@ -302,49 +333,61 @@ class PyVMTraced(PyVM):
             ):
                 frame.f_trace(
                     "exception",
-                    opoffset,
-                    byte_name,
+                    offset,
+                    bytecode_name,
                     byte_code,
                     line_number,
-                    intArg,
+                    int_arg,
                     self.last_exception,
                     self,
                 )
             elif callback and (not frame or frame.event_flags & PyVMEVENT_RETURN):
                 callback(
                     "return",
-                    opoffset,
-                    byte_name,
+                    offset,
+                    bytecode_name,
                     byte_code,
                     line_number,
-                    intArg,
+                    int_arg,
                     self.return_value,
                     self,
                 )
             pass
+        # End extra tracing code
+
+        # TODO: handle generator exception state
 
         self.pop_frame()
 
         if why == "exception":
-            if self.last_exception and self.last_exception[0]:
-                # For now, we are dropping the traceback;
-                # ".with_excpetion(self.last_exception[2])
-                raise self.last_exception[1]
-                # Older code which may be of use sometimes
-                # six.reraise(*self.last_exception)
+            last_exception = self.last_exception
+            if last_exception and last_exception[0]:
+                if isinstance(last_exception[2], (Traceback, TracebackType)):
+                    if not self.frame:
+                        if isinstance(last_exception, tuple):
+                            self.last_exception = PyVMUncaughtException.from_tuple(
+                                last_exception
+                            )
+                        raise self.last_exception
+                    else:
+                        raise last_exception[0]
+                    pass
+                pass
             else:
                 raise PyVMError("Borked exception recording")
             # if self.exception and .... ?
             # log.error("Haven't finished traceback handling, nulling traceback "
-            #           "information for now")
+            #            "information for now")
             # six.reraise(self.last_exception[0], None)
 
         self.in_exception_processing = False
+
+        # Extra tracing code:
         if callback and frame.event_flags & PyVMEVENT_RETURN:
             callback(
                 "return",
-                opoffset,
-                byte_name,
+                offset,
+                bytecode_name,
                 byte_code,
                 line_number,
                 None,
@@ -358,13 +401,13 @@ class PyVMTraced(PyVM):
 if __name__ == "__main__":
 
     def sample_callback_hook(
-        event, offset, byte_name, byte_code, line_number, int_arg, event_arg, vm
+        event, offset, bytecode_name, byte_code, line_number, int_arg, event_arg, vm
     ):
         print(
             "CALLBACK",
             event,
             offset,
-            byte_name,
+            bytecode_name,
             byte_code,
             line_number,
             int_arg,
