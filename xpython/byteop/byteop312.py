@@ -138,4 +138,17 @@ class ByteOp312(ByteOp311):
         raise self.vm.PyVMError("LOAD_FAST_AND_CLEAR not implemented")
 
 
-    # And menay more...
+    # And many more...
+
+    # Changed in 3.11...
+
+    def COMPARE_OP(self, opname: int):
+        """Performs a Boolean operation. The operation name can be
+        found in cmp_op[opname].
+
+        The cmp_op index is now stored in the four-highest bits of
+        oparg instead of the four-lowest bits of oparg.
+        """
+        x, y = self.vm.popn(2)
+        opname >>= 4
+        self.vm.push(self.COMPARE_OPERATORS[opname](x, y))
