@@ -52,9 +52,9 @@ log_rounds = 5
 assert "05$" == f"{log_rounds:02d}$"
 
 
-def testit(a, b, l):
-    # print(l)
-    return l
+def testit(_, _b, li):
+    # print(li)
+    return li
 
 
 # The call below shows the need for BUILD_STRING to count expr arguments.

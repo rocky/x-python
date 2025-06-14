@@ -3,6 +3,7 @@ This can be used in a debugger or profiler.
 """
 
 import logging
+from types import TracebackType
 
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, codeType2Portable
 
@@ -10,8 +11,8 @@ from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, codeType2Portable
 from xdis.bytecode import parse_exception_table
 from xdis.opcodes.base import def_op
 
-from xpython.pyobj import Frame, traceback_from_frame
-from xpython.vm import PyVM, PyVMError, byteint, format_instruction
+from xpython.pyobj import Frame, Traceback, traceback_from_frame
+from xpython.vm import PyVM, PyVMError, PyVMUncaughtException, byteint, format_instruction
 
 log = logging.getLogger(__name__)
 
@@ -367,8 +368,10 @@ class PyVMTraced(PyVM):
                                 last_exception
                             )
                         raise self.last_exception
-                else:
-                    six.reraise(*self.last_exception)
+                    else:
+                        raise last_exception[0]
+                    pass
+                pass
             else:
                 raise PyVMError("Borked exception recording")
             # if self.exception and .... ?
