@@ -1,43 +1,36 @@
-# Various functions
+"""This program is self-checking!"""
 
-# Some Python's like 3.4 are irregular with the order in showing
-# dictionary keys. For testing we need them to always come out in the
-# same order.
-def print_dict_sorted(mydict):
-    for key, value in sorted(mydict.items(), key=lambda item: item[1]):
-        print("\t%s: %s" % (key, value))
-    print("")
-
+# Test Various functions argument combinations
 
 def fn(*args):
-    print("args is %r" % (args,))
+    assert args == (1, 2)
 
 
 fn(1, 2)
 
 
-def fn(**kwargs):
-    print("kwargs is")
-    print_dict_sorted(kwargs)
+def kwargs_fn(**kwargs):
+    assert sorted(kwargs.keys()) == ["blue", "red"]
+    assert sorted(kwargs.values()) == [False, True]
 
 
-fn(red=True, blue=False)
+kwargs_fn(red=True, blue=False)
 
 
-def fn(*args, **kwargs):
-    print("args is %r" % (args,))
-    print("kwargs is:")
-    print_dict_sorted(kwargs)
+def args_kwargs_fn(*args, **kwargs):
+    assert args == (1, 2)
+    assert sorted(kwargs.keys()) == ["blue", "red"]
+    assert sorted(kwargs.values()) == [False, True]
 
 
-fn(1, 2, red=True, blue=False)
+args_kwargs_fn(1, 2, red=True, blue=False)
 
 
-def fn(x, y, *args, **kwargs):
-    print("x is %r, y is %r" % (x, y))
-    print("args is %r" % (args,))
-    print("kwargs is")
-    print_dict_sorted(kwargs)
+def pos_args_kwargs_fn(x, y, *args, **kwargs):
+    assert x, y == ("a", "b")
+    assert args == (1, 2)
+    assert sorted(kwargs.keys()) == ["blue", "red"]
+    assert sorted(kwargs.values()) == [False, True]
 
 
-fn("a", "b", 1, 2, red=True, blue=False)
+pos_args_kwargs_fn("a", "b", 1, 2, red=True, blue=False)

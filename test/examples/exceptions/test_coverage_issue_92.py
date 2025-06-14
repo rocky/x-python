@@ -1,12 +1,11 @@
 """This program is self-checking!"""
 
-l = []
+a_list = []
 for i in range(3):
     try:
-        l.append(i)
+        a_list.append(i)
     finally:
-        l.append("f")
-    l.append("e")
-l.append("r")
-print(l)
-assert l == [0, "f", "e", 1, "f", "e", 2, "f", "e", "r"]
+        a_list.append("f")
+    a_list.append("e")
+a_list.append("r")
+assert a_list == [0, "f", "e", 1, "f", "e", 2, "f", "e", "r"]

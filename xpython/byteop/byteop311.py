@@ -308,11 +308,17 @@ class ByteOp311(ByteOp310):
         self.vm.set(0, stack_i)
 
     def CHECK_EXC_MATCH(self):
+        """Performs exception matching for except. Tests whether the
+        TOS1 is an exception matching TOS. Pops TOS and pushes the
+        boolean result of the test.
+
+        TOS is usually the exception in an `except` cluase of a `try` block,
+        while TOS1 is usually the exception that got raised.
+
+        For "exception matching" use isinstance(TOS1 TOS.__class__) so superclasses
         """
-        To be continued...
-        """
-        # FIXME
-        raise self.vm.PyVMError("CHECK_EXC_MATCH not implemented")
+        tos1, tos = self.vm.popn(2)
+        self.vm.push(isinstance(tos, tos.__class__))
 
     def JUMP_BACKWARD(self, delta: int):
         """
@@ -390,6 +396,15 @@ class ByteOp311(ByteOp310):
         val = self.vm.pop()
         if val is None:
             self.vm.jump(-delta)
+
+    def PUSH_EXC_INFO(self):
+        """Pops a value from the stack. Pushes the current exception
+        to the top of the stack. Pushes the value originally popped
+        back to the stack. Used in exception handlers.
+        """
+        val = self.vm.pop()
+        self.vm.push(self.vm.last_exception)
+        self.vm.push(val)
 
     def JUMP_IF_TRUE_OR_POP(self, delta: int):
         """
