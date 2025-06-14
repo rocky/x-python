@@ -23,12 +23,12 @@ from xpython.byteop.byteop310 import ByteOp310
 from xpython.pyobj import Function
 
 
-def fmt_load_global(vm, arg=None, repr_fn=repr) -> str:
+def fmt_load_global(vm, arg, repr_fn=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
     namei =  vm.f_code.co_names[arg >> 1]
-    return f' ({("NULL + " + namei) if arg & 1 else namei})'
+    return ' (%s)' % ("NULL + " + namei) if arg & 1 else namei
 
 
 def fmt_make_function(vm, _=None, repr_fn=repr) -> str:
@@ -37,7 +37,7 @@ def fmt_make_function(vm, _=None, repr_fn=repr) -> str:
     """
     fn_item = vm.top
     name = fn_item.co_name
-    return f" ({name})"
+    return " (%s)" % name
 
 
 # pylint: disable=too-many-public-methods
@@ -173,7 +173,7 @@ class ByteOp311(ByteOp310):
         elif name in f.f_builtins:
             val = f.f_builtins[name]
         else:
-            raise NameError(f"global name '{name}' is not defined")
+            raise NameError("global name '%s' is not defined" % name)
 
         if push_null:
             self.vm.push(NULL)

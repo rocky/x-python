@@ -7,7 +7,6 @@ import logging
 import os
 import sys
 from types import TracebackType
-from typing import List
 
 import six
 from six.moves import reprlib
@@ -261,7 +260,7 @@ class PyVM(object):
         if 0 <= i < len(self.frame.stack):
             self.frame.stack[i-1] = value
         else:
-            raise PyVMError(f"set value must be between 0 and {i-1}")
+            raise PyVMError("set value must be between 0 and %s" % (i-1))
 
 
     @property
