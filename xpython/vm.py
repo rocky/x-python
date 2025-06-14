@@ -6,9 +6,10 @@ import linecache
 import logging
 import os
 import sys
+from types import TracebackType
+from typing import List
 
 import six
-from typing import List
 from six.moves import reprlib
 from xdis import (
     CO_NEWLOCALS,
@@ -26,7 +27,6 @@ from xdis.opcodes.opcode_311 import _nb_ops
 
 from xpython.byteop import get_byteop
 from xpython.pyobj import Block, Frame, Traceback, traceback_from_frame
-from types import TracebackType
 
 PY2 = not PYTHON3
 log = logging.getLogger(__name__)
@@ -583,7 +583,7 @@ class PyVM(object):
             if bytecode_name.startswith("UNARY_"):
                 byteop.unaryOperator(bytecode_name[6:])
             elif bytecode_name.startswith("BINARY_"):
-                if self.version < (3, 11):
+                if self.version < (3, 11) or int_arg is None:
                     byteop.binary_operator(bytecode_name[7:])
                 else:
                     byteop.binary_operator(_nb_ops[int_arg][0][3:])
