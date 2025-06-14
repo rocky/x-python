@@ -130,6 +130,8 @@ def format_instruction(
     elif int_arg is None:
         argrepr = ""
     elif byte_code in opc.COMPARE_OPS:
+        if vm.version >= (3, 12):
+            int_arg >>= 4
         argrepr = opc.cmp_op[int_arg]
     elif isinstance(arguments, list) and arguments:
         argrepr = arguments[0]
