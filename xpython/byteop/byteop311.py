@@ -301,10 +301,13 @@ class ByteOp311(ByteOp310):
     def SWAP(self, i: int):
         """
         Swap TOS with the item at position i.
+        2 sets TOS1?
         """
         tos = self.vm.top
         stack_i = self.vm.peek(i)
-        self.vm.set(i, tos)
+
+        # 2 sets TOS1 so we have to subtract 1
+        self.vm.set(i-1, tos)
         self.vm.set(0, stack_i)
 
     def CHECK_EXC_MATCH(self):
