@@ -27,7 +27,7 @@ assert f(17, 0) == 17
 assert f(0, 23) == 23
 assert f(0, "") == ""
 
-# test jUMP_IF_FALSE_OR_POP
+# test JUMP_IF_FALSE_OR_POP
 def f1(a, b):
     return not (a and b)
 
