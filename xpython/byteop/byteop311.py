@@ -23,7 +23,7 @@ from xpython.byteop.byteop310 import ByteOp310
 from xpython.pyobj import Function
 
 
-def fmt_load_global(vm, arg=None, repr_fn=repr) -> str:
+def fmt_load_global(vm, arg, repr_fn=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
