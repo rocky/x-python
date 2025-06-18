@@ -130,7 +130,7 @@ class ByteOpBase(object):
     def binary_operator(self, op):
         if self.version_info[:2] >= (3, 11) and op not in BINARY_OPERATORS:
             if op.startswith("INPLACE_"):
-                return self.inplace_operator(op[len("INPLACE_"):])
+                return self.inplace_operator(op[len("INPLACE_") :])
         x, y = self.vm.popn(2)
         self.vm.push(BINARY_OPERATORS[op](x, y))
 
@@ -325,7 +325,17 @@ class ByteOpBase(object):
                 pos_args = [self.vm.frame] + pos_args
                 func = builtin_super
 
-        retval = func(*pos_args, **named_args)
+        # FIXME something weird is happing here in 3.11+
+        if (
+            self.version_info > (3, 11)
+            and hasattr(func, "__iter__")
+            and hasattr(func, "__next__")
+            and not pos_args
+            and not named_args
+        ):
+            return
+        else:
+            retval = func(*pos_args, **named_args)
         self.vm.push(retval)
 
     def call_function(self, argc, var_args, keyword_args):
@@ -533,7 +543,6 @@ class ByteOpBase(object):
         else:
             sys_module = self.vm.frame.f_globals["sys"]
         return sys_module
-
 
     def unaryOperator(self, op):
         x = self.vm.pop()

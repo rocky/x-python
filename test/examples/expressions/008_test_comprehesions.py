@@ -8,8 +8,8 @@
 x = [z * z for z in range(5)]
 assert x == [0, 1, 4, 9, 16]
 
-x = {z: z * z for z in range(5)}
-assert x == {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+y = {z: z * z for z in range(5)}
+assert y == {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
 
-x = {z * z for z in range(5)}
-assert x == {0, 1, 4, 9, 16}
+w = {z * z for z in range(5)}
+assert w == {0, 1, 4, 9, 16}
