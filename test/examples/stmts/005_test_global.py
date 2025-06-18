@@ -7,16 +7,16 @@
 
 """This program is self-checking!"""
 
-global xyz
-xyz = 2106
+global Xyz
+Xyz = 2106
 
 
 def abc():
-    global xyz
-    xyz += 1
-    assert xyz == 2107, "Midst failed"
+    global Xyz
+    Xyz += 1
+    assert Xyz == 2107, "Midst failed"
 
 
-assert xyz == 2106, "Pre failed"
+assert Xyz == 2106, "Pre failed"
 abc()
-assert xyz == 2107, "Post failed"
+assert Xyz == 2107, "Post failed"
