@@ -13,6 +13,11 @@ xpython_owd=$(pwd)
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 cd $mydir
+
+if ! source ../admin-tools/pyenv-3.6-3.10-versions ; then
+    exit $?
+fi
+
 . ./checkout_common.sh
 (cd $fulldir/.. && setup_version python-xdis python-3.6)
 checkout_finish python-3.6-to-3.10
