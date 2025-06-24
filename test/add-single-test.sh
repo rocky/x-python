@@ -5,7 +5,7 @@ if [[ $# == 0 ]]; then
 fi
 mydir=$(dirname ${BASH_SOURCE[0]})
 
-for file in $*; do
+for file in $@; do
     pyenv local $version
     python ${mydir}/compile-file.py "$file"
     short=$(basename $file .py)
