@@ -105,16 +105,6 @@ else:
                 """
             )
 
-    class TestClosures(vmtest.VmTestCase):
-        if PYTHON_VERSION_TRIPLE < (3, 8):
-
-            def test_closures(self):
-                self.self_checking()
-
-            def test_closure_vars_from_static_parent(self):
-                self.self_checking()
-
-
     class TestGenerators(vmtest.VmTestCase):
         def test_first(self):
             self.assert_ok(
