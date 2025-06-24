@@ -412,7 +412,7 @@ class ByteOpBase(object):
 
     def do_raise(self, exc, cause):
         if exc is None:  # reraise
-            exc_type, val, tb = self.vm.last_exception
+            exc_type, val, _ = self.vm.last_exception
             if exc_type is None:
                 return "exception"  # error
             else:

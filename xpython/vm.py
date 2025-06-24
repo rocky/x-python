@@ -406,15 +406,20 @@ class PyVM(object):
     ##############################################
 
     # This is the main entry point
-    def run_code(self, code, f_globals=None, f_locals=None, toplevel=True):
+    def run_code(self, code, f_globals=None, f_locals=None, toplevel=True) -> int:
         """run code using f_globals and f_locals in our VM"""
         frame = self.make_frame(code, f_globals=f_globals, f_locals=f_locals)
         try:
-            val = self.eval_frame(frame)
+            self.eval_frame(frame)
+        except PyVMUncaughtException:
+            if self.last_traceback is not None:
+                print("Traceback (most recent call last):")
+                self.last_traceback.print_tb()
+            if self.last_exception is not None:
+                print(f"{self.last_exception[0].__name__}:", *self.last_exception[1].args)
+            return 1
+
         except Exception:
-            # Until we get test/vmtest.py under control:
-            if self.vmtest_testing:
-                raise
             if self.last_traceback:
                 self.last_traceback.print_tb()
                 print(f"{self.last_exception[0].__name__}", end="")
@@ -432,7 +437,7 @@ class PyVM(object):
             if self.frame and self.frame.stack:  # pragma: no cover
                 raise PyVMError(f"Data left on stack! {self.frame.stack!r}")
 
-        return val
+        return 0
 
     def unwind_block(self, block):
         """
@@ -850,10 +855,9 @@ class PyVM(object):
                 if isinstance(last_exception[2], (Traceback, TracebackType)):
                     if not self.frame:
                         if isinstance(last_exception, tuple):
-                            self.last_exception = PyVMUncaughtException.from_tuple(
-                                last_exception
-                            )
-                        raise self.last_exception
+                            raise PyVMUncaughtException.from_tuple(last_exception)
+                        else:
+                            raise self.last_exception
                 else:
                     six.reraise(*self.last_exception)
             else:
