@@ -27,7 +27,7 @@ def fmt_load_global(vm, arg, repr_fn=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
-    namei =  vm.f_code.co_names[arg >> 1]
+    namei =  vm.frame.f_code.co_names[arg >> 1]
     return f' ({("NULL + " + namei) if arg & 1 else namei})'
 
 

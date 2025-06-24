@@ -263,10 +263,9 @@ class PyVM(object):
         0 sets TOS, 1 sets TOS1, etc.
         """
         if 0 <= i < len(self.frame.stack):
-            self.frame.stack[i-1] = value
+            self.frame.stack[i - 1] = value
         else:
             raise PyVMError(f"set value must be between 0 and {i-1}")
-
 
     @property
     def top(self):
@@ -525,7 +524,10 @@ class PyVM(object):
                         var_idx = int_arg - len(f.f_code.co_cellvars)
                         arg = f_code.co_freevars[var_idx]
                 elif byte_code in self.opc.NAME_OPS:
-                    if self.version >= (3, 11) and bytecode_name == "LOAD_GLOBAL":
+                    if self.version >= (3, 11) and (
+                        bytecode_name == "LOAD_GLOBAL"
+                        or (self.version >= (3, 12) and bytecode_name == "LOAD_ATTR")
+                    ):
                         namei = f_code.co_names[int_arg >> 1]
                         push_NULL = bool(int_arg & 1)
                         arguments = [namei, push_NULL]
@@ -590,7 +592,7 @@ class PyVM(object):
         try:
             if bytecode_name.startswith("UNARY_"):
                 byteop.unaryOperator(bytecode_name[6:])
-            elif bytecode_name.startswith("BINARY_"):
+            elif bytecode_name.startswith("BINARY_") and bytecode_name != "BINARY_SLICE":
                 if self.version < (3, 11) or int_arg is None:
                     byteop.binary_operator(bytecode_name[7:])
                 else:
@@ -646,6 +648,7 @@ class PyVM(object):
                                 offset,
                                 line_number,
                                 False,
+                                vm=self,
                             )
                         )
                     )

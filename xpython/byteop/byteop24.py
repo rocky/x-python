@@ -812,13 +812,15 @@ class ByteOp24(ByteOpBase):
         2, slice(TOS1, TOS) is pushed; if it is 3, slice(TOS2, TOS1,
         TOS) is pushed. See the slice() built-in function for more
         information.
+
+        Changed to BINARY_SLICE in 3.12
         """
         if count == 2:
-            x, y = self.vm.popn(2)
-            self.vm.push(slice(x, y))
+            start, stop = self.vm.popn(2)
+            self.vm.push(slice(start, stop))
         elif count == 3:
-            x, y, z = self.vm.popn(3)
-            self.vm.push(slice(x, y, z))
+            start, stop, step = self.vm.popn(3)
+            self.vm.push(slice(start, stop, step))
         else:  # pragma: no cover
             raise self.vm.PyVMError(f"Strange BUILD_SLICE count: {count!r}")
 

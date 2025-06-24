@@ -15,7 +15,7 @@ del z
 exec("z=1+1")
 
 # Make sure we can exec bytes as well as strings.
-import sys
+import sys  # noqa
 
 if sys.version_info[:2] >= (2, 5):
     if sys.version_info[:2] >= (3, 0):
