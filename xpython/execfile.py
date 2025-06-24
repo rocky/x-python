@@ -72,7 +72,8 @@ def exec_code_object(
     is_pypy=IS_PYPY,
     callback=None,
     format_instruction=format_instruction,
-):
+) -> int:
+    rc = 0
     if callback:
         vm = PyVMTraced(
             callback,
@@ -94,9 +95,11 @@ def exec_code_object(
             make_compatible_builtins(BUILTINS.__dict__, python_version)
         vm = PyVM(python_version, is_pypy, format_instruction_func=format_instruction)
         try:
-            vm.run_code(code, f_globals=env)
+            rc = vm.run_code(code, f_globals=env)
         except PyVMUncaughtException:
             pass
+
+    return rc
 
 
 def get_supported_versions(is_pypy, is_bytecode):
@@ -271,7 +274,7 @@ def run_python_file(
             raise NoSourceError(f"No file to run: {filename!r}")
 
         # Execute the source file.
-        exec_code_object(
+        rc = exec_code_object(
             code,
             main_mod.__dict__,
             python_version,
@@ -287,6 +290,8 @@ def run_python_file(
         # Restore the old argv and path
         sys.argv = old_argv
         sys.path[0] = old_path0
+
+    sys.exit(rc)
 
 
 def run_python_string(

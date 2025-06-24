@@ -478,7 +478,7 @@ class ByteOp24(ByteOpBase):
             self.lookup_name(name)
         except NameError:
             self.vm.last_traceback = self.traceback_from_frame()
-            self.create_exception(NameError, NameError(f"name '{name}' is not defined"))
+            self.create_exception(NameError, f"name '{name}' is not defined")
             return "exception"
         else:
             self.vm.push(self.lookup_name(name))
