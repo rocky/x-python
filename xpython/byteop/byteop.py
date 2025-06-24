@@ -74,7 +74,14 @@ def fmt_binary_op(vm: PyVM, arg=None, repr=repr):
     elements of evaluation stack
 
     """
+    # In the presence of exceptions the stack might be messed up.
+    # So check stack condition for access.
+    if vm.frame is None or len(vm.frame.stack) < 2:
+        return "(?)"
     return f" ({repr(vm.peek(2))}, {repr(vm.top)})"
+
+
+
 
 
 def fmt_ternary_op(vm: PyVM, arg=None, repr=repr):
