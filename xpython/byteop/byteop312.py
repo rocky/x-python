@@ -91,9 +91,6 @@ class ByteOp312(ByteOp311):
         Returns with co_consts[consti] to the caller of the function.
         """
         self.vm.return_value = consti
-        if self.vm.frame.generator:
-            self.vm.frame.generator.finished = True
-        self.vm.push(consti)
         return "return"
 
     def LOAD_FAST_CHECK(self):
