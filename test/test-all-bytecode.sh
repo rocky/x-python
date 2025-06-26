@@ -8,9 +8,9 @@ fi
 mydir=$(dirname ${BASH_SOURCE[0]})
 set -e
 
-source ../admin-tools/pyenv-newest-versions
+source ../admin-tools/pyenv-3.6-3.10-versions
 
-(cd ../../python-xdis && . ./admin-tools/setup-master.sh)
+(cd ../../python-xdis && . ./admin-tools/setup-python-3.6.sh)
 # Note: Python < 2.7 is added at the end and 2.6.9 is used as a sentinal in the version test below
 for version in $PYVERSIONS; do
     pyenv local $version
