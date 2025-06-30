@@ -49,9 +49,13 @@ class ByteOp39(ByteOp38):
     ##############################################################################
 
     def RERAISE(self):
-        # FIXME
-        raise RuntimeError("RERAISE not implemented yet")
-        pass
+        """
+        Re-raises the exception currently on top of the stack.
+        """
+        # An exception was already set up to set: self.vm.last_exception,
+        # self.vm.last_type, self.vm.last_value, self.vm.last_traceback.
+        # All we need to do here is note an exception return.
+        return "exception"
 
     def WITH_EXCEPT_START(self):
         # FIXME

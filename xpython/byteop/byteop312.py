@@ -9,6 +9,7 @@
 
 from xpython.byteop.byteop24 import Version_info
 from xpython.byteop.byteop311 import ByteOp311
+from xpython.byteop.byteop37 import NULL
 
 
 # pylint: disable=too-many-public-methods
@@ -23,6 +24,19 @@ class ByteOp312(ByteOp311):
         self.version_info = Version_info(3, 12, 0, "final", 0)
 
     # Added in 3.12...
+    def BINARY_SLICE(self):
+        """
+        Implements:
+          end = STACK.pop()
+          start = STACK.pop()
+          container = STACK.pop()
+          STACK.append(container[start:end])
+
+        Pushes a slice object on the stack. slice(TOS1, TOS) is pushed.
+        """
+        container, start, stop = self.vm.popn(3)
+        self.vm.push(container[slice(start, stop)])
+
     def INTERPRETER_EXIT(self):
         """
         To be continued...
@@ -51,13 +65,6 @@ class ByteOp312(ByteOp311):
         # FIXME
         raise self.vm.PyVMError("RESERVED not implemented")
 
-    def BINARY_SLICE(self):
-        """
-        To be continued...
-        """
-        # FIXME
-        raise self.vm.PyVMError("BINARY_SLICE not implemented")
-
     def STORE_SLICE(self):
         """
         To be continued...
@@ -84,8 +91,6 @@ class ByteOp312(ByteOp311):
         Returns with co_consts[consti] to the caller of the function.
         """
         self.vm.return_value = consti
-        if self.vm.frame.generator:
-            self.vm.frame.generator.finished = True
         return "return"
 
     def LOAD_FAST_CHECK(self):
@@ -140,7 +145,7 @@ class ByteOp312(ByteOp311):
 
     # And many more...
 
-    # Changed in 3.11...
+    # Changed in 3.12...
 
     def COMPARE_OP(self, opname: int):
         """Performs a Boolean operation. The operation name can be
@@ -152,3 +157,32 @@ class ByteOp312(ByteOp311):
         x, y = self.vm.popn(2)
         opname >>= 4
         self.vm.push(self.COMPARE_OPERATORS[opname](x, y))
+
+    def LOAD_ATTR(self, name, push_null=False):
+        """If the low bit of namei is not set (push_null is False),
+        this replaces STACK[-1]
+        with getattr(STACK[-1], co_names[namei>>1]).
+
+        If the low bit of namei is set, this will attempt to load a
+        method named co_names[namei>>1] from the STACK[-1]
+        object. STACK[-1] is popped. This bytecode distinguishes two
+        cases: if STACK[-1] has a method with the correct name, the
+        bytecode pushes the unbound method and STACK[-1]. STACK[-1]
+        will be used as the first argument (self) by CALL or CALL_KW
+        when calling the unbound method. Otherwise, NULL and the
+        object returned by the attribute lookup are pushed.
+
+        Changed in version 3.12: If the low bit of namei is set, then
+        a NULL or self is pushed to the stack before the attribute or
+        unbound method respectively.
+
+        Note: name = co_names[namei] and push_null are set in
+        parse_byte_and_args()
+        """
+        obj = self.vm.pop()
+        val = getattr(obj, name)
+
+        if push_null:
+            self.vm.push(NULL)
+
+        self.vm.push(val)

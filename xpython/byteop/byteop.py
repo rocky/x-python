@@ -73,7 +73,14 @@ def fmt_binary_op(vm: PyVM, arg=None, repr=repr):
     elements of evaluation stack
 
     """
+    # In the presence of exceptions the stack might be messed up.
+    # So check stack condition for access.
+    if vm.frame is None or len(vm.frame.stack) < 2:
+        return "(?)"
     return " (%s, %s)" % (repr(vm.peek(2)), repr(vm.top))
+
+
+
 
 
 def fmt_ternary_op(vm: PyVM, arg=None, repr=repr):
@@ -404,7 +411,7 @@ class ByteOpBase(object):
 
     def do_raise(self, exc, cause):
         if exc is None:  # reraise
-            exc_type, val, tb = self.vm.last_exception
+            exc_type, val, _ = self.vm.last_exception
             if exc_type is None:
                 return "exception"  # error
             else:
