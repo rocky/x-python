@@ -550,7 +550,7 @@ class PyVM(object):
                         if bytecode_name.find("_BACKWARD") > 0 and self.version >= (3, 11):
                             int_arg = -int_arg
                         int_arg += int_arg
-                        arg = arg_offset + int_arg
+                    arg = arg_offset + int_arg
                 elif byte_code in self.opc.JABS_OPS:
                     # We probably could set fallthough, since many (all?)
                     # of these are unconditional, but we'll make the jump do
