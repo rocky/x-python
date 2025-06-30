@@ -492,6 +492,7 @@ class PyVM(object):
             if not replay:
                 byte_code = byteint(co_code[offset])
             bytecode_name = self.opc.opname[byte_code]
+
             arg_offset = offset + 1
             arg = None
 
@@ -544,7 +545,10 @@ class PyVM(object):
                 elif byte_code in self.opc.JREL_OPS:
                     # Many relative jumps are conditional,
                     # so setting f.fallthrough is wrong.
-                    if self.version >= (3, 10, 0):
+
+                    if self.version >= (3, 10):
+                        if bytecode_name.find("_BACKWARD") > 0 and self.version >= (3, 11):
+                            int_arg = -int_arg
                         int_arg += int_arg
                     arg = arg_offset + int_arg
                 elif byte_code in self.opc.JABS_OPS:
