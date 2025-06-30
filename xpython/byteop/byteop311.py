@@ -327,14 +327,16 @@ class ByteOp311(ByteOp310):
         """
         Decrements bytecode counter by delta. Checks for interrupts.
         """
+        # Note: vm turns delta into an absolute offset
         # FIXME: check for interrupts.
-        self.vm.jump(-delta)
+        self.vm.jump(delta)
 
     def POP_JUMP_BACKWARD_NO_INTERRUPT(self, delta: int):
         """
         Decrements bytecode counter by delta. Does not check for interrupts.
         """
-        self.vm.jump(-delta)
+        # Note: vm turns delta into an absolute offset
+        self.vm.jump(delta)
 
     def POP_JUMP_FORWARD_IF_TRUE(self, delta: int):
         """
@@ -350,7 +352,7 @@ class ByteOp311(ByteOp310):
         """
         val = self.vm.pop()
         if val == True:  # noqa
-            self.vm.jump(-delta)
+            self.vm.jump(delta)
 
     def POP_JUMP_FORWARD_IF_FALSE(self, delta: int):
         """
@@ -366,7 +368,7 @@ class ByteOp311(ByteOp310):
         """
         val = self.vm.pop()
         if val == False:  # noqa
-            self.vm.jump(-delta)
+            self.vm.jump(delta)
 
     def POP_JUMP_FORWARD_IF_NOT_NONE(self, delta: int):
         """
@@ -382,7 +384,7 @@ class ByteOp311(ByteOp310):
         """
         val = self.vm.pop()
         if val is not None:
-            self.vm.jump(-delta)
+            self.vm.jump(delta)
 
     def POP_JUMP_FORWARD_IF_NONE(self, delta: int):
         """
@@ -398,7 +400,7 @@ class ByteOp311(ByteOp310):
         """
         val = self.vm.pop()
         if val is None:
-            self.vm.jump(-delta)
+            self.vm.jump(delta)
 
     def PUSH_EXC_INFO(self):
         """Pops a value from the stack. Pushes the current exception
