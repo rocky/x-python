@@ -80,9 +80,6 @@ def fmt_binary_op(vm: PyVM, arg=None, repr=repr):
     return " (%s, %s)" % (repr(vm.peek(2)), repr(vm.top))
 
 
-
-
-
 def fmt_ternary_op(vm: PyVM, arg=None, repr=repr):
     """returns string of the repr() for each of the first three
     elements of evaluation stack

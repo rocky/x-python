@@ -413,7 +413,7 @@ class PyVM(object):
                 print("Traceback (most recent call last):")
                 self.last_traceback.print_tb()
             if self.last_exception is not None:
-                print(f"{self.last_exception[0].__name__}:", *self.last_exception[1].args)
+                print("%s:" % self.last_exception[0].__name__, *self.last_exception[1].args)
             return 1
 
         except Exception:
