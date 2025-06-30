@@ -64,9 +64,10 @@ class ByteOp311(ByteOp310):
 
     # Added in 3.11...
 
-    # New in 3.11.  Note: below, when the parameter is "delta", the
-    # value has been adjusted from a relative number into and absolute
-    # one.
+    # New in 3.11.  Note: below, the parameter mentioned in the
+    # docstring is "delta", but the parameter name is "offset", a valu
+    # taht value has been adjusted from a relative number divided by two into and
+    # absolute offset.
     def CACHE(self):
         """
         Rather than being an actual instruction, this opcode is
@@ -323,84 +324,81 @@ class ByteOp311(ByteOp310):
         tos1, tos = self.vm.popn(2)
         self.vm.push(isinstance(tos, tos.__class__))
 
-    def JUMP_BACKWARD(self, delta: int):
+    def JUMP_BACKWARD(self, offset: int):
         """
         Decrements bytecode counter by delta. Checks for interrupts.
         """
-        # Note: vm turns delta into an absolute offset
-        # FIXME: check for interrupts.
-        self.vm.jump(delta)
+        self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_NO_INTERRUPT(self, delta: int):
+    def POP_JUMP_BACKWARD_NO_INTERRUPT(self, offset: int):
         """
         Decrements bytecode counter by delta. Does not check for interrupts.
         """
-        # Note: vm turns delta into an absolute offset
-        self.vm.jump(delta)
+        self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_TRUE(self, delta: int):
+    def POP_JUMP_FORWARD_IF_TRUE(self, offset: int):
         """
         If TOS is true, increments the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val == True:  # noqa
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_TRUE(self, delta: int):
+    def POP_JUMP_BACKWARD_IF_TRUE(self, offset: int):
         """
         If TOS is true, decrements the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val == True:  # noqa
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_FALSE(self, delta: int):
+    def POP_JUMP_FORWARD_IF_FALSE(self, offset: int):
         """
         If TOS is false, increments the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val == False:  # noqa
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_FALSE(self, delta: int):
+    def POP_JUMP_BACKWARD_IF_FALSE(self, offset: int):
         """
         If TOS is false, decrements the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val == False:  # noqa
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_NOT_NONE(self, delta: int):
+    def POP_JUMP_FORWARD_IF_NOT_NONE(self, offset: int):
         """
         If TOS is not None, increments the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val is not None:
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_NOT_NONE(self, delta: int):
+    def POP_JUMP_BACKWARD_IF_NOT_NONE(self, offset: int):
         """
         If TOS is not None, decrements the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val is not None:
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_NONE(self, delta: int):
+    def POP_JUMP_FORWARD_IF_NONE(self, offset: int):
         """
         If TOS is not None, increments the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val is None:
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_NONE(self, delta: int):
+    def POP_JUMP_BACKWARD_IF_NONE(self, offset: int):
         """
         If TOS is not None, decrements the bytecode counter by delta. TOS is popped.
         """
         val = self.vm.pop()
         if val is None:
-            self.vm.jump(delta)
+            self.vm.jump(offset)
 
     def PUSH_EXC_INFO(self):
         """Pops a value from the stack. Pushes the current exception
