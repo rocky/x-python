@@ -211,6 +211,8 @@ class ByteOpBase(object):
                     pos_args.append(self.vm.frame.f_globals)
 
                 if self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]:
+                    # Use the compile() and interprete the bytecode using our own
+                    # interpreter not CPython's.
                     source = pos_args[0]
                     if isinstance(source, str) or isinstance(source, bytes):
                         try:
@@ -224,8 +226,9 @@ class ByteOpBase(object):
                 else:
                     if not self.cross_bytecode_exec_warning_shown:
                         log.warning(
-                            "Running built-in `exec()` because we are cross-version "
-                            "interpreting version %s from version %s."
+                            "Running built-in `exec()`, because we compile() is not available "
+                            "and we are cross-version. "
+                            "Interpreting version %s from version %s."
                             % (
                                 version_tuple_to_str(self.version_info, end=2),
                                 version_tuple_to_str(PYTHON_VERSION_TRIPLE, end=2),
@@ -250,6 +253,8 @@ class ByteOpBase(object):
                 assert len(pos_args) == 3
 
                 if self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]:
+                    # Use the compile() and interprete the bytecode using our own
+                    # interpreter not CPython's.
                     source = pos_args[0]
                     if isinstance(source, str) or isinstance(source, unicode):
                         try:
@@ -263,8 +268,9 @@ class ByteOpBase(object):
                 else:
                     if not self.cross_bytecode_eval_warning_shown:
                         log.warning(
-                            "Running built-in `eval()` because we are cross-version "
-                            "interpreting version %s from version %s."
+                            "Running built-in `eval()`, because we compile() is not available "
+                            "and we are cross-version. "
+                            "Interpreting version %s from version %s."
                             % (
                                 version_tuple_to_str(self.version_info, end=2),
                                 version_tuple_to_str(PYTHON_VERSION_TRIPLE, end=2),
