@@ -403,7 +403,7 @@ class PyVM(object):
     ##############################################
 
     # This is the main entry point
-    def run_code(self, code, f_globals=None, f_locals=None, toplevel=True) -> Any:
+    def run_code(self, code, f_globals=None, f_locals=None, toplevel=True):
         """run code using f_globals and f_locals in our VM.
 
         If toplevel is True, then the return is 0 on successful run, and the
