@@ -403,8 +403,15 @@ class PyVM(object):
     ##############################################
 
     # This is the main entry point
-    def run_code(self, code, f_globals=None, f_locals=None, toplevel=True) -> int:
-        """run code using f_globals and f_locals in our VM"""
+    def run_code(self, code, f_globals=None, f_locals=None, toplevel=True) -> Any:
+        """run code using f_globals and f_locals in our VM.
+
+        If toplevel is True, then the return is 0 on successful run, and the
+        return code on error. However if toplevel is not True, then this
+        code could be called from eval() or exec(). The return value here
+        is the value from the last RETURN_VALUE or RETURN_CONST instruction.
+        This matters when this is called to interpret eval().
+        """
         frame = self.make_frame(code, f_globals=f_globals, f_locals=f_locals)
         try:
             self.eval_frame(frame)
@@ -434,7 +441,9 @@ class PyVM(object):
             if self.frame and self.frame.stack:  # pragma: no cover
                 raise PyVMError("Data left on stack! %r" % self.frame.stack)
 
-        return 0
+            return 0
+        else:
+            return self.return_value
 
     def unwind_block(self, block):
         """
