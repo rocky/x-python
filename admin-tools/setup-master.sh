@@ -12,6 +12,12 @@ xpython_owd=$(pwd)
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 cd $mydir
+
+if ! source ../admin-tools/pyenv-newest-versions ; then
+    exit $?
+fi
+
+
 . ./checkout_common.sh
 (cd $fulldir/.. && setup_version python-xdis master)
 checkout_finish master

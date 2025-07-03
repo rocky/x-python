@@ -5,6 +5,7 @@ List of bytecode and Python versions that xpython has support for
 SUPPORTED_PYTHON = (
     (2, 7),
     (3, 3),
+    (3, 1),
     (3, 2),
     (3, 4),
     (3, 5),

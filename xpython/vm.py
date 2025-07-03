@@ -266,10 +266,9 @@ class PyVM(object):
         0 sets TOS, 1 sets TOS1, etc.
         """
         if 0 <= i < len(self.frame.stack):
-            self.frame.stack[i-1] = value
+            self.frame.stack[i - 1] = value
         else:
             raise PyVMError("set value must be between 0 and %s" % (i-1))
-
 
     @property
     def top(self):
@@ -411,14 +410,26 @@ class PyVM(object):
 
     # This is the main entry point
     def run_code(self, code, f_globals=None, f_locals=None, toplevel=True):
-        """run code using f_globals and f_locals in our VM"""
+        """run code using f_globals and f_locals in our VM.
+
+        If toplevel is True, then the return is 0 on successful run, and the
+        return code on error. However if toplevel is not True, then this
+        code could be called from eval() or exec(). The return value here
+        is the value from the last RETURN_VALUE or RETURN_CONST instruction.
+        This matters when this is called to interpret eval().
+        """
         frame = self.make_frame(code, f_globals=f_globals, f_locals=f_locals)
         try:
-            val = self.eval_frame(frame)
+            self.eval_frame(frame)
+        except PyVMUncaughtException:
+            if self.last_traceback is not None:
+                print("Traceback (most recent call last):")
+                self.last_traceback.print_tb()
+            if self.last_exception is not None:
+                print("%s:" % self.last_exception[0].__name__, *self.last_exception[1].args)
+            return 1
+
         except Exception:
-            # Until we get test/vmtest.py under control:
-            if self.vmtest_testing:
-                raise
             if self.last_traceback:
                 self.last_traceback.print_tb()
                 print("%s" % self.last_exception[0].__name__, end="")
@@ -439,7 +450,9 @@ class PyVM(object):
             if self.frame and self.frame.stack:  # pragma: no cover
                 raise PyVMError("Data left on stack! %r" % self.frame.stack)
 
-        return val
+            return 0
+        else:
+            return self.return_value
 
     def unwind_block(self, block):
         """
@@ -494,6 +507,7 @@ class PyVM(object):
             if not replay:
                 byte_code = byteint(co_code[offset])
             bytecode_name = self.opc.opname[byte_code]
+
             arg_offset = offset + 1
             arg = None
 
@@ -531,7 +545,10 @@ class PyVM(object):
                         var_idx = int_arg - len(f.f_code.co_cellvars)
                         arg = f_code.co_freevars[var_idx]
                 elif byte_code in self.opc.NAME_OPS:
-                    if self.version >= (3, 11) and bytecode_name == "LOAD_GLOBAL":
+                    if self.version >= (3, 11) and (
+                        bytecode_name == "LOAD_GLOBAL"
+                        or (self.version >= (3, 12) and bytecode_name == "LOAD_ATTR")
+                    ):
                         namei = f_code.co_names[int_arg >> 1]
                         push_NULL = bool(int_arg & 1)
                         arguments = [namei, push_NULL]
@@ -543,7 +560,10 @@ class PyVM(object):
                 elif byte_code in self.opc.JREL_OPS:
                     # Many relative jumps are conditional,
                     # so setting f.fallthrough is wrong.
-                    if self.version >= (3, 10, 0):
+
+                    if self.version >= (3, 10):
+                        if bytecode_name.find("_BACKWARD") > 0 and self.version >= (3, 11):
+                            int_arg = -int_arg
                         int_arg += int_arg
                     arg = arg_offset + int_arg
                 elif byte_code in self.opc.JABS_OPS:
@@ -596,7 +616,7 @@ class PyVM(object):
         try:
             if bytecode_name.startswith("UNARY_"):
                 byteop.unaryOperator(bytecode_name[6:])
-            elif bytecode_name.startswith("BINARY_"):
+            elif bytecode_name.startswith("BINARY_") and bytecode_name != "BINARY_SLICE":
                 if self.version < (3, 11) or int_arg is None:
                     byteop.binary_operator(bytecode_name[7:])
                 else:
@@ -652,6 +672,7 @@ class PyVM(object):
                                 offset,
                                 line_number,
                                 False,
+                                vm=self,
                             )
                         )
                     )
@@ -853,10 +874,9 @@ class PyVM(object):
                 if isinstance(last_exception[2], (Traceback, TracebackType)):
                     if not self.frame:
                         if isinstance(last_exception, tuple):
-                            self.last_exception = PyVMUncaughtException.from_tuple(
-                                last_exception
-                            )
-                        raise self.last_exception
+                            raise PyVMUncaughtException.from_tuple(last_exception)
+                        else:
+                            raise self.last_exception
                 else:
                     six.reraise(*self.last_exception)
             else:

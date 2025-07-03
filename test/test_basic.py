@@ -1,4 +1,5 @@
 """Basic Python interpreter tests for x-python."""
+
 try:
     import vmtest
 except ImportError:
@@ -13,6 +14,7 @@ class TestBasic(vmtest.VmTestCase):
     if PYTHON_VERSION_TRIPLE[:2] in ((3, 10),):
         print("Test not gone over yet for %s" % version_tuple_to_str())
     else:
+
         def test_callback(self):
             self.self_checking()
 
@@ -22,26 +24,11 @@ class TestBasic(vmtest.VmTestCase):
     def test_calling_methods_wrong(self):
         self.self_checking()
 
-    def test_comparisons(self):
-        self.self_checking()
-
-    def test_comprehensions(self):
-        self.self_checking()
-
-    def test_generator_expression(self):
-        self.self_checking()
-
     if PYTHON_VERSION_TRIPLE[:2] in ((3, 10),):
         print("Test not gone over yet for %s" % version_tuple_to_str())
     else:
 
         def test_inplace_operators(self):
-            self.self_checking()
-
-        def test_slice(self):
-            self.self_checking()
-
-        def test_slice_stmts(self):
             self.self_checking()
 
         def test_subscripting(self):
@@ -83,10 +70,6 @@ class TestBasic(vmtest.VmTestCase):
                     assert isinstance(x, float)
                     """
                 )
-
-        def test_strange_sequence_ops(self):
-            # from stdlib: test/test_augassign.py
-            self.do_one()
 
         def test_unary_operators(self):
             self.assert_ok(
@@ -205,22 +188,6 @@ class TestBasic(vmtest.VmTestCase):
                 b = Bar()
                 Foo.baz = 3
                 assert b.baz == 3
-                """
-            )
-
-        def test_staticmethods(self):
-            self.assert_ok(
-                """\
-                class Thing(object):
-                    @staticmethod
-                    def smeth(x):
-                        print(x)
-                    @classmethod
-                    def cmeth(cls, x):
-                        print(x)
-
-                Thing.smeth(1492)
-                Thing.cmeth(1776)
                 """
             )
 

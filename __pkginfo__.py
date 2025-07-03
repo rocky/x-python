@@ -38,12 +38,7 @@ if PYTHON_VERSION_TRIPLE[:2] not in supported_versions:
     print("We only support %s; you have %sPython %s" % (mess, python, sys.version_info))
     raise Exception(mess)
 
-if (3, 0) <= PYTHON_VERSION_TRIPLE < (3, 3) and PYTHON_VERSION_TRIPLE[:2] != (2, 7):
-    click_version = "<= 4.0"
-else:
-    click_version = ""
-
-install_requires = (["six", "xdis >= 6.1.1, < 6.3.0", "click%s" % click_version],)
+install_requires = (["six", "xdis >= 6.1.1, < 6.3.0", "click"],)
 
 py_modules = None
 short_desc = "Python cross-version byte-code interpeter"

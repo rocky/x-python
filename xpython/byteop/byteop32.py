@@ -140,6 +140,8 @@ class ByteOp32(ByteOp27):
         * the code associated with the function (at TOS1 if 3.3+ else at TOS for
           3.0..3.2)
         * the qualified name of the function (at TOS if 3.3+)
+
+        Changed from Python 2.4.
         """
         default_count, kw_default_count, annotate_count = parse_fn_counts_30_35(argc)
 
