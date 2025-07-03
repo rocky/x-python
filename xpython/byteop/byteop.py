@@ -226,7 +226,7 @@ class ByteOpBase(object):
                 else:
                     if not self.cross_bytecode_exec_warning_shown:
                         log.warning(
-                            "Running built-in `exec()`, because we compile() is not available "
+                            "Running built-in `exec()`, because bytecode compile() is not available "
                             "and we are cross-version. "
                             "Interpreting version %s from version %s."
                             % (
@@ -268,7 +268,7 @@ class ByteOpBase(object):
                 else:
                     if not self.cross_bytecode_eval_warning_shown:
                         log.warning(
-                            "Running built-in `eval()`, because we compile() is not available "
+                            "Running built-in `eval()`, because bytecode compile() is not available "
                             "and we are cross-version. "
                             "Interpreting version %s from version %s."
                             % (
