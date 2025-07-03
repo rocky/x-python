@@ -68,7 +68,7 @@ def exec_code_object(
     is_pypy=IS_PYPY,
     callback=None,
     format_instruction=format_instruction,
-) -> int:
+):
     rc = 0
     if callback:
         vm = PyVMTraced(
