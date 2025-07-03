@@ -1,5 +1,5 @@
 #!/bin/bash
-# Simple script to run xpython 3.3-3.5 bytecode
+# Simple script to run xpython 3.11+ bytecode
 if (( $# > 0 )); then
     # FIXME
     print "Arg not handled yet"
@@ -11,6 +11,7 @@ set -e
 source ../admin-tools/pyenv-newest-versions
 
 for version in $PYVERSIONS; do
+    pyenv local $version
     echo "Using Python $version"
     first_two=$(echo $version | cut -d'.' -f 1-2)
     for file in bytecode-${first_two}/*.pyc; do
@@ -19,3 +20,4 @@ for version in $PYVERSIONS; do
 	echo ------- $file --------
     done
 done
+rm .python-version

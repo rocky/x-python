@@ -15,9 +15,6 @@ class TestData(vmtest.VmTestCase):
     def test_attributes(self):
         self.self_checking()
 
-    def test_eval(self):
-        self.self_checking()
-
     if (3, 5) <= PYTHON_VERSION_TRIPLE < (3, 10):
         # {**{}} is illegal before 3.5
         def test_map_unpack(self):

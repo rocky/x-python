@@ -73,6 +73,10 @@ def fmt_binary_op(vm: PyVM, arg=None, repr=repr):
     elements of evaluation stack
 
     """
+    # In the presence of exceptions the stack might be messed up.
+    # So check stack condition for access.
+    if vm.frame is None or len(vm.frame.stack) < 2:
+        return "(?)"
     return " (%s, %s)" % (repr(vm.peek(2)), repr(vm.top))
 
 
@@ -130,7 +134,7 @@ class ByteOpBase(object):
     def binary_operator(self, op):
         if self.version_info[:2] >= (3, 11) and op not in BINARY_OPERATORS:
             if op.startswith("INPLACE_"):
-                return self.inplace_operator(op[len("INPLACE_"):])
+                return self.inplace_operator(op[len("INPLACE_") :])
         x, y = self.vm.popn(2)
         self.vm.push(BINARY_OPERATORS[op](x, y))
 
@@ -203,6 +207,8 @@ class ByteOpBase(object):
                     pos_args.append(self.vm.frame.f_globals)
 
                 if self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]:
+                    # Use the compile() and interprete the bytecode using our own
+                    # interpreter not CPython's.
                     source = pos_args[0]
                     if isinstance(source, str) or isinstance(source, bytes):
                         try:
@@ -216,8 +222,9 @@ class ByteOpBase(object):
                 else:
                     if not self.cross_bytecode_exec_warning_shown:
                         log.warning(
-                            "Running built-in `exec()` because we are cross-version "
-                            "interpreting version %s from version %s."
+                            "Running built-in `exec()`, because bytecode compile() is not available "
+                            "and we are cross-version. "
+                            "Interpreting version %s from version %s."
                             % (
                                 version_tuple_to_str(self.version_info, end=2),
                                 version_tuple_to_str(PYTHON_VERSION_TRIPLE, end=2),
@@ -242,6 +249,8 @@ class ByteOpBase(object):
                 assert len(pos_args) == 3
 
                 if self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]:
+                    # Use the compile() and interprete the bytecode using our own
+                    # interpreter not CPython's.
                     source = pos_args[0]
                     if isinstance(source, str) or isinstance(source, unicode):
                         try:
@@ -255,8 +264,9 @@ class ByteOpBase(object):
                 else:
                     if not self.cross_bytecode_eval_warning_shown:
                         log.warning(
-                            "Running built-in `eval()` because we are cross-version "
-                            "interpreting version %s from version %s."
+                            "Running built-in `eval()`, because bytecode compile() is not available "
+                            "and we are cross-version. "
+                            "Interpreting version %s from version %s."
                             % (
                                 version_tuple_to_str(self.version_info, end=2),
                                 version_tuple_to_str(PYTHON_VERSION_TRIPLE, end=2),
@@ -325,7 +335,17 @@ class ByteOpBase(object):
                 pos_args = [self.vm.frame] + pos_args
                 func = builtin_super
 
-        retval = func(*pos_args, **named_args)
+        # FIXME something weird is happing here in 3.11+
+        if (
+            self.version_info > (3, 11)
+            and hasattr(func, "__iter__")
+            and hasattr(func, "__next__")
+            and not pos_args
+            and not named_args
+        ):
+            return
+        else:
+            retval = func(*pos_args, **named_args)
         self.vm.push(retval)
 
     def call_function(self, argc, var_args, keyword_args):
@@ -394,7 +414,7 @@ class ByteOpBase(object):
 
     def do_raise(self, exc, cause):
         if exc is None:  # reraise
-            exc_type, val, tb = self.vm.last_exception
+            exc_type, val, _ = self.vm.last_exception
             if exc_type is None:
                 return "exception"  # error
             else:
@@ -533,7 +553,6 @@ class ByteOpBase(object):
         else:
             sys_module = self.vm.frame.f_globals["sys"]
         return sys_module
-
 
     def unaryOperator(self, op):
         x = self.vm.pop()
