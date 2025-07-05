@@ -260,12 +260,15 @@ class PyVM(object):
 
     def set(self, i: int, value):
         """Set a value at stack position i from the TOS.
-        0 sets TOS, 1 sets TOS1, etc.
+        1 sets TOS, 2 sets TOS2, etc.
         """
-        if 0 <= i < len(self.frame.stack):
-            self.frame.stack[i - 1] = value
+        if 0 <= i <= len(self.frame.stack):
+            self.frame.stack[-i] = value
         else:
-            raise PyVMError(f"set value must be between 0 and {i-1}")
+            raise PyVMError(
+                f"frame stack 'set' value must be between 0 and "
+                f"{len(self.frame.stack)}"
+            )
 
     @property
     def top(self):
@@ -423,7 +426,9 @@ class PyVM(object):
                 print("Traceback (most recent call last):")
                 self.last_traceback.print_tb()
             if self.last_exception is not None:
-                print(f"{self.last_exception[0].__name__}:", *self.last_exception[1].args)
+                print(
+                    f"{self.last_exception[0].__name__}:", *self.last_exception[1].args
+                )
             return 1
 
         except Exception:
@@ -556,7 +561,10 @@ class PyVM(object):
                     # so setting f.fallthrough is wrong.
 
                     if self.version >= (3, 10):
-                        if bytecode_name.find("_BACKWARD") > 0 and self.version >= (3, 11):
+                        if bytecode_name.find("_BACKWARD") > 0 and self.version >= (
+                            3,
+                            11,
+                        ):
                             int_arg = -int_arg
                         int_arg += int_arg
                     arg = arg_offset + int_arg
@@ -610,7 +618,9 @@ class PyVM(object):
         try:
             if bytecode_name.startswith("UNARY_"):
                 byteop.unaryOperator(bytecode_name[6:])
-            elif bytecode_name.startswith("BINARY_") and bytecode_name != "BINARY_SLICE":
+            elif (
+                bytecode_name.startswith("BINARY_") and bytecode_name != "BINARY_SLICE"
+            ):
                 if self.version < (3, 11) or int_arg is None:
                     byteop.binary_operator(bytecode_name[7:])
                 else:
