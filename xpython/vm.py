@@ -250,8 +250,13 @@ class PyVM(object):
 
         if XPYTHON_STACKCHECK:
             if new_size > self.frame.f_code.co_stacksize:
-                print(("***Warning: exceeding declared max stacksize; have %s, "
-                      "max size: %s") % (new_size, self.f_code.co_stacksize))
+                print(
+                    (
+                        "***Warning: exceeding declared max stacksize; have %s, "
+                        "max size: %s"
+                    )
+                    % (new_size, self.f_code.co_stacksize)
+                )
 
         self.frame.stack.extend(vals)
 
@@ -262,7 +267,9 @@ class PyVM(object):
         if 0 <= i <= len(self.frame.stack):
             self.frame.stack[-i] = value
         else:
-            raise PyVMError("set value must be between 0 and %s" % (len(self.frame.stack)))
+            raise PyVMError(
+                "set value must be between 0 and %s" % (len(self.frame.stack))
+            )
 
     @property
     def top(self):
@@ -420,7 +427,10 @@ class PyVM(object):
                 print("Traceback (most recent call last):")
                 self.last_traceback.print_tb()
             if self.last_exception is not None:
-                print("%s:" % self.last_exception[0].__name__, *self.last_exception[1].args)
+                print(
+                    "%s:" % self.last_exception[0].__name__,
+                    *self.last_exception[1].args
+                )
             return 1
 
         except Exception:
