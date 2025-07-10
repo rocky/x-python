@@ -3,7 +3,7 @@
 """
 from xpython.byteop.byteop32 import ByteOp32, Version_info
 # from xpython.byteop.byteop26 import ByteOp26
->>>>>>> master
+
 
 # FIXME: "del" removes in a way that messes up modules earlier modules
 # e.g. 3.0 that may want to inherit from this module.
