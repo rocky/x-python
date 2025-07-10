@@ -405,7 +405,7 @@ class ByteOp311(ByteOp310):
         back to the stack. Used in exception handlers.
         """
         val = self.vm.pop()
-        self.vm.push(self.vm.last_exception)
+        self.vm.push(self.vm.last_exception[1])
         self.vm.push(val)
 
 

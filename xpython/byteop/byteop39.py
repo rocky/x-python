@@ -48,19 +48,24 @@ class ByteOp39(ByteOp38):
     #   already been performed in parse_byte_and_args().
     ##############################################################################
 
-    def RERAISE(self):
-        """
-        Re-raises the exception currently on top of the stack.
+    def RERAISE(self, oparg: int):
+        """Re-raises the exception currently on top of the stack.  If
+        oparg is non-zero, pops an additional value from the stack
+        which is used to set f_lasti of the current frame.
+
         """
         # An exception was already set up to set: self.vm.last_exception,
         # self.vm.last_type, self.vm.last_value, self.vm.last_traceback.
         # All we need to do here is note an exception return.
+        for _ in range(oparg, 0, -1):
+            self.vm.frame.block_stack.pop()
         return "exception"
 
     def WITH_EXCEPT_START(self):
         # FIXME
         raise RuntimeError("WITH_EXCEPT_START not implemented yet")
         pass
+
 
     def LOAD_ASSERTION_ERROR(self):
         """

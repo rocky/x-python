@@ -290,27 +290,19 @@ class PyVMTraced(PyVM):
             if why == "exception":
                 # Deal with exceptions encountered while executing the op.
                 # TODO: ceval calls PyTraceBack_Here, not sure what that does.
+
+                if self.version >= (3, 11):
+                    self.exception_handling_311()
+
                 if not self.in_exception_processing:
                     self.last_traceback = traceback_from_frame(self.frame)
                     self.in_exception_processing = True
-                elif self.version >= (3, 11):
-                    # Find and add a block frame
-                    frame = self.frame
-                    lasti = frame.f_lasti
-                    encoded_exception_table = frame.f_code.co_exceptiontable
-                    exception_entries = parse_exception_table(encoded_exception_table)
-                    for exception_entry in exception_entries:
-                        if exception_entry.start <= lasti <= exception_entry.end:
-                            self.push_block(
-                                "setup-except311",
-                                exception_entry.target,
-                                exception_entry.depth,
-                            )
-                            break
-                    pass
 
             elif why == "reraise":
                 why = "exception"
+                if self.version >= (3, 11):
+                    self.exception_handling_311()
+
 
             if why != "yield":
                 while why and frame.block_stack:
