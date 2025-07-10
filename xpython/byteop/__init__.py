@@ -47,7 +47,7 @@ def get_byteop(vm, python_version, is_pypy):
             if python_version == (3, 1):
                 from xpython.byteop.byteop31 import ByteOp31
                 byteop = ByteOp31(vm)
-            if python_version == (3, 2):
+            elif python_version == (3, 2):
                 if is_pypy:
                     from xpython.byteop.byteop32pypy import ByteOp32PyPy
 
