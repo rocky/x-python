@@ -9,9 +9,6 @@ from xpython.byteop.byteop24 import ByteOp24, Version_info
 from xpython.byteop.byteop27 import ByteOp27
 from xpython.pyobj import Function
 
-# FIXME: investigate does "del" remove an attribute here?
-# have an effect on what another module sees as ByteOp27's attributes?
-
 # Gone since 3.0
 del ByteOp24.PRINT_EXPR
 del ByteOp24.PRINT_ITEM
@@ -21,6 +18,9 @@ del ByteOp24.PRINT_NEWLINE_TO
 del ByteOp24.BUILD_CLASS
 del ByteOp24.EXEC_STMT
 del ByteOp24.RAISE_VARARGS
+
+# FIXME: "del" removes in a way that messes up modules earlier modules
+# e.g. 3.1 that may want to inherit from this module.
 
 # Gone since 3.2
 del ByteOp24.DUP_TOPX
