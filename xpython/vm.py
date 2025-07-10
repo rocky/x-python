@@ -201,6 +201,30 @@ class PyVM(object):
         self.opc = get_opcode_module(python_version, variant)
         self.byteop = get_byteop(self, python_version, is_pypy)
 
+    def exception_handling_311(self):
+        """In Python 3.11 exception handling blocks are handled off
+        of a code co_exceptiontable.
+
+        Here, we find the exception block associated with a code offset,
+        determined by the frame's f_lasti, push the exception block,
+        and note we are in exception processing
+
+        """
+        frame = self.frame
+        lasti = frame.f_lasti
+        encoded_exception_table = frame.f_code.co_exceptiontable
+        exception_entries = parse_exception_table(encoded_exception_table)
+        for exception_entry in exception_entries:
+            if exception_entry.start <= lasti <= exception_entry.end:
+                self.push_block(
+                    "setup-except311",
+                    exception_entry.target,
+                    exception_entry.depth,
+                )
+                self.in_exception_processing = True
+                break
+        return
+
     ##############################################
     # Frame operations. First the frame stack....
     ##############################################
@@ -467,7 +491,7 @@ class PyVM(object):
             self.pop()
 
         # Set self.last_exception which will filter its way to
-        # sys.last_exception. 3.11 has a already set this.
+        # sys.last_exception. 3.11+ has a already set this.
         if block.type == "except-handler" and self.version < (3, 11):
             tb, value, exctype = self.popn(3)
             self.last_exception = exctype, value, tb
@@ -698,7 +722,9 @@ class PyVM(object):
             why = None
             return why
 
-        if not (block.type == "except-handler" and why == "silenced"):
+        if not (
+            block.type in ("except-handler", "setup-except311") and why == "silenced"
+        ):
             self.pop_block()
             self.unwind_block(block)
 
@@ -820,6 +846,10 @@ class PyVM(object):
             if why == "exception":
                 # Deal with exceptions encountered while executing the op.
                 # TODO: ceval calls PyTraceBack_Here, not sure what that does.
+
+                if self.version >= (3, 11):
+                    self.exception_handling_311()
+
                 if not self.in_exception_processing:
                     # FIXME: DRY code
                     if self.last_exception[0] != SystemExit:
@@ -841,24 +871,11 @@ class PyVM(object):
                         )
                     self.last_traceback = traceback_from_frame(frame)
                     self.in_exception_processing = True
-                elif self.version >= (3, 11):
-                    # Find and add a block frame
-                    frame = self.frame
-                    lasti = frame.f_lasti
-                    encoded_exception_table = frame.f_code.co_exceptiontable
-                    exception_entries = parse_exception_table(encoded_exception_table)
-                    for exception_entry in exception_entries:
-                        if exception_entry.start <= lasti <= exception_entry.end:
-                            self.push_block(
-                                "setup-except311",
-                                exception_entry.target,
-                                exception_entry.depth,
-                            )
-                            break
-                    pass
 
             elif why == "reraise":
                 why = "exception"
+                if self.version >= (3, 11):
+                    self.exception_handling_311()
 
             if why != "yield":
                 while why and frame.block_stack:
