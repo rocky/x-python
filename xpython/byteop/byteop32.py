@@ -47,6 +47,11 @@ class ByteOp32(ByteOp27):
     def convert_native_to_Function(self, frame, func):
         assert inspect.isfunction(func) or isinstance(func, Function)
 
+    def DELETE_DEREF(self, i):
+        """Empties the cell contained in slot i of the cell and free
+        variable storage. Used by the del statement."""
+        raise self.vm.PyVMError("DELETE_DEREF not implemented")
+
     def DUP_TOP_TWO(self):
         """Duplicates the reference on top of the stack."""
         a, b = self.vm.popn(2)
