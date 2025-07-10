@@ -206,6 +206,30 @@ class PyVM(object):
         self.opc = get_opcode_module(python_version, variant)
         self.byteop = get_byteop(self, python_version, is_pypy)
 
+    def exception_handling_311(self):
+        """In Python 3.11 exception handling blocks are handled off
+        of a code co_exceptiontable.
+
+        Here, we find the exception block associated with a code offset,
+        determined by the frame's f_lasti, push the exception block,
+        and note we are in exception processing
+
+        """
+        frame = self.frame
+        lasti = frame.f_lasti
+        encoded_exception_table = frame.f_code.co_exceptiontable
+        exception_entries = parse_exception_table(encoded_exception_table)
+        for exception_entry in exception_entries:
+            if exception_entry.start <= lasti <= exception_entry.end:
+                self.push_block(
+                    "setup-except311",
+                    exception_entry.target,
+                    exception_entry.depth,
+                )
+                self.in_exception_processing = True
+                break
+        return
+
     ##############################################
     # Frame operations. First the frame stack....
     ##############################################
@@ -256,19 +280,26 @@ class PyVM(object):
 
         if XPYTHON_STACKCHECK:
             if new_size > self.frame.f_code.co_stacksize:
-                print(("***Warning: exceeding declared max stacksize; have %s, "
-                      "max size: %s") % (new_size, self.f_code.co_stacksize))
+                print(
+                    (
+                        "***Warning: exceeding declared max stacksize; have %s, "
+                        "max size: %s"
+                    )
+                    % (new_size, self.f_code.co_stacksize)
+                )
 
         self.frame.stack.extend(vals)
 
     def set(self, i, value):
         """Set a value at stack position i from the TOS.
-        0 sets TOS, 1 sets TOS1, etc.
+        1 sets TOS, 2 sets TOS2, etc.
         """
-        if 0 <= i < len(self.frame.stack):
-            self.frame.stack[i - 1] = value
+        if 0 <= i <= len(self.frame.stack):
+            self.frame.stack[-i] = value
         else:
-            raise PyVMError("set value must be between 0 and %s" % (i-1))
+            raise PyVMError(
+                "set value must be between 0 and %s" % (len(self.frame.stack))
+            )
 
     @property
     def top(self):
@@ -426,7 +457,10 @@ class PyVM(object):
                 print("Traceback (most recent call last):")
                 self.last_traceback.print_tb()
             if self.last_exception is not None:
-                print("%s:" % self.last_exception[0].__name__, *self.last_exception[1].args)
+                print(
+                    "%s:" % self.last_exception[0].__name__,
+                    *self.last_exception[1].args
+                )
             return 1
 
         except Exception:
@@ -468,7 +502,7 @@ class PyVM(object):
             self.pop()
 
         # Set self.last_exception which will filter its way to
-        # sys.last_exception. 3.11 has a already set this.
+        # sys.last_exception. 3.11+ has a already set this.
         if block.type == "except-handler" and self.version < (3, 11):
             tb, value, exctype = self.popn(3)
             self.last_exception = exctype, value, tb
@@ -562,7 +596,10 @@ class PyVM(object):
                     # so setting f.fallthrough is wrong.
 
                     if self.version >= (3, 10):
-                        if bytecode_name.find("_BACKWARD") > 0 and self.version >= (3, 11):
+                        if bytecode_name.find("_BACKWARD") > 0 and self.version >= (
+                            3,
+                            11,
+                        ):
                             int_arg = -int_arg
                         int_arg += int_arg
                     arg = arg_offset + int_arg
@@ -616,7 +653,9 @@ class PyVM(object):
         try:
             if bytecode_name.startswith("UNARY_"):
                 byteop.unaryOperator(bytecode_name[6:])
-            elif bytecode_name.startswith("BINARY_") and bytecode_name != "BINARY_SLICE":
+            elif (
+                bytecode_name.startswith("BINARY_") and bytecode_name != "BINARY_SLICE"
+            ):
                 if self.version < (3, 11) or int_arg is None:
                     byteop.binary_operator(bytecode_name[7:])
                 else:
@@ -694,7 +733,9 @@ class PyVM(object):
             why = None
             return why
 
-        if not (block.type == "except-handler" and why == "silenced"):
+        if not (
+            block.type in ("except-handler", "setup-except311") and why == "silenced"
+        ):
             self.pop_block()
             self.unwind_block(block)
 
@@ -816,6 +857,10 @@ class PyVM(object):
             if why == "exception":
                 # Deal with exceptions encountered while executing the op.
                 # TODO: ceval calls PyTraceBack_Here, not sure what that does.
+
+                if self.version >= (3, 11):
+                    self.exception_handling_311()
+
                 if not self.in_exception_processing:
                     # FIXME: DRY code
                     if self.last_exception[0] != SystemExit:
@@ -837,24 +882,11 @@ class PyVM(object):
                         )
                     self.last_traceback = traceback_from_frame(frame)
                     self.in_exception_processing = True
-                elif self.version >= (3, 11):
-                    # Find and add a block frame
-                    frame = self.frame
-                    lasti = frame.f_lasti
-                    encoded_exception_table = frame.f_code.co_exceptiontable
-                    exception_entries = parse_exception_table(encoded_exception_table)
-                    for exception_entry in exception_entries:
-                        if exception_entry.start <= lasti <= exception_entry.end:
-                            self.push_block(
-                                "setup-except311",
-                                exception_entry.target,
-                                exception_entry.depth,
-                            )
-                            break
-                    pass
 
             elif why == "reraise":
                 why = "exception"
+                if self.version >= (3, 11):
+                    self.exception_handling_311()
 
             if why != "yield":
                 while why and frame.block_stack:

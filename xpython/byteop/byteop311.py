@@ -302,14 +302,13 @@ class ByteOp311(ByteOp310):
     def SWAP(self, i: int):
         """
         Swap TOS with the item at position i.
-        2 sets TOS1?
+        2 swaps TOS with TOS1, 3 swaps TOS with TOS2, etc.
         """
         tos = self.vm.top
         stack_i = self.vm.peek(i)
 
-        # 2 sets TOS1 so we have to subtract 1
-        self.vm.set(i-1, tos)
-        self.vm.set(0, stack_i)
+        self.vm.set(i, tos)
+        self.vm.set(1, stack_i)  # 1 is TOS
 
     def CHECK_EXC_MATCH(self):
         """Performs exception matching for except. Tests whether the
@@ -406,7 +405,7 @@ class ByteOp311(ByteOp310):
         back to the stack. Used in exception handlers.
         """
         val = self.vm.pop()
-        self.vm.push(self.vm.last_exception)
+        self.vm.push(self.vm.last_exception[1])
         self.vm.push(val)
 
 

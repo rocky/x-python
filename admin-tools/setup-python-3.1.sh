@@ -14,5 +14,5 @@ mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 cd $mydir
 . ./checkout_common.sh
-(cd $fulldir/.. && checkout_version python-xdis python-3.0)
+(cd $fulldir/.. && setup_version python-xdis python-3.0)
 checkout_finish python-3.1-to-3.2

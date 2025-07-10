@@ -67,10 +67,16 @@ class ByteOp312(ByteOp311):
 
     def STORE_SLICE(self):
         """
-        To be continued...
+        Implements:
+          end = STACK.pop()
+          start = STACK.pop()
+          container = STACK.pop()
+          values = STACK.pop()
+          STACK.push(container)
         """
-        # FIXME
-        raise self.vm.PyVMError("STORE_SLICE not implemented")
+        values, container, start, end = self.vm.popn(4)
+        container[start:end]= values
+        self.vm.push(container)
 
     def CLEANUP_THROW(self):
         """
