@@ -640,6 +640,7 @@ class ByteOp24(ByteOpBase):
         and the bytecode counter is incremented by delta.
 
         Note: jump = delta + f.f_lasti set in parse_byte_and_args()
+        Changed in 3.12.
         """
 
         iterobj = self.vm.top

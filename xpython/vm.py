@@ -592,6 +592,11 @@ class PyVM(object):
                             int_arg = -int_arg
                         int_arg += int_arg
                     arg = arg_offset + int_arg
+                    if bytecode_name == "FOR_ITER" and self.version >= (3, 12):
+                        # 3.12 jumps one more instruction for reasons I can't find
+                        # well documented.
+                        arg += 2
+
                 elif byte_code in self.opc.JABS_OPS:
                     # We probably could set fallthough, since many (all?)
                     # of these are unconditional, but we'll make the jump do
