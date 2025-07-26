@@ -45,11 +45,10 @@ class ByteOp312(ByteOp311):
         raise self.vm.PyVMError("INTERPRETER_EXIT not implemented")
 
     def END_FOR(self):
+        """Removes the top-of-stack item. Equivalent to POP_TOP. Used
+          to clean up at the end of loops, hence the name.
         """
-        To be continued...
-        """
-        # FIXME
-        raise self.vm.PyVMError("END_FOR not implemented")
+        self.vm.pop()
 
     def END_SEND(self):
         """
@@ -141,12 +140,16 @@ class ByteOp312(ByteOp311):
         # FIXME
         raise self.vm.PyVMError("LOAD_SUPER_ATTR not implemented")
 
-    def LOAD_FAST_AND_CLEAR(self):
+    def LOAD_FAST_AND_CLEAR(self, name):
+        """Pushes a reference to the local co_varnames[var_num] onto
+        the stack (or pushes NULL onto the stack if the local variable
+        has not been initialized) and sets co_varnames[var_num] to
+        NULL.
         """
-        To be continued...
-        """
-        # FIXME
-        raise self.vm.PyVMError("LOAD_FAST_AND_CLEAR not implemented")
+        value = self.vm.frame.f_locals.get(name, NULL)
+        if value is NULL:
+            self.vm.frame.f_locals[name] = NULL
+        self.vm.push(value)
 
 
     # And many more...
@@ -163,6 +166,24 @@ class ByteOp312(ByteOp311):
         x, y = self.vm.popn(2)
         opname >>= 4
         self.vm.push(self.COMPARE_OPERATORS[opname](x, y))
+
+    def FOR_ITER(self, jump_offset):
+        """TOS is an iterator. Call its __next__() method. If this
+        yields a new value, push it on the stack (leaving the iterator
+        below it). If the iterator indicates it is exhausted the
+        bytecode counter is incremented by delta.
+
+        Note: jump = delta + f.f_lasti set in parse_byte_and_args()
+
+        Changed in 3.12. Up until 3.11 the iterator was popped when it
+        was exhausted.
+        """
+
+        try:
+            v = next(self.vm.top)
+            self.vm.push(v)
+        except StopIteration:
+            self.vm.jump(jump_offset)
 
     def LOAD_ATTR(self, name, push_null=False):
         """If the low bit of namei is not set (push_null is False),
