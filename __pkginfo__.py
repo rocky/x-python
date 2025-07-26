@@ -43,7 +43,7 @@ if (3, 0) <= PYTHON_VERSION_TRIPLE < (3, 3):
 else:
     click_version = ""
 
-install_requires = (["six", "xdis >= 6.1.1, < 6.3.0", "click%s" % click_version],)
+install_requires = (["six", "xdis >= 6.1.5, < 6.3.0", "click%s" % click_version],)
 
 py_modules = None
 short_desc = "Python cross-version byte-code interpeter"
@@ -61,6 +61,8 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 

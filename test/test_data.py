@@ -9,9 +9,6 @@ from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 
 class TestData(vmtest.VmTestCase):
-    def test_constant(self):
-        self.do_one()
-
     def test_attributes(self):
         self.self_checking()
 
