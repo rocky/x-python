@@ -8,7 +8,6 @@ from types import TracebackType
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, codeType2Portable
 
 # We will add a new "DEBUG" opcode
-from xdis.bytecode import parse_exception_table
 from xdis.opcodes.base import def_op
 
 from xpython.pyobj import Frame, Traceback, traceback_from_frame

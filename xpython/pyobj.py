@@ -334,7 +334,7 @@ class Method(object):
             return self.im_func(*args, **kwargs)
 
 
-class Cell(object):
+class Cell:
     """A fake cell for closures.
 
     Closures keep names in scope by storing them not in a frame, but in a
@@ -407,13 +407,16 @@ class Frame(object):
         f_back,
         version=PYTHON_VERSION_TRIPLE,
         closure=None,
+        localsplusnames=tuple(),  # 3.11+ only
     ):
+        self.f_back = f_back
         self.f_code = f_code
         self.f_globals = f_globals
         self.f_locals = f_locals
-        self.f_back = f_back
-        self.stack = []
+        self.f_locals = f_locals
         self.f_trace = None
+        self.localsplusnames = localsplusnames
+        self.stack = []
 
         # event args is used in tracing/debugging callback.
         self.event_flags = None
