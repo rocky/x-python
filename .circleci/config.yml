@@ -1,4 +1,6 @@
 version: 2
+  branches:
+    only: python-3.6-to-3.10
 jobs:
   build:
     working_directory: ~/rocky/x-python
@@ -13,7 +15,7 @@ jobs:
     # To see the list of pre-built images that CircleCI provides for most common languages see
     # https://circleci.com/docs/2.0/circleci-images/
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:3.10
     steps:
     # Machine Setup
     #   If you break your build into multiple jobs with workflows, you will probably want to do the parts of this that are relevant in each
@@ -39,8 +41,6 @@ jobs:
     - run:
         command: | # Use pip to install dependengcies
           sudo pip install --user --upgrade setuptools
-          # Until the next release
-          sudo pip install git+https://github.com/rocky/python-xdis#egg=xdis
           pip install --user -e .
           pip install --user -r requirements-dev.txt
 
