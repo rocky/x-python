@@ -57,7 +57,7 @@ PyVMEVENT_ALL = (
 PyVMEVENT_NONE = 0
 
 
-def pretty_event_flags(flags):
+def pretty_event_flags(flags) -> str:
     """Return pretty representation of trace event flags."""
     names = []
     result = f"0x{flags:08x}"
@@ -78,12 +78,12 @@ class PyVMTraced(PyVM):
     def __init__(
         self,
         callback,
-        python_version=PYTHON_VERSION_TRIPLE,
-        is_pypy=IS_PYPY,
-        vmtest_testing=False,
-        event_flags=PyVMEVENT_ALL,
+        python_version: tuple[int, ...]=PYTHON_VERSION_TRIPLE,
+        is_pypy: bool=IS_PYPY,
+        vmtest_testing: bool=False,
+        event_flags: int=PyVMEVENT_ALL,
         format_instruction_func=format_instruction,
-    ):
+    ) -> None:
         super().__init__(
             python_version,
             is_pypy,
@@ -100,7 +100,7 @@ class PyVMTraced(PyVM):
                 self.opc.loc = self.opc.l
         def_op(self.opc.loc, "BRKPT", BREAKPOINT_OP, 0, 0)
 
-    def add_breakpoint(self, frame: Frame, offset: int):
+    def add_breakpoint(self, frame: Frame, offset: int) -> None:
         """
         Adds a breakpoint at `offset` of `frame`. This is done by modifying the
         bytecode opcode at the given offset by replacing it with a pseudo-op BRKPT
@@ -118,7 +118,7 @@ class PyVMTraced(PyVM):
         code.co_code = bytes(bytecode)
         frame.f_code = code
 
-    def remove_breakpoint(self, frame: Frame, offset: int):
+    def remove_breakpoint(self, frame: Frame, offset: int) -> None:
         """
         Removes a breakpoint at `offset` of `frame`. This is done by restoring the
         opcode that was previously smashed using `add_breakpoint()`
@@ -135,7 +135,7 @@ class PyVMTraced(PyVM):
     # Interpreter main loop
     # This is analogous to CPython's _PyEval_EvalFrameDefault() (in 3.x newer Python)
     # or eval_frame() in older 2.x code.
-    def eval_frame(self, frame: Frame):
+    def eval_frame(self, frame: Frame) -> None:
         """Run a frame until it returns (somehow).
 
         Exceptions are raised, the return value is returned.
@@ -392,7 +392,7 @@ if __name__ == "__main__":
 
     def sample_callback_hook(
         event, offset, bytecode_name, byte_code, line_number, int_arg, event_arg, vm
-    ):
+    ) -> None:
         print(
             "CALLBACK",
             event,
@@ -405,13 +405,13 @@ if __name__ == "__main__":
         )
 
     # Simplest of tests
-    def five():
+    def five() -> int:
         return 5
 
     # Test with a conditional in it
     a, b = 10, 3
 
-    def mymax():
+    def mymax() -> int:
         return a if a > b else b
 
     logging.basicConfig(level=logging.DEBUG)
