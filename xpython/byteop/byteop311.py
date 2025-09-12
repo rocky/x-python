@@ -325,6 +325,29 @@ class ByteOp311(ByteOp310):
         self.vm.frame.call_shape_kwnames = {}
         return ret_val
 
+    def COPY_FREE_VARS(self, argc: int):
+        """Copies the n free variables from the closure into the
+          frame. Removes the need for special code on the caller’s
+          side when calling closures.
+        """
+        # Copy closure variables to free variables
+        # PyCodeObject *co = frame->f_code;
+        # PyObject *closure = frame->f_func->func_closure;
+        # int offset = co->co_nlocals + co->co_nplaincellvars;
+        # assert(oparg == co->co_nfreevars);
+        # for (int i = 0; i < oparg; ++i) {
+        #     PyObject *o = PyTuple_GET_ITEM(closure, i);
+        #     Py_INCREF(o);
+        #     frame->localsplus[offset + i] = o;
+        # }
+        frame = self.vm.frame
+        co = frame.f_code
+        localsplus = co.co_freevars + co.co_cellvars
+        for i in range(argc):
+            name = localsplus[i]
+            frame.f_locals[name] = frame.cells[name].get()
+        return
+
     def KW_NAMES(self, names: Tuple[str]):
         """
         Prefixes CALL. Stores a reference to co_consts[consti] into an internal frame variable
@@ -336,6 +359,23 @@ class ByteOp311(ByteOp310):
 
         for name in names:
             self.vm.frame.call_shape_kwnames[name] = self.vm.pop()
+        return
+
+    # Changed in 3.11...
+    def MAKE_CELL(self, name: str):
+        """
+        Creates a new cell in slot i having name "name". If that slot is nonempty then that value is stored into the new cell.
+
+
+        In this interpreter, we create all cells when the frame is created. So there's nothing to do
+        """
+        # PyObject *initial = GETLOCAL(oparg);
+        # PyObject *cell = PyCell_New(initial);
+        # if (cell == NULL) {
+        #     goto resume_with_error;
+        # }
+        # SETLOCAL(oparg, cell);
+        self.vm.frame.cells[name].set(self.vm.frame.f_locals.get(name, None))
         return
 
     # Changed in 3.11...

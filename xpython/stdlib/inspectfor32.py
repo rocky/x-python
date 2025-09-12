@@ -12,7 +12,7 @@ KEYWORD_ONLY = 3
 VAR_KEYWORD = 4
 
 
-def formatannotation(annotation, base_module=None):
+def formatannotation(annotation, base_module=None) -> str:
     if getattr(annotation, "__module__", None) == "typing":
         return repr(annotation).replace("typing.", "")
     if isinstance(annotation, type):
@@ -73,7 +73,7 @@ class Parameter:
 
     empty = _empty
 
-    def __init__(self, name, kind, default=_empty, annotation=_empty):
+    def __init__(self, name, kind, default: type[_empty]=_empty, annotation: type[_empty]=_empty) -> None:
         try:
             self._kind = kind
         except ValueError:
@@ -120,27 +120,27 @@ class Parameter:
             {"_default": self._default, "_annotation": self._annotation},
         )
 
-    def __setstate__(self, state):
+    def __setstate__(self, state) -> None:
         self._default = state["_default"]
         self._annotation = state["_annotation"]
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def default(self):
+    def default(self) -> type[_empty]:
         return self._default
 
     @property
-    def annotation(self):
+    def annotation(self) -> type[_empty]:
         return self._annotation
 
     @property
     def kind(self):
         return self._kind
 
-    def replace(self, name=_void, kind=_void, annotation=_void, default=_void):
+    def replace(self, name: type[_void]=_void, kind: type[_void]=_void, annotation: type[_void]=_void, default: type[_void]=_void):
         """Creates a customized copy of the Parameter."""
 
         if name is _void:
@@ -157,7 +157,7 @@ class Parameter:
 
         return type(self)(name, kind, default=default, annotation=annotation)
 
-    def __str__(self):
+    def __str__(self) -> str:
         kind = self.kind
         formatted = self._name
 
@@ -178,10 +178,10 @@ class Parameter:
 
         return formatted
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<{} "{}">'.format(self.__class__.__name__, self)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((self.name, self.kind, self.annotation, self.default))
 
     def __eq__(self, other):
@@ -216,7 +216,7 @@ class BoundArguments:
 
     __slots__ = ("arguments", "_signature", "__weakref__")
 
-    def __init__(self, signature, arguments):
+    def __init__(self, signature, arguments) -> None:
         self.arguments = arguments
         self._signature = signature
 
@@ -277,7 +277,7 @@ class BoundArguments:
 
         return kwargs
 
-    def apply_defaults(self):
+    def apply_defaults(self) -> None:
         """Set default values for missing arguments.
 
         For variable-positional arguments (*args) the default is an
@@ -312,14 +312,14 @@ class BoundArguments:
             return NotImplemented
         return self.signature == other.signature and self.arguments == other.arguments
 
-    def __setstate__(self, state):
+    def __setstate__(self, state) -> None:
         self._signature = state["_signature"]
         self.arguments = state["arguments"]
 
     def __getstate__(self):
         return {"_signature": self._signature, "arguments": self.arguments}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         args = []
         for arg, value in self.arguments.items():
             args.append("{}={!r}".format(arg, value))
@@ -357,8 +357,8 @@ class Signature:
     empty = _empty
 
     def __init__(
-        self, parameters=None, return_annotation=_empty, __validate_parameters__=True
-    ):
+        self, parameters=None, return_annotation: type[_empty]=_empty, __validate_parameters__: bool=True
+    ) -> None:
         """Constructs Signature from the given list of Parameter
         objects and 'return_annotation'.  All arguments are optional.
         """
@@ -451,10 +451,10 @@ class Signature:
         return self._parameters
 
     @property
-    def return_annotation(self):
+    def return_annotation(self) -> type[_empty]:
         return self._return_annotation
 
-    def replace(self, parameters=_void, return_annotation=_void):
+    def replace(self, parameters: type[_void]=_void, return_annotation: type[_void]=_void):
         """Creates a customized copy of the Signature.
         Pass 'parameters' and/or 'return_annotation' arguments
         to override them in the new copy.
@@ -481,7 +481,7 @@ class Signature:
 
         return params, kwo_params, self.return_annotation
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         params, kwo_params, return_annotation = self._hash_basis()
         kwo_params = frozenset(kwo_params.values())
         return hash((params, kwo_params, return_annotation))
@@ -493,7 +493,7 @@ class Signature:
             return NotImplemented
         return self._hash_basis() == other._hash_basis()
 
-    def _bind(self, args, kwargs, partial=False):
+    def _bind(self, args, kwargs, partial: bool=False) -> BoundArguments:
         """Private method. Don't use directly."""
 
         arguments = OrderedDict()
@@ -654,13 +654,13 @@ class Signature:
             {"_return_annotation": self._return_annotation},
         )
 
-    def __setstate__(self, state):
+    def __setstate__(self, state) -> None:
         self._return_annotation = state["_return_annotation"]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<{} {}>".format(self.__class__.__name__, self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         result = []
         render_pos_only_separator = False
         render_kw_only_separator = True
