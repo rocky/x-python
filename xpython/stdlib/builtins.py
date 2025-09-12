@@ -13,7 +13,7 @@ from io import open
 from sys import intern
 
 
-def make_compatible_builtins(builtins: dict, target_python: tuple):
+def make_compatible_builtins(builtins: dict, target_python: tuple) -> None:
     """
     Add functions in builtins dictionary with functions that do the same
     thing.
@@ -56,7 +56,7 @@ def apply(f, args=None, kwargs=None):
     return f(*args, **kwargs)
 
 
-def breakpoint(*args, **kwargs):
+def breakpoint(*args, **kwargs) -> None:
     """
     Python Python 3.8- breakpoint (compare) for Python 3.x
     """
@@ -86,7 +86,7 @@ def coerce(x, y) -> tuple:
     return x, y
 
 
-def execfile(path: str):
+def execfile(path: str) -> None:
     """
     Python 1-2.x execfile for Python 3.x
     """
@@ -96,7 +96,7 @@ def execfile(path: str):
 class OverflowWarning(RuntimeError):
     """A Python 1.x - 2.6 RuntimeError."""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "OverflowError: Numerical result out of range"
 
 
