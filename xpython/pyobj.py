@@ -407,7 +407,7 @@ class Frame(object):
         f_globals,
         f_locals,
         f_back,
-        version: tuple[int, ...]=PYTHON_VERSION_TRIPLE,
+        version: tuple=PYTHON_VERSION_TRIPLE,
         closure=None,
         localsplusnames=tuple(),  # 3.11+ only
     ) -> None:

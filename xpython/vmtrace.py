@@ -78,7 +78,7 @@ class PyVMTraced(PyVM):
     def __init__(
         self,
         callback,
-        python_version: tuple[int, ...]=PYTHON_VERSION_TRIPLE,
+        python_version: tuple=PYTHON_VERSION_TRIPLE,
         is_pypy: bool=IS_PYPY,
         vmtest_testing: bool=False,
         event_flags: int=PyVMEVENT_ALL,
