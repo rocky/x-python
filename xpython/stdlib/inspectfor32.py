@@ -73,7 +73,7 @@ class Parameter:
 
     empty = _empty
 
-    def __init__(self, name, kind, default: type[_empty]=_empty, annotation: type[_empty]=_empty) -> None:
+    def __init__(self, name, kind, default=_empty, annotation=_empty) -> None:
         try:
             self._kind = kind
         except ValueError:
@@ -129,18 +129,18 @@ class Parameter:
         return self._name
 
     @property
-    def default(self) -> type[_empty]:
+    def default(self):
         return self._default
 
     @property
-    def annotation(self) -> type[_empty]:
+    def annotation(self):
         return self._annotation
 
     @property
     def kind(self):
         return self._kind
 
-    def replace(self, name: type[_void]=_void, kind: type[_void]=_void, annotation: type[_void]=_void, default: type[_void]=_void):
+    def replace(self, name, kind=_void, annotation=_void, default=_void):
         """Creates a customized copy of the Parameter."""
 
         if name is _void:
@@ -357,7 +357,7 @@ class Signature:
     empty = _empty
 
     def __init__(
-        self, parameters=None, return_annotation: type[_empty]=_empty, __validate_parameters__: bool=True
+        self, parameters=None, return_annotation=_empty, __validate_parameters__: bool=True
     ) -> None:
         """Constructs Signature from the given list of Parameter
         objects and 'return_annotation'.  All arguments are optional.
@@ -451,10 +451,10 @@ class Signature:
         return self._parameters
 
     @property
-    def return_annotation(self) -> type[_empty]:
+    def return_annotation(self):
         return self._return_annotation
 
-    def replace(self, parameters: type[_void]=_void, return_annotation: type[_void]=_void):
+    def replace(self, parameters=_void, return_annotation=_void):
         """Creates a customized copy of the Signature.
         Pass 'parameters' and/or 'return_annotation' arguments
         to override them in the new copy.

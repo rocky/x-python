@@ -3,7 +3,6 @@
 """
 Define names for built-in types that aren't directly accessible as a builtin.
 """
-import collections.abc as _collections_abc
 import functools as _functools
 import sys
 from types import GeneratorType
@@ -27,7 +26,6 @@ FunctionType = type(_f)
 LambdaType = type(lambda: None)  # Same as FunctionType
 CodeType = type(_f.__code__)
 MappingProxyType = type(type.__dict__)
-SimpleNamespace = type(sys.implementation)
 
 if PYTHON_VERSION_TRIPLE >= (3, 5):
     exec(
@@ -295,13 +293,6 @@ def coroutine(func):
         ):
             # 'coro' is a native coroutine object or an iterable coroutine
             return coro
-        if isinstance(coro, _collections_abc.Generator) and not isinstance(
-            coro, _collections_abc.Coroutine
-        ):
-            # 'coro' is either a pure Python generator iterator, or it
-            # implements collections.abc.Generator (and does not implement
-            # collections.abc.Coroutine).
-            return _GeneratorWrapper(coro)
         # 'coro' is either an instance of collections.abc.Coroutine or
         # some other object -- pass it through.
         return coro
