@@ -14,7 +14,8 @@ function setup_version {
 
 function checkout_finish {
     branch=$1
-    git checkout $branch && pyenv local $PYTHON_VERSION && git pull
+    cd $mydir/.. && pyenv local $PYTHON_VERSION
+    git checkout $branch && git pull
     cd $xpython_owd
     rc=$?
     return $rc
