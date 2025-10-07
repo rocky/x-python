@@ -8,13 +8,8 @@ import sys
 from types import GeneratorType
 
 from xdis.util import CO_COROUTINE, CO_GENERATOR, CO_ITERABLE_COROUTINE
-from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 from xpython.stdlib.inspect3 import isfunction, isgeneratorfunction, xCallable
-
-if PYTHON_VERSION_TRIPLE >= (3, 0):
-    import collections.abc as _collections_abc
-
 
 # Iterators in Python aren't a matter of type but of protocol.  A large
 # and changing number of builtin types implement *some* flavor of
@@ -31,17 +26,7 @@ LambdaType = type(lambda: None)  # Same as FunctionType
 CodeType = type(_f.__code__)
 MappingProxyType = type(type.__dict__)
 
-if PYTHON_VERSION_TRIPLE >= (3, 5):
-    exec(
-        """
-async def _c(): pass
-_c = _c()
-CoroutineType = type(_c)
-_c.close()  # Prevent ResourceWarning
-"""
-    )
-else:
-    CoroutineType = None
+CoroutineType = None
 
 
 class _C:
@@ -300,7 +285,6 @@ def coroutine(func):
         # 'coro' is either an instance of collections.abc.Coroutine or
         # some other object -- pass it through.
         return coro
->>>>>>> python-3.1-to-3.2
 
     return wrapped
 

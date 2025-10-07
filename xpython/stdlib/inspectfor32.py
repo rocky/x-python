@@ -12,7 +12,7 @@ KEYWORD_ONLY = 3
 VAR_KEYWORD = 4
 
 
-def formatannotation(annotation, base_module=None) -> str:
+def formatannotation(annotation, base_module=None):
     if getattr(annotation, "__module__", None) == "typing":
         return repr(annotation).replace("typing.", "")
     if isinstance(annotation, type):
@@ -73,7 +73,7 @@ class Parameter:
 
     empty = _empty
 
-    def __init__(self, name, kind, default=_empty, annotation=_empty) -> None:
+    def __init__(self, name, kind, default=_empty, annotation=_empty):
         try:
             self._kind = kind
         except ValueError:
@@ -120,12 +120,12 @@ class Parameter:
             {"_default": self._default, "_annotation": self._annotation},
         )
 
-    def __setstate__(self, state) -> None:
+    def __setstate__(self, state):
         self._default = state["_default"]
         self._annotation = state["_annotation"]
 
     @property
-    def name(self) -> str:
+    def name(self):
         return self._name
 
     @property
@@ -157,7 +157,7 @@ class Parameter:
 
         return type(self)(name, kind, default=default, annotation=annotation)
 
-    def __str__(self) -> str:
+    def __str__(self):
         kind = self.kind
         formatted = self._name
 
@@ -178,10 +178,10 @@ class Parameter:
 
         return formatted
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return '<{} "{}">'.format(self.__class__.__name__, self)
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         return hash((self.name, self.kind, self.annotation, self.default))
 
     def __eq__(self, other):
@@ -216,7 +216,7 @@ class BoundArguments:
 
     __slots__ = ("arguments", "_signature", "__weakref__")
 
-    def __init__(self, signature, arguments) -> None:
+    def __init__(self, signature, arguments):
         self.arguments = arguments
         self._signature = signature
 
@@ -277,7 +277,7 @@ class BoundArguments:
 
         return kwargs
 
-    def apply_defaults(self) -> None:
+    def apply_defaults(self):
         """Set default values for missing arguments.
 
         For variable-positional arguments (*args) the default is an
@@ -312,14 +312,14 @@ class BoundArguments:
             return NotImplemented
         return self.signature == other.signature and self.arguments == other.arguments
 
-    def __setstate__(self, state) -> None:
+    def __setstate__(self, state):
         self._signature = state["_signature"]
         self.arguments = state["arguments"]
 
     def __getstate__(self):
         return {"_signature": self._signature, "arguments": self.arguments}
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         args = []
         for arg, value in self.arguments.items():
             args.append("{}={!r}".format(arg, value))
@@ -357,8 +357,8 @@ class Signature:
     empty = _empty
 
     def __init__(
-        self, parameters=None, return_annotation=_empty, __validate_parameters__: bool=True
-    ) -> None:
+        self, parameters=None, return_annotation=_empty, __validate_parameters=True
+        ):
         """Constructs Signature from the given list of Parameter
         objects and 'return_annotation'.  All arguments are optional.
         """
@@ -481,7 +481,7 @@ class Signature:
 
         return params, kwo_params, self.return_annotation
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         params, kwo_params, return_annotation = self._hash_basis()
         kwo_params = frozenset(kwo_params.values())
         return hash((params, kwo_params, return_annotation))
@@ -493,7 +493,7 @@ class Signature:
             return NotImplemented
         return self._hash_basis() == other._hash_basis()
 
-    def _bind(self, args, kwargs, partial: bool=False) -> BoundArguments:
+    def _bind(self, args, kwargs, partial):
         """Private method. Don't use directly."""
 
         arguments = OrderedDict()
@@ -654,13 +654,13 @@ class Signature:
             {"_return_annotation": self._return_annotation},
         )
 
-    def __setstate__(self, state) -> None:
+    def __setstate__(self, state):
         self._return_annotation = state["_return_annotation"]
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return "<{} {}>".format(self.__class__.__name__, self)
 
-    def __str__(self) -> str:
+    def __str__(self):
         result = []
         render_pos_only_separator = False
         render_kw_only_separator = True

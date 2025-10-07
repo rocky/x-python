@@ -33,7 +33,12 @@ def fmt_make_function(vm, arg=None, repr_fn=repr):
     # Gotta love Python for stuff like this.
     fn_index = 1 if vm.version >= (3, 2) else 2
     fn_item = vm.peek(fn_index)
-    name = fn_item if isinstance(fn_item, str) else fn_item.co_name
+    if isinstance(fn_item, str):
+        name = fn_item
+    elif hasattr(fn_item, "co_name"):
+        name = fn_item.co_name
+    else:
+        name = "??"
     return " (%s)" % name
 
 

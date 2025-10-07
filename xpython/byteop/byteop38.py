@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021, 2023-2024 Rocky Bernstein
+# Copyright (C) 2021, 2023-2025 Rocky Bernstein
 # This program comes with ABSOLUTELY NO WARRANTY.
 # This is free software, and you are welcome to redistribute it
 # under certain conditions.
@@ -102,7 +102,7 @@ class ByteOp38(ByteOp37):
         self.vm.push(self.vm.frame.f_lasti)
         self.vm.jump(delta)
 
-    def POP_FINALLY(self, preserve_tos: int):
+    def POP_FINALLY(self, preserve_tos):
         """Cleans up the value stack and the block stack. If preserve_tos is
         not 0 TOS first is popped from the stack and pushed on the stack after
         performing other stack operations:

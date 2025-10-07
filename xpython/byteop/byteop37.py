@@ -26,7 +26,7 @@ class NullClass:
     can't be used, because that is a valid value.
     """
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return "NULL"
 
 

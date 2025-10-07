@@ -26,7 +26,7 @@ from xpython.pyobj import Function
 
 log = logging.getLogger(__name__)
 
-def fmt_load_global(vm, arg, _=repr) -> str:
+def fmt_load_global(vm, arg, _=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -34,7 +34,7 @@ def fmt_load_global(vm, arg, _=repr) -> str:
     return ' (NULL + %s)' % namei if arg & 1 else namei
 
 
-def fmt_make_function(vm, _=None, repr_fn=repr) -> str:
+def fmt_make_function(vm, _=None, repr_fn=repr):
     """
     returns the name of the function from the code object in the stack
     """
@@ -71,7 +71,7 @@ class ByteOp311(ByteOp310):
 
         # FIXME: put this in a separate routine.
         if inspect.isbuiltin(func):
-            log.debug(f"handling built-in function {func.__name__}")
+            log.debug("handling built-in function %s" % func.__name__)
             if func == globals:
                 # Use the frame's globals(), not the interpreter's
                 self.vm.push(frame.f_globals)
@@ -228,7 +228,7 @@ class ByteOp311(ByteOp310):
             inspect.isfunction(func)
             and self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]
         ):
-            log.debug(f"calling native function {func.__name__}")
+            log.debug("calling native function %s" % func.__name__)
         elif inspect.isclass(func):
             if func.__name__ == "super":
                 pos_args = [self.vm.frame] + pos_args
@@ -237,7 +237,7 @@ class ByteOp311(ByteOp310):
         retval = func(*pos_args, **named_args)
         self.vm.push(retval)
 
-    def is_method(self, argc: int) -> bool:
+    def is_method(self, argc):
         """
         Translation of ceval.c is_method() macro:
             #define is_method(stack_pointer, args) (PEEK((args)+2) != NULL)
@@ -281,7 +281,7 @@ class ByteOp311(ByteOp310):
     #     self.vm.push(len(self.vm.pop()))
     #     raise self.vm.PyVMError("MATCH_COPY_DICT_WITHOUT_KEYS not implemented")
 
-    def CALL(self, argc: int):
+    def CALL(self, argc):
         """Calls a callable object with the number of arguments
         specified by argc, including the named arguments specified by
         the preceding KW_NAMES, if any. On the stack are (in ascending
@@ -325,7 +325,7 @@ class ByteOp311(ByteOp310):
         self.vm.frame.call_shape_kwnames = {}
         return ret_val
 
-    def COPY_FREE_VARS(self, argc: int):
+    def COPY_FREE_VARS(self, argc):
         """Copies the n free variables from the closure into the
           frame. Removes the need for special code on the caller’s
           side when calling closures.
@@ -348,7 +348,7 @@ class ByteOp311(ByteOp310):
             frame.f_locals[name] = frame.cells[name].get()
         return
 
-    def KW_NAMES(self, names: Tuple[str]):
+    def KW_NAMES(self, names):
         """
         Prefixes CALL. Stores a reference to co_consts[consti] into an internal frame variable
         call_shape.
@@ -362,7 +362,7 @@ class ByteOp311(ByteOp310):
         return
 
     # Changed in 3.11...
-    def MAKE_CELL(self, name: str):
+    def MAKE_CELL(self, name):
         """
         Creates a new cell in slot i having name "name". If that slot is nonempty then that value is stored into the new cell.
 
@@ -379,7 +379,7 @@ class ByteOp311(ByteOp310):
         return
 
     # Changed in 3.11...
-    def LOAD_GLOBAL(self, name, push_null: bool=False):
+    def LOAD_GLOBAL(self, name, push_null):
         """
         Loads the global named co_names[namei>>1] onto the stack.
 
@@ -400,7 +400,7 @@ class ByteOp311(ByteOp310):
 
         self.vm.push(val)
 
-    def MAKE_FUNCTION(self, argc: int):
+    def MAKE_FUNCTION(self, argc):
         """
         Pushes a new function object on the stack. From bottom to top,
         the consumed stack must consist of values if the argument
@@ -469,7 +469,7 @@ class ByteOp311(ByteOp310):
 
         self.vm.push(fn_vm)
 
-    def PRECALL(self, argc: int):
+    def PRECALL(self, argc):
         """
          `meth` is NULL when LOAD_METHOD thinks that it's not
          a method call.
@@ -510,7 +510,7 @@ class ByteOp311(ByteOp310):
         """
         self.vm.push(NULL)
 
-    def COPY(self, i: int):
+    def COPY(self, i):
         """
         Push the i-th item to the top of the stack. The item is not removed from its
         original location.
@@ -518,7 +518,7 @@ class ByteOp311(ByteOp310):
         stack_i = self.vm.peek(i)
         self.vm.push(stack_i)
 
-    def SWAP(self, i: int):
+    def SWAP(self, i):
         """
         Swap TOS with the item at position i.
         2 swaps TOS with TOS1, 3 swaps TOS with TOS2, etc.
@@ -542,19 +542,19 @@ class ByteOp311(ByteOp310):
         _, tos = self.vm.popn(2)
         self.vm.push(isinstance(tos, tos.__class__))
 
-    def JUMP_BACKWARD(self, offset: int):
+    def JUMP_BACKWARD(self, offset):
         """
         Decrements bytecode counter by delta. Checks for interrupts.
         """
         self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_NO_INTERRUPT(self, offset: int):
+    def POP_JUMP_BACKWARD_NO_INTERRUPT(self, offset):
         """
         Decrements bytecode counter by delta. Does not check for interrupts.
         """
         self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_TRUE(self, offset: int):
+    def POP_JUMP_FORWARD_IF_TRUE(self, offset):
         """
         If TOS is true, increments the bytecode counter by delta. TOS is popped.
         """
@@ -562,7 +562,7 @@ class ByteOp311(ByteOp310):
         if val == True:  # noqa
             self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_TRUE(self, offset: int):
+    def POP_JUMP_BACKWARD_IF_TRUE(self, offset):
         """
         If TOS is true, decrements the bytecode counter by delta. TOS is popped.
         """
@@ -570,7 +570,7 @@ class ByteOp311(ByteOp310):
         if val == True:  # noqa
             self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_FALSE(self, offset: int):
+    def POP_JUMP_FORWARD_IF_FALSE(self, offset):
         """
         If TOS is false, increments the bytecode counter by delta. TOS is popped.
         """
@@ -578,7 +578,7 @@ class ByteOp311(ByteOp310):
         if val == False:  # noqa
             self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_FALSE(self, offset: int):
+    def POP_JUMP_BACKWARD_IF_FALSE(self, offset):
         """
         If TOS is false, decrements the bytecode counter by delta. TOS is popped.
         """
@@ -586,7 +586,7 @@ class ByteOp311(ByteOp310):
         if val == False:  # noqa
             self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_NOT_NONE(self, offset: int):
+    def POP_JUMP_FORWARD_IF_NOT_NONE(self, offset):
         """
         If TOS is not None, increments the bytecode counter by delta. TOS is popped.
         """
@@ -594,7 +594,7 @@ class ByteOp311(ByteOp310):
         if val is not None:
             self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_NOT_NONE(self, offset: int):
+    def POP_JUMP_BACKWARD_IF_NOT_NONE(self, offset):
         """
         If TOS is not None, decrements the bytecode counter by delta. TOS is popped.
         """
@@ -602,7 +602,7 @@ class ByteOp311(ByteOp310):
         if val is not None:
             self.vm.jump(offset)
 
-    def POP_JUMP_FORWARD_IF_NONE(self, offset: int):
+    def POP_JUMP_FORWARD_IF_NONE(self, offset):
         """
         If TOS is not None, increments the bytecode counter by delta. TOS is popped.
         """
@@ -610,7 +610,7 @@ class ByteOp311(ByteOp310):
         if val is None:
             self.vm.jump(offset)
 
-    def POP_JUMP_BACKWARD_IF_NONE(self, offset: int):
+    def POP_JUMP_BACKWARD_IF_NONE(self, offset):
         """
         If TOS is not None, decrements the bytecode counter by delta. TOS is popped.
         """
@@ -628,7 +628,7 @@ class ByteOp311(ByteOp310):
         self.vm.push(val)
 
 
-    def RESUME(self, where: int):
+    def RESUME(self, where):
         """
         A no-op. Performs internal tracing, debugging and optimization checks.
 

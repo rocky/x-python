@@ -13,20 +13,20 @@ class ByteOpPyPy(object):
         self.BUILD_LIST(count)
         self.ROT_TWO()
 
-    def JUMP_IF_NOT_DEBUG(self, jump_offset) -> None:
+    def JUMP_IF_NOT_DEBUG(self, jump_offset):
         """
         For now, same as JUMP_ABSOLUTE.
         """
         self.vm.jump(jump_offset)
 
     # For Python 3.7+ this is not correct
-    def LOOKUP_METHOD(self, name) -> None:
+    def LOOKUP_METHOD(self, name):
         """From
         https://doc.pypy.org/en/latest/interpreter-optimizations.html#lookup-method-call-method
         LOOKUP_METHOD contains exactly the same attribute lookup logic
         as LOAD_ATTR - thus fully preserving semantics - but pushes
         two values onto the stack instead of one. These two values are
-        an “inlined” version of the bound method object: the im_func
+        an "inlined" version of the bound method object: the im_func
         and im_self, i.e. respectively the underlying Python function
         object and a reference to obj. This is only possible when the
         attribute actually refers to a function object from the class;

@@ -35,7 +35,7 @@ Arguments = namedtuple("Arguments", "args varargs keywords")
 # opcodes with arguments start.
 
 
-def getargs(co, version) -> Arguments:
+def getargs(co, version):
     """Get information about the arguments accepted by a code object.
 
     Three things are returned: (args, varargs, varkw), where 'args' is
@@ -99,7 +99,7 @@ def getargs(co, version) -> Arguments:
     return Arguments(args, varargs, varkw)
 
 
-def getargspec(func) -> ArgSpec:
+def getargspec(func):
     """Get the names and default values of a function's arguments.
 
     A tuple of four things is returned: (args, varargs, varkw, defaults).
@@ -141,7 +141,7 @@ def getcallargs(func, *positional, **named):
     # The following closures are basically because of tuple parameter unpacking.
     assigned_tuple_params = []
 
-    def assign(arg: str, value: tuple[()]) -> None:
+    def assign(arg, value):
         if isinstance(arg, str):
             arg2value[arg] = value
         else:
@@ -163,7 +163,7 @@ def getcallargs(func, *positional, **named):
             else:
                 raise ValueError("too many values to unpack")
 
-    def is_assigned(arg: str) -> bool:
+    def is_assigned(arg):
         if isinstance(arg, str):
             return arg in arg2value
         return arg in assigned_tuple_params

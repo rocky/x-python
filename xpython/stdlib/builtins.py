@@ -91,7 +91,7 @@ def execfile(path):
 class OverflowWarning(RuntimeError):
     """A Python 1.x - 2.6 RuntimeError."""
 
-    def __str__(self) -> str:
+    def __str__(self):
         return "OverflowError: Numerical result out of range"
 
 

@@ -21,7 +21,7 @@ class ByteOp31(ByteOp32):
         self.version_info = Version_info(3, 1, 5, "final", 0)
 
     # Added in 2.4 but removed in 3.2, so we need to readd.
-    def DUP_TOPX(self, count: int):
+    def DUP_TOPX(self, count):
         """
         Duplicate count items, keeping them in the same order. Due to
         implementation limits, count should be between 1 and 5 inclusive.

@@ -442,7 +442,7 @@ class ByteOp24(ByteOpBase):
         for x in reversed(seq):
             self.vm.push(x)
 
-    def DUP_TOPX(self, count: int):
+    def DUP_TOPX(self, count):
         """
         Duplicate count items, keeping them in the same order. Due to
         implementation limits, count should be between 1 and 5 inclusive.

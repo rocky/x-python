@@ -57,7 +57,7 @@ PyVMEVENT_ALL = (
 PyVMEVENT_NONE = 0
 
 
-def pretty_event_flags(flags) -> str:
+def pretty_event_flags(flags):
     """Return pretty representation of trace event flags."""
     names = []
     result = "0x%08x" % flags
@@ -78,10 +78,10 @@ class PyVMTraced(PyVM):
     def __init__(
         self,
         callback,
-        python_version: tuple=PYTHON_VERSION_TRIPLE,
-        is_pypy: bool=IS_PYPY,
-        vmtest_testing: bool=False,
-        event_flags: int=PyVMEVENT_ALL,
+        python_version=PYTHON_VERSION_TRIPLE,
+        is_pypy=IS_PYPY,
+        vmtest_testing=False,
+        event_flags=PyVMEVENT_ALL,
         format_instruction_func=format_instruction,
     ):
         PyVM.__init__(
@@ -393,7 +393,7 @@ if __name__ == "__main__":
 
     def sample_callback_hook(
         event, offset, bytecode_name, byte_code, line_number, int_arg, event_arg, vm
-    ) -> None:
+    ):
         print(
             "CALLBACK",
             event,
@@ -406,13 +406,13 @@ if __name__ == "__main__":
         )
 
     # Simplest of tests
-    def five() -> int:
+    def five():
         return 5
 
     # Test with a conditional in it
     a, b = 10, 3
 
-    def mymax() -> int:
+    def mymax():
         return a if a > b else b
 
     logging.basicConfig(level=logging.DEBUG)

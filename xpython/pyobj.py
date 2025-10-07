@@ -1,5 +1,3 @@
-from xpython.stdlib.types34 import ModuleType
-from types import ModuleType
 """Implementations of Python fundamental objects for xpython."""
 from __future__ import print_function
 
@@ -28,7 +26,7 @@ import xpython.stdlib.inspect3 as inspect3
 PY2 = not PYTHON3
 
 
-def copy_module(old_module) -> ModuleType:
+def copy_module(old_module):
     """
     Use to make copy of system modules like "sys" which should be
     distinct.
@@ -38,7 +36,7 @@ def copy_module(old_module) -> ModuleType:
     return new_module
 
 
-def make_cell(value: int):
+def make_cell(value):
     # Thanks to Alex Gaynor for help with this bit of twistiness.
     # Construct an actual cell object by creating a closure right here,
     # and grabbing the cell object out of the function we create.
@@ -121,7 +119,7 @@ class Function:
         annotations={},
         doc=None,
         qualname=None,
-    ) -> None:
+    ):
         self._vm = vm
         self.version = vm.version
         self.__doc__ = doc
@@ -238,7 +236,7 @@ class Function:
             # cross version interpreting... FIXME: fix this up
             self._func = None
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self):
         if hasattr(self, "func_name"):
             return "<Function %s at 0x%08x>" % (self.func_name, id(self))
         elif hasattr (self, "_func"):
@@ -323,7 +321,7 @@ class Function:
 class Method(object):
     """Create a bound instance method object."""
 
-    def __init__(self, obj, _class, func) -> None:
+    def __init__(self, obj, _class, func):
         self.__doc__ = obj.__doc__
         self.im_self = obj
         self.im_class = _class
@@ -339,7 +337,7 @@ class Method(object):
         # This causes failure
         # self.__name__ = obj.__name__
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self):
         name = "%s.%s" % (self.im_class.__name__, self.im_func.func_name)
         if self.im_self is not None:
             return "<Bound Method %s of %s>" % (name, self.im_self)
@@ -373,13 +371,13 @@ class Cell:
 
     """
 
-    def __init__(self, value) -> None:
+    def __init__(self, value):
         self.contents = value
 
     def get(self):
         return self.contents
 
-    def set(self, value) -> None:
+    def set(self, value):
         self.contents = value
 
 
@@ -400,13 +398,13 @@ class Block(object):
 
     """
 
-    def __init__(self, type, handler, level) -> None:
+    def __init__(self, type, handler, level):
         self.type = type
         self.handler = handler
         self.level = level
         return
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         if self.handler is None:
             return "<Block type: %s, stack level: %d" % (self.type, self.level)
         else:
@@ -424,10 +422,10 @@ class Frame(object):
         f_globals,
         f_locals,
         f_back,
-        version: tuple=PYTHON_VERSION_TRIPLE,
+        version=PYTHON_VERSION_TRIPLE,
         closure=None,
         localsplusnames=tuple(),  # 3.11+ only
-    ) -> None:
+    ):
         self.f_back = f_back
         self.f_code = f_code
         self.f_globals = f_globals
@@ -514,7 +512,7 @@ class Frame(object):
         self.call_shape_kwnames = {}
         return
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self):
         return "<Frame at 0x%08x: %r:%d @%d>" % (
             id(self),
             self.f_code.co_filename,
@@ -536,14 +534,14 @@ class Frame(object):
 
 
 class Traceback:
-    def __init__(self, frame) -> None:
+    def __init__(self, frame):
         self.tb_next = frame.f_back
         self.tb_lasti = frame.f_lasti
         self.tb_lineno = frame.f_lineno
         self.tb_frame = frame
 
     # Note: this can be removed when we have our own compatibility traceback.
-    def print_tb(self, limit=None, file=stderr) -> None:
+    def print_tb(self, limit=None, file=stderr):
         """Like traceback.tb, but is a method."""
         tb = self
         while tb:
@@ -574,7 +572,7 @@ def traceback_from_frame(frame):
 
 
 class Generator(object):
-    def __init__(self, g_frame, name, qualname, vm) -> None:
+    def __init__(self, g_frame, name, qualname, vm):
         self.gi_frame = g_frame
         self.vm = vm
         self.name = vm
@@ -615,7 +613,7 @@ if __name__ == "__main__":
     class Foo(object):
         "Class Foo docstring"
 
-        def bar(self) -> None:
+        def bar(self):
             "This is a docstring"
             return
 

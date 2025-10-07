@@ -26,7 +26,7 @@ del ByteOp38.POP_FINALLY
 
 
 class ByteOp39(ByteOp38):
-    def __init__(self, vm) -> None:
+    def __init__(self, vm):
         super(ByteOp38, self).__init__(vm)
         self.hexversion = 0x30907F0
         self.version = "3.9.7 (default, Oct 27 1955, 00:00:00)\n[x-python]"
@@ -48,7 +48,7 @@ class ByteOp39(ByteOp38):
     #   already been performed in parse_byte_and_args().
     ##############################################################################
 
-    def RERAISE(self, oparg: int) -> str:
+    def RERAISE(self, oparg):
         """Re-raises the exception currently on top of the stack.  If
         oparg is non-zero, pops an additional value from the stack
         which is used to set f_lasti of the current frame.
@@ -61,25 +61,25 @@ class ByteOp39(ByteOp38):
             self.vm.frame.block_stack.pop()
         return "exception"
 
-    def WITH_EXCEPT_START(self) -> None:
+    def WITH_EXCEPT_START(self):
         # FIXME
         raise RuntimeError("WITH_EXCEPT_START not implemented yet")
         pass
 
 
-    def LOAD_ASSERTION_ERROR(self) -> None:
+    def LOAD_ASSERTION_ERROR(self):
         """
         Pushes AssertionError onto the stack. Used by the `assert` statement.
         """
         self.vm.push(AssertionError)
 
-    def LIST_TO_TUPLE(self) -> None:
+    def LIST_TO_TUPLE(self):
         """
         Pops a list from the stack and pushes a tuple containing the same values.
         """
         self.vm.push(tuple(self.vm.pop()))
 
-    def IS_OP(self, invert: int) -> None:
+    def IS_OP(self, invert):
         """Performs is comparison, or is not if invert is 1."""
         TOS1, TOS = self.vm.popn(2)
         if invert:
@@ -99,7 +99,7 @@ class ByteOp39(ByteOp38):
             self.vm.jump(target)
         return
 
-    def CONTAINS_OP(self, invert: int) -> None:
+    def CONTAINS_OP(self, invert):
         """Performs in comparison, or not in if invert is 1."""
         TOS1, TOS = self.vm.popn(2)
         if invert:
@@ -108,21 +108,21 @@ class ByteOp39(ByteOp38):
             self.vm.push(TOS1 in TOS)
         return
 
-    def LIST_EXTEND(self, i) -> None:
+    def LIST_EXTEND(self, i):
         """Calls list.extend(TOS1[-i], TOS). Used to build lists."""
         TOS = self.vm.pop()
         destination = self.vm.peek(i)
         assert isinstance(destination, list)
         destination.extend(TOS)
 
-    def SET_UPDATE(self, i) -> None:
+    def SET_UPDATE(self, i):
         """Calls set.update(TOS1[-i], TOS). Used to build sets."""
         TOS = self.vm.pop()
         destination = self.vm.peek(i)
         assert isinstance(destination, set)
         destination.update(TOS)
 
-    def DICT_MERGE(self, i) -> None:
+    def DICT_MERGE(self, i):
         """Like DICT_UPDATE but raises an exception for duplicate keys."""
         TOS = self.vm.pop()
         assert isinstance(TOS, dict)
@@ -133,7 +133,7 @@ class ByteOp39(ByteOp38):
             raise RuntimeError("Duplicate keys '%s' in DICT_MERGE" % dups)
         destination.update(TOS)
 
-    def DICT_UPDATE(self, i) -> None:
+    def DICT_UPDATE(self, i):
         """Calls dict.update(TOS1[-i], TOS). Used to build dicts."""
         TOS = self.vm.pop()
         assert isinstance(TOS, dict)

@@ -11,7 +11,7 @@ from xpython.version import __version__
 from xpython.vm import PyVMRuntimeError
 
 
-def version_message() -> str:
+def version_message():
     platform = "PyPy " if IS_PYPY else "C"
     mess = "%s running from %sPython %s" % (
         __version__,
@@ -41,7 +41,7 @@ def version_message() -> str:
 )
 @click.argument("path", nargs=1, type=click.Path(readable=True), required=False)
 @click.argument("args", nargs=-1)
-def main(module, verbose, command_to_run, path, args) -> None:
+def main(module, verbose, command_to_run, path, args):
     """
     Runs Python programs or bytecode using a bytecode interpreter written in Python.
     """
