@@ -9,12 +9,9 @@ import sys
 from types import TracebackType
 from typing import Any, List
 
-import six
-from six.moves import reprlib
 from xdis import (
     CO_NEWLOCALS,
     IS_PYPY,
-    PYTHON3,
     PYTHON_VERSION_TRIPLE,
     code2num,
     next_offset,
@@ -28,28 +25,16 @@ from xdis.opcodes.opcode_311 import _nb_ops
 from xpython.byteop import get_byteop
 from xpython.pyobj import Block, Frame, Traceback, traceback_from_frame
 
-PY2 = not PYTHON3
 log = logging.getLogger(__name__)
 
 XPYTHON_STACKCHECK = os.environ.get("XPYTHON_STACKCHECK", False)
 
-if PYTHON3:
-
-    def byteint(b):
-        return b
-
-else:
-    byteint = ord
+def byteint(b):
+    return b
 
 LINE_NUMBER_WIDTH = 4
 LINE_NUMBER_WIDTH_FMT = "L. %%-%dd@" % LINE_NUMBER_WIDTH
 LINE_NUMBER_SPACES = " " * (LINE_NUMBER_WIDTH + len("L. ")) + "@"
-
-# Create a repr that won't overflow.
-repr_obj = reprlib.Repr()
-repr_obj.maxother = 120
-repper = repr_obj.repr
-
 
 class PyVMError(Exception):
     """For raising errors in the operation of the VM."""
@@ -345,7 +330,7 @@ class PyVM(object):
         log.debug(
             "make_frame: code=%r, callargs=%s, f_globals=%r, f_locals=%r",
             code,
-            repper(callargs),
+            repr(callargs),
             (type(f_globals), id(f_globals)),
             (type(f_locals), id(f_locals)),
         )
@@ -645,8 +630,8 @@ class PyVM(object):
             vm=self,
         )
         indent = "    " * (len(self.frames) - 1)
-        stack_rep = repper(self.frame.stack)
-        block_stack_rep = repper(self.frame.block_stack)
+        stack_rep = repr(self.frame.stack)
+        block_stack_rep = repr(self.frame.block_stack)
 
         log.debug(f"  {indent}frame.stack: {stack_rep}")
         log.debug(f"  {indent}blocks     : {block_stack_rep}")
@@ -917,9 +902,9 @@ class PyVM(object):
                         if isinstance(last_exception, tuple):
                             raise PyVMUncaughtException.from_tuple(last_exception)
                         else:
-                            raise self.last_exception
+                            raise
                 else:
-                    six.reraise(*self.last_exception)
+                    raise
             else:
                 raise PyVMError("Borked exception recording")
             # if self.exception and .... ?

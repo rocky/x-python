@@ -9,7 +9,6 @@ import sys
 from types import GeneratorType
 
 from xdis.util import CO_COROUTINE, CO_GENERATOR, CO_ITERABLE_COROUTINE
-from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 from xpython.stdlib.inspect3 import isfunction, isgeneratorfunction, xCallable
 
@@ -29,17 +28,14 @@ CodeType = type(_f.__code__)
 MappingProxyType = type(type.__dict__)
 SimpleNamespace = type(sys.implementation)
 
-if PYTHON_VERSION_TRIPLE >= (3, 5):
-    exec(
-        """
+exec(
+    """
 async def _c(): pass
 _c = _c()
 CoroutineType = type(_c)
 _c.close()  # Prevent ResourceWarning
 """
-    )
-else:
-    CoroutineType = None
+)
 
 
 class _C:

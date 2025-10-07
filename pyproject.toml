@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=61.2",
+    "setuptools",
 ]
 
 build-backend = "setuptools.build_meta"
@@ -10,19 +10,16 @@ authors = [
     {name = "Rocky Bernstein",	email = "rb@dustyfeet.com"},
     {name = "Ned Batchelder"},
     {name = "Paul Swartz"},
-    {name = "Allison Kaptur"},
-    {name = "Ned Batchelder"},
 ]
 
 name = "x-python"
 description = "Python cross-version byte-code interpeter"
 dependencies = [
     "click",
-    "six",
-    "xdis >= 6.0.3,<6.2.0",
+    "xdis >= 6.0.3,<6.3",
 ]
 readme = "README.rst"
-license = {text = "GPL"}
+license = "GPL-3.0-or-later"
 keywords = ["Python bytecode", "bytecode", "disassembler"]
 classifiers = [
     "Intended Audience :: Developers",
@@ -30,6 +27,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3.1",
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
@@ -41,6 +39,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
@@ -64,3 +63,6 @@ disable = ["W0511", "C103"]
 
 [tool.setuptools.dynamic]
 version = {attr = "xpython.version.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["xpython"]  # Include all subpackages
