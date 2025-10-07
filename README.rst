@@ -50,6 +50,50 @@ classes you may want to not run under a slow interpreter while others
 you do want to run under the interpreter.
 
 
+Installation
+------------
+
+*For recent Python releases (Python 3.11+)*, you can install from PyPI using the name ``x-python``::
+
+    pip install x-python
+
+*For Python releases before 3.11*, do not install using PyPI, but instead install using a file in the [GitHub Releases section](https://github.com/rocky/python-x-python/releases). Older Python used to use `easy_install <https://python101.pythonlibrary.org/chapter29_pip.html#using-easy-install>`_. But this is no longer supported in PyPi or newer Python versions. And vice versa, *poetry* nor *pip*, (the newer ways) are not supported on older Pythons.
+
+If the Python version you are running x-python is between Python 2.4 through 2.7, use a tarball called x-python_24-*x.y.z*.tar.gz.
+
+If the Python version you are running x-python is between Python 3.0 through 3.2, use a tarball called x-python_30-*x.y.z*.tar.gz.
+
+If the Python version you are running x-python is between Python 3.3 through 3.5, use a tarball called x-python_33-*x.y.z*.tar.gz.
+
+If the Python version you are running x-python is between Python 3.6 through 3.11, use a tarball called x-python_36-*x.y.z*.tar.gz.
+
+If the Python version you are running x-python is 3.11 or later, use a called x-python-*x.y.z*.tar.gz.
+
+You can also try eggs or wheels that have the same version designation, e.g., x-python-*x.y.z*-py39-none-any.whl for a Python 3.9 installation. *However, note that *the version without the designation means Python 3.11 or greater*.
+
+You can also try eggs or wheels that have the same version designation, e.g., x-python-*x.y.z*-py39-none-any.whl for a Python 3.9 installation. *However, note that *the version without the designation means Python 3.11 or greater*.
+
+Similarly a tarball with without `_`*xx* works only from Python 3.11 or greater.
+
+Rationale for using Git Branches
+++++++++++++++++++++++++++++++++
+
+It is currently impossible (if not impractical) to have one Python source code of this complexity and with this many features that can run both Python 2.7 and Python 3.13+. The languages have drifted so much, and Packing is vastly different. In fact, the packaging practice for Python 3.11+ is incompatible with Python 2.7 (and before back to Python 2.4), which favored "easy_install".
+
+
+Installation from source text
+++++++++++++++++++++++++++++++
+
+To install from source code, make sure you have the right Git
+branch. See the Requirements section for the Git branch names.
+
+After setting the right branch::
+
+   $ pip install -e .  # or pip install -e .[dev] to include testing package
+
+A GNU makefile is also provided so ``make install`` (possibly as root or sudo) will do the steps above.
+
+
 Examples:
 +++++++++
 
@@ -71,7 +115,7 @@ Try this:
    INFO:xpython.vm:       @ 18: RETURN_VALUE (None)
 
 Option ``-c`` is the same as Python's flag (program passed in as string)
-and ``-v`` is also analogus Python's flag. Here, it shows the bytecode
+and ``-v`` is also analogous Python's flag. Here, it shows the bytecode
 instructions run.
 
 Note that the disassembly above in the dynamic trace above gives a
@@ -143,7 +187,7 @@ this, but you are running Python 3.7?
 
 Not much has changed here, other then the fact that that in after 3.6 instructions are two bytes instead of 1- or 3-byte instructions.
 
-The above examples show straight-line code, so you see all of the instructions. But don't confuse this with a disassembler like `pydisasm` from `xdis`.
+The above examples show straight-line code, so you see all of the instructions. But don't confuse this with a disassembler like ``pydisasm`` from ``xdis``.
 The below example, with conditional branching example makes this more clear:
 ::
 
@@ -199,7 +243,7 @@ cases as well.  While we haven't addressed the ``import`` issue
 mentioned in issue 26, we have addressed similar kinds of issues like
 this.
 
-Some built-in functions and the ``inpsect`` module require built-in
+Some built-in functions and the ``inspect`` module require built-in
 types like cell, traceback, or frame objects, and they can't use the
 corresponding interpreter classes. Here is an example of this in
 *Byterun*: class ``__init__`` functions don't get traced into, because
@@ -211,9 +255,9 @@ https://github.com/nedbat/byterun/pull/20.
 Also *Byterun* is loose in accepting bytecode opcodes that is invalid
 for particular Python but may be valid for another. I suppose this is
 okay since you don't expect invalid opcodes appearing in valid
-bytecode. It can however accidentally or erronously appear code that
+bytecode. It can however accidentally or erroneously appear code that
 has been obtained via some sort of extraction process, when the
-extraction process isn't accruate.
+extraction process isn't accurate.
 
 In contrast to *Byterun*, *x-python* is more stringent what opcodes it
 accepts.

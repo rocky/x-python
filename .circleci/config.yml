@@ -1,4 +1,5 @@
 version: 2
+filters:
   branches:
     only: python-3.6-to-3.10
 jobs:
