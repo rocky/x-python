@@ -2,4 +2,4 @@
 
 from distutils.core import setup
 
-setup(packages=["xpython"])
+setup()

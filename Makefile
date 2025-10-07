@@ -34,7 +34,6 @@ check-compat:
 
 #: Clean up temporary files and .pyc files
 clean: clean_pyc
-	$(PYTHON) ./setup.py $@
 	find . -name __pycache__ -exec rm -fr {} \; || true
 
 #: Create source (tarball) and wheel distribution
