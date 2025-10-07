@@ -13,14 +13,14 @@ class ByteOpPyPy(object):
         self.BUILD_LIST(count)
         self.ROT_TWO()
 
-    def JUMP_IF_NOT_DEBUG(self, jump_offset):
+    def JUMP_IF_NOT_DEBUG(self, jump_offset) -> None:
         """
         For now, same as JUMP_ABSOLUTE.
         """
         self.vm.jump(jump_offset)
 
     # For Python 3.7+ this is not correct
-    def LOOKUP_METHOD(self, name):
+    def LOOKUP_METHOD(self, name) -> None:
         """From
         https://doc.pypy.org/en/latest/interpreter-optimizations.html#lookup-method-call-method
         LOOKUP_METHOD contains exactly the same attribute lookup logic

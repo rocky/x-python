@@ -297,18 +297,10 @@ def coroutine(func):
         ):
             # 'coro' is a native coroutine object or an iterable coroutine
             return coro
-
-        if PYTHON_VERSION_TRIPLE >= (3, 0):
-            if isinstance(coro, _collections_abc.Generator) and not isinstance(
-                coro, _collections_abc.Coroutine
-            ):
-                # 'coro' is either a pure Python generator iterator, or it
-                # implements collections.abc.Generator (and does not implement
-                # collections.abc.Coroutine).
-                return _GeneratorWrapper(coro)
-            # 'coro' is either an instance of collections.abc.Coroutine or
-            # some other object -- pass it through.
-            return coro
+        # 'coro' is either an instance of collections.abc.Coroutine or
+        # some other object -- pass it through.
+        return coro
+>>>>>>> python-3.1-to-3.2
 
     return wrapped
 

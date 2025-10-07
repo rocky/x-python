@@ -31,14 +31,14 @@ PYTHON_VERSION_TRIPLE = tuple(sys.version_info[:3])
 IS_PYPY = "__pypy__" in sys.builtin_module_names
 
 supported_versions = SUPPORTED_PYPY if IS_PYPY else SUPPORTED_PYTHON  # noqa
-mess = "PYPY 2.7, 3.2, 3.5-3.7" if IS_PYPY else "CPython 2.7, 3.2 .. 3.11"
+mess = "PYPY 2.7, 3.2, 3.5-3.7" if IS_PYPY else "CPython 2.7, 3.2 .. 3.13"
 
 if PYTHON_VERSION_TRIPLE[:2] not in supported_versions:
     python = "PyPy " if IS_PYPY else "C"
     print("We only support %s; you have %sPython %s" % (mess, python, sys.version_info))
     raise Exception(mess)
 
-install_requires = (["six", "xdis >= 6.1.1, < 6.3.0", "click"],)
+install_requires = (["six", "xdis >= 6.1.5, < 6.3.0", "click"],)
 
 py_modules = None
 short_desc = "Python cross-version byte-code interpeter"
@@ -58,6 +58,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 

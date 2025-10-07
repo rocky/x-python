@@ -8,9 +8,10 @@
 """
 
 import inspect
+import logging
 from typing import Tuple
 
-from xdis.version_info import PYTHON_VERSION_TRIPLE
+from xdis.version_info import PYTHON_VERSION_TRIPLE, version_tuple_to_str
 
 from xpython.byteop.byteop24 import Version_info
 from xpython.byteop.byteop36 import (
@@ -18,12 +19,14 @@ from xpython.byteop.byteop36 import (
     MAKE_FUNCTION_SLOT_NAMES,
     MAKE_FUNCTION_SLOTS,
 )
+from xpython.builtins import build_class, builtin_super
 from xpython.byteop.byteop37 import NULL
 from xpython.byteop.byteop310 import ByteOp310
 from xpython.pyobj import Function
 
+log = logging.getLogger(__name__)
 
-def fmt_load_global(vm, arg, repr_fn=repr) -> str:
+def fmt_load_global(vm, arg, _=repr) -> str:
     """
     returns the name of the function from the code object in the stack
     """
@@ -52,6 +55,187 @@ class ByteOp311(ByteOp310):
         self.hexversion = 0x30A00F0
         self.version = "3.11.0 (default, Oct 27 1955, 00:00:00)\n[x-python]"
         self.version_info = Version_info(3, 11, 0, "final", 0)
+
+    def call311_function_with_args_resolved(self, func, pos_args, named_args):
+        frame = self.vm.frame
+
+        assert not self.vm.is_empty_stack
+        if self.vm.top is NULL:
+            self.vm.pop()  # Remove NULL
+        else:
+            # Pickup self.
+            self_obj = self.vm.pop()
+            retval = self_obj(func, *pos_args, **named_args)
+            self.vm.push(retval)
+            return
+
+        # FIXME: put this in a separate routine.
+        if inspect.isbuiltin(func):
+            log.debug(f"handling built-in function {func.__name__}")
+            if func == globals:
+                # Use the frame's globals(), not the interpreter's
+                self.vm.push(frame.f_globals)
+                return
+            elif func == locals:
+                # Use the frame's locals(), not the interpreter's
+                self.vm.push(frame.f_locals)
+                return
+
+            if func == compile:
+                # Set dont_inherit parameter.  FIXME: we should set
+                # other flags too based on the interpreted
+                # environment?
+                if len(pos_args) < 5 and "dont_inherit" not in named_args:
+                    named_args["dont_inherit"] = True
+                    pass
+            elif func.__name__ == "exec":
+                if not 1 <= len(pos_args) <= 3:
+                    raise self.vm.PyVMError(
+                        "exec() builtin should have 1..3 positional arguments; got %d"
+                        % (len(pos_args))
+                    )
+                n = len(pos_args)
+                assert 1 <= n <= 3
+
+                # Note that in contrast to `eval()` handled below, if
+                # the `locals` parameter is not provided, the
+                # `globals` parameter value (whether provided or
+                # default value) is used for the `locals`
+                # parameter. So we shouldn't use the frame's `locals`.
+                if len(pos_args) == 1:
+                    pos_args.append(self.vm.frame.f_globals)
+
+                if self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]:
+                    # Use the compile() and interprete the bytecode using our own
+                    # interpreter not CPython's.
+                    source = pos_args[0]
+                    if isinstance(source, str) or isinstance(source, bytes):
+                        try:
+                            pos_args[0] = compile(
+                                source, "<string>", mode="exec", dont_inherit=True
+                            )
+                        except (TypeError, SyntaxError, ValueError):
+                            raise
+                    self.vm.push(self.vm.run_code(*pos_args, toplevel=False))
+                    return
+                else:
+                    if not self.cross_bytecode_exec_warning_shown:
+                        log.warning(
+                            "Running built-in `exec()`, because bytecode compile() is not available "
+                            "and we are cross-version. "
+                            "Interpreting version %s from version %s."
+                            % (
+                                version_tuple_to_str(self.version_info, end=2),
+                                version_tuple_to_str(PYTHON_VERSION_TRIPLE, end=2),
+                            )
+                        )
+                        self.cross_bytecode_exec_warning_shown = True
+
+            elif func == eval:
+                if not 1 <= len(pos_args) <= 3:
+                    raise self.vm.PyVMError(
+                        "eval() builtin should have 1..3 positional arguments; got %d"
+                        % (len(pos_args))
+                    )
+                assert 1 <= len(pos_args) <= 3
+                # Use the frame's globals(), not the interpreter's
+                n = len(pos_args)
+                if n < 2:
+                    pos_args.append(self.vm.frame.f_globals)
+                # Likewise for locals()
+                if n < 3:
+                    pos_args.append(self.vm.frame.f_locals)
+                assert len(pos_args) == 3
+
+                if self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]:
+                    # Use the compile() and interprete the bytecode using our own
+                    # interpreter not CPython's.
+                    source = pos_args[0]
+                    if isinstance(source, str):
+                        try:
+                            pos_args[0] = compile(
+                                source, "<string>", mode="eval", dont_inherit=True
+                            )
+                        except (TypeError, SyntaxError, ValueError):
+                            raise
+                    self.vm.push(self.vm.run_code(*pos_args, toplevel=False))
+                    return
+                else:
+                    if not self.cross_bytecode_eval_warning_shown:
+                        log.warning(
+                            "Running built-in `eval()`, because bytecode compile() is not available "
+                            "and we are cross-version. "
+                            "Interpreting version %s from version %s."
+                            % (
+                                version_tuple_to_str(self.version_info, end=2),
+                                version_tuple_to_str(PYTHON_VERSION_TRIPLE, end=2),
+                            )
+                        )
+                        self.cross_bytecode_eval_warning_shown = True
+
+            elif PYTHON_VERSION_TRIPLE >= (3, 0) and func == __build_class__:
+                assert len(pos_args) > 0, (
+                    "__build_class__() should have at least one argument, an "
+                    "__init__() function."
+                )
+                init_fn = pos_args[0]
+                if (
+                    isinstance(init_fn, Function)
+                    or self.is_pypy
+                    or self.version_info[:2] != PYTHON_VERSION_TRIPLE[:2]
+                ) and PYTHON_VERSION_TRIPLE >= (3, 3):
+                    # 3.3+ __build_class__() works only on bytecode
+                    # that matches the CPython interpreter, so use
+                    # Darius' version instead.  Down the line we will
+                    # try to do this universally, but it is tricky:
+                    retval = build_class(self.vm.opc, *pos_args, **named_args)
+                    self.vm.push(retval)
+                    return
+                else:
+                    # Use builtin __build_class__(). However for that,
+                    # we need a native function.  This is wrong though
+                    # in that we won't trace into __init__().
+                    init_fn = pos_args[0]
+                    if isinstance(init_fn, Function) and init_fn in self.vm.fn2native:
+                        pos_args[0] = self.vm.fn2native[init_fn]
+        elif func is type and len(pos_args) == 3:
+            # Set __module__
+            assert not named_args
+            namespace = pos_args[2]
+            namespace["__module__"] = namespace.get(
+                "__name__", self.vm.frame.f_globals["__name__"]
+            )
+
+        if (
+            inspect.isfunction(func)
+            and self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]
+        ):
+            # Try to convert to an interpreter function, so we can interpret it.
+            if func in self.vm.fn2native:
+                func = self.vm.fn2native[func]
+            elif False:  # self.vm.version < (3, 0):
+                # Not quite ready. See 3.7 test_asyncgen.py for an
+                # example of code that comes here. In that test, the
+                # LOAD_GLOBAL '_ignore_deprecated_imports' fails to
+                # find the global. '_ignore_deprecated_imports' is a method name
+                # in test.support module of test/support/__init__.py.
+                # In Python 2.X we work around a similar problem by
+                # not tying to handle functions with closures.
+                assert len(pos_args) > 0
+                pos_args[0] = self.convert_native_to_Function(frame, pos_args[0])
+
+        if (
+            inspect.isfunction(func)
+            and self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]
+        ):
+            log.debug(f"calling native function {func.__name__}")
+        elif inspect.isclass(func):
+            if func.__name__ == "super":
+                pos_args = [self.vm.frame] + pos_args
+                func = builtin_super
+
+        retval = func(*pos_args, **named_args)
+        self.vm.push(retval)
 
     def is_method(self, argc: int) -> bool:
         """
@@ -135,16 +319,34 @@ class ByteOp311(ByteOp310):
         # C interpreter checks for inlining here.
         # We will skip this.
 
-        if not self.vm.is_empty_stack:
-            if self.vm.top is NULL:
-                self.vm.pop()  # Remove NULL
-            # else ???
-
-        ret_val = self.call_function_with_args_resolved(function, pos_args, named_args)
+        ret_val = self.call311_function_with_args_resolved(function, pos_args, named_args)
 
         # Clear names set by KW_NAMES
         self.vm.frame.call_shape_kwnames = {}
         return ret_val
+
+    def COPY_FREE_VARS(self, argc: int):
+        """Copies the n free variables from the closure into the
+          frame. Removes the need for special code on the caller’s
+          side when calling closures.
+        """
+        # Copy closure variables to free variables
+        # PyCodeObject *co = frame->f_code;
+        # PyObject *closure = frame->f_func->func_closure;
+        # int offset = co->co_nlocals + co->co_nplaincellvars;
+        # assert(oparg == co->co_nfreevars);
+        # for (int i = 0; i < oparg; ++i) {
+        #     PyObject *o = PyTuple_GET_ITEM(closure, i);
+        #     Py_INCREF(o);
+        #     frame->localsplus[offset + i] = o;
+        # }
+        frame = self.vm.frame
+        co = frame.f_code
+        localsplus = co.co_freevars + co.co_cellvars
+        for i in range(argc):
+            name = localsplus[i]
+            frame.f_locals[name] = frame.cells[name].get()
+        return
 
     def KW_NAMES(self, names: Tuple[str]):
         """
@@ -157,6 +359,23 @@ class ByteOp311(ByteOp310):
 
         for name in names:
             self.vm.frame.call_shape_kwnames[name] = self.vm.pop()
+        return
+
+    # Changed in 3.11...
+    def MAKE_CELL(self, name: str):
+        """
+        Creates a new cell in slot i having name "name". If that slot is nonempty then that value is stored into the new cell.
+
+
+        In this interpreter, we create all cells when the frame is created. So there's nothing to do
+        """
+        # PyObject *initial = GETLOCAL(oparg);
+        # PyObject *cell = PyCell_New(initial);
+        # if (cell == NULL) {
+        #     goto resume_with_error;
+        # }
+        # SETLOCAL(oparg, cell);
+        self.vm.frame.cells[name].set(self.vm.frame.f_locals.get(name, None))
         return
 
     # Changed in 3.11...
@@ -320,7 +539,7 @@ class ByteOp311(ByteOp310):
 
         For "exception matching" use isinstance(TOS1 TOS.__class__) so superclasses
         """
-        tos1, tos = self.vm.popn(2)
+        _, tos = self.vm.popn(2)
         self.vm.push(isinstance(tos, tos.__class__))
 
     def JUMP_BACKWARD(self, offset: int):

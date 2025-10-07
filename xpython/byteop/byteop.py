@@ -171,7 +171,8 @@ class ByteOpBase(object):
                 # Use the frame's locals(), not the interpreter's
                 self.vm.push(frame.f_locals)
                 return
-            elif func == compile:
+
+            if func == compile:
                 # Set dont_inherit parameter.  FIXME: we should set
                 # other flags too based on the interpreted
                 # environment?
@@ -298,7 +299,7 @@ class ByteOpBase(object):
                     init_fn = pos_args[0]
                     if isinstance(init_fn, Function) and init_fn in self.vm.fn2native:
                         pos_args[0] = self.vm.fn2native[init_fn]
-        elif func == type and len(pos_args) == 3:
+        elif func is type and len(pos_args) == 3:
             # Set __module__
             assert not named_args
             namespace = pos_args[2]
@@ -313,16 +314,6 @@ class ByteOpBase(object):
             # Try to convert to an interpreter function, so we can interpret it.
             if func in self.vm.fn2native:
                 func = self.vm.fn2native[func]
-            elif False:  # self.vm.version < (3, 0):
-                # Not quite ready. See 3.7 test_asyncgen.py for an
-                # example of code that comes here. In that test, the
-                # LOAD_GLOBAL '_ignore_deprecated_imports' fails to
-                # find the global. '_ignore_deprecated_imports' is a method name
-                # in test.support module of test/support/__init__.py.
-                # In Python 2.X we work around a similar problem by
-                # not tying to handle functions with closures.
-                assert len(pos_args) > 0
-                pos_args[0] = self.convert_native_to_Function(frame, pos_args[0])
 
         if (
             inspect.isfunction(func)
@@ -334,17 +325,7 @@ class ByteOpBase(object):
             if func.__name__ == "super":
                 func = builtin_super
 
-        # FIXME something weird is happing here in 3.11+
-        if (
-            self.version_info > (3, 11)
-            and hasattr(func, "__iter__")
-            and hasattr(func, "__next__")
-            and not pos_args
-            and not named_args
-        ):
-            return
-        else:
-            retval = func(*pos_args, **named_args)
+        retval = func(*pos_args, **named_args)
         self.vm.push(retval)
 
     def call_function(self, argc, var_args, keyword_args):

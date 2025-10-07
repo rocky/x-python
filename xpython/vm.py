@@ -378,6 +378,17 @@ class PyVM(object):
             f_locals = {"__locals__": {}}
 
         f_locals.update(callargs)
+
+        # create a localsplusnames table that resolves duplicates.
+        varnames = code.co_varnames
+        cells = code.co_cellvars
+        freevars = code.co_freevars
+        localsplusnames = (varnames or tuple()) + tuple(
+            name for name in (freevars or tuple()) if name not in varnames
+            ) + tuple(
+            name for name in (cells or tuple()) if name not in varnames
+            )
+
         frame = Frame(
             f_code=code,
             f_globals=f_globals,
@@ -385,6 +396,7 @@ class PyVM(object):
             f_back=self.frame,
             version=self.version,
             closure=closure,
+            localsplusnames=localsplusnames,
         )
 
         # THINK ABOUT: should this go into making the frame?
@@ -573,11 +585,14 @@ class PyVM(object):
                     if isinstance(arg, UnicodeForPython3):
                         arg = str(arg)
                 elif byte_code in self.opc.FREE_OPS:
-                    if int_arg < len(f_code.co_cellvars):
-                        arg = f_code.co_cellvars[int_arg]
+                    if self.version >= (3, 11):
+                        arg = f.localsplusnames[int_arg]
                     else:
-                        var_idx = int_arg - len(f.f_code.co_cellvars)
-                        arg = f_code.co_freevars[var_idx]
+                        if int_arg < len(f_code.co_cellvars):
+                            arg = f_code.co_cellvars[int_arg]
+                        else:
+                            var_idx = int_arg - len(f.f_code.co_cellvars)
+                            arg = f_code.co_freevars[var_idx]
                 elif byte_code in self.opc.NAME_OPS:
                     if self.version >= (3, 11) and (
                         bytecode_name == "LOAD_GLOBAL"
@@ -603,6 +618,11 @@ class PyVM(object):
                             int_arg = -int_arg
                         int_arg += int_arg
                     arg = arg_offset + int_arg
+                    if bytecode_name == "FOR_ITER" and self.version >= (3, 12):
+                        # 3.12 jumps one more instruction for reasons I can't find
+                        # well documented.
+                        arg += 2
+
                 elif byte_code in self.opc.JABS_OPS:
                     # We probably could set fallthough, since many (all?)
                     # of these are unconditional, but we'll make the jump do

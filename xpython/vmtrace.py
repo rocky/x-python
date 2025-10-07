@@ -8,7 +8,6 @@ from types import TracebackType
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, codeType2Portable
 
 # We will add a new "DEBUG" opcode
-from xdis.bytecode import parse_exception_table
 from xdis.opcodes.base import def_op
 
 from xpython.pyobj import Frame, Traceback, traceback_from_frame
@@ -58,7 +57,7 @@ PyVMEVENT_ALL = (
 PyVMEVENT_NONE = 0
 
 
-def pretty_event_flags(flags):
+def pretty_event_flags(flags) -> str:
     """Return pretty representation of trace event flags."""
     names = []
     result = "0x%08x" % flags
@@ -79,10 +78,10 @@ class PyVMTraced(PyVM):
     def __init__(
         self,
         callback,
-        python_version=PYTHON_VERSION_TRIPLE,
-        is_pypy=IS_PYPY,
-        vmtest_testing=False,
-        event_flags=PyVMEVENT_ALL,
+        python_version: tuple=PYTHON_VERSION_TRIPLE,
+        is_pypy: bool=IS_PYPY,
+        vmtest_testing: bool=False,
+        event_flags: int=PyVMEVENT_ALL,
         format_instruction_func=format_instruction,
     ):
         PyVM.__init__(
@@ -394,7 +393,7 @@ if __name__ == "__main__":
 
     def sample_callback_hook(
         event, offset, bytecode_name, byte_code, line_number, int_arg, event_arg, vm
-    ):
+    ) -> None:
         print(
             "CALLBACK",
             event,
@@ -407,13 +406,13 @@ if __name__ == "__main__":
         )
 
     # Simplest of tests
-    def five():
+    def five() -> int:
         return 5
 
     # Test with a conditional in it
     a, b = 10, 3
 
-    def mymax():
+    def mymax() -> int:
         return a if a > b else b
 
     logging.basicConfig(level=logging.DEBUG)

@@ -6,12 +6,12 @@ if [[ $# == 0 ]]; then
 fi
 mydir=$(dirname ${BASH_SOURCE[0]})
 
-(cd ../../python-xdis && . ./admin-tools/setup-master.sh)
-
 if [[ -z "$PYVERSIONS" ]]; then
     print 2>&1 "Need to have PYVERSIONS set first"
     exit 2
 fi
+
+(cd ../../python-xdis && . ./admin-tools/setup-python-3.6.sh)
 
 for version in $PYVERSIONS; do
     # Note: below we use
