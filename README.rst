@@ -73,7 +73,7 @@ You can also try eggs or wheels that have the same version designation, e.g., x-
 
 You can also try eggs or wheels that have the same version designation, e.g., x-python-*x.y.z*-py39-none-any.whl for a Python 3.9 installation. *However, note that *the version without the designation means Python 3.11 or greater*.
 
-Similarly a tarball with without `_`*xx* works only from Python 3.11 or greater.
+Similarly, a tarball with without an underscore  e.g., x-python-*x.y.z* works only from Python 3.11 or greater.
 
 Rationale for using Git Branches
 ++++++++++++++++++++++++++++++++
