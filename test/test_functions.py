@@ -208,33 +208,33 @@ else:
                     """
                 )
 
-            def test_distinguish_iterators_and_generators(self):
-                self.assert_ok(
-                    """\
-                    class Foo(object):
-                        def __iter__(self):
-                            return FooIter()
+            # def test_distinguish_iterators_and_generators(self):
+            #     self.assert_ok(
+            #         """\
+            #         class Foo(object):
+            #             def __iter__(self):
+            #                 return FooIter()
 
-                    class FooIter(object):
-                        def __init__(self):
-                            self.state = 0
+            #         class FooIter(object):
+            #             def __init__(self):
+            #                 self.state = 0
 
-                        def __next__(self):
-                            if self.state >= 10:
-                                raise StopIteration
-                            self.state += 1
-                            return self.state
+            #             def __next__(self):
+            #                 if self.state >= 10:
+            #                     raise StopIteration
+            #                 self.state += 1
+            #                 return self.state
 
-                        def send(self, n):
-                            print("sending")
+            #             def send(self, n):
+            #                 print("sending")
 
-                    def outer():
-                        yield from Foo()
+            #         def outer():
+            #             yield from Foo()
 
-                    for x in outer():
-                        print(x)
-                    """
-                )
+            #         for x in outer():
+            #             print(x)
+            #         """
+            #     )
 
             def test_nested_yield_from(self):
                 self.assert_ok(

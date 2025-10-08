@@ -27,6 +27,14 @@ CodeType = type(_f.__code__)
 MappingProxyType = type(type.__dict__)
 
 CoroutineType = None
+# exec(
+#     """
+# async def _c(): pass
+# _c = _c()
+# CoroutineType = type(_c)
+# _c.close()  # Prevent ResourceWarning
+# """
+# )
 
 
 class _C:

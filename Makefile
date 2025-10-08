@@ -33,7 +33,6 @@ check-compat:
 
 #: Clean up temporary files and .pyc files
 clean: clean_pyc
-	$(PYTHON) ./setup.py $@
 	find . -name __pycache__ -exec rm -fr {} \; || true
 
 #: Create source (tarball) and wheel distribution
@@ -93,3 +92,4 @@ rmChangeLog:
 #: Create a ChangeLog from git via git log and git2cl
 ChangeLog: rmChangeLog
 	git log --pretty --numstat --summary | $(GIT2CL) >$@
+	patch ChangeLog < ChangeLog-spell-corrected.diff

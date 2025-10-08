@@ -1,3 +1,12 @@
+1.5.3 2025-10-07
+================
+
+* Start adding opcodes for Python 3.12. (Much more work is needed though)
+* Improve 3.11 bytecode support.
+* Continue revising the way testing works to be more scalable.
+* Incorporate xdis API
+* Redo packaging because, you know, that's the way Python rolls
+
 1.5.2 2024-07-22
 ================
 

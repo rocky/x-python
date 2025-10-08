@@ -1,4 +1,6 @@
 """Implementations of Python fundamental objects for xpython."""
+from xpython.stdlib.types34 import ModuleType
+"""Implementations of Python fundamental objects for xpython."""
 from __future__ import print_function
 
 import collections
@@ -10,20 +12,13 @@ from sys import stderr
 
 from xdis import CO_GENERATOR, CO_ITERABLE_COROUTINE, iscode
 from xdis.cross_dis import findlinestarts
-from xdis.version_info import PYTHON3, PYTHON_VERSION_TRIPLE
-
-if PYTHON_VERSION_TRIPLE >= (3, 4):
-    from xpython.stdlib.types34 import _AsyncGeneratorWrapper
-else:
-
-    class _AsyncGeneratorWrapper:
-        pass
-
+from xdis.version_info import PYTHON_VERSION_TRIPLE
+from xpython.stdlib.types34 import _AsyncGeneratorWrapper
 
 import xpython.stdlib.inspect2 as inspect2
 import xpython.stdlib.inspect3 as inspect3
 
-PY2 = not PYTHON3
+from xpython.stdlib.types34 import ModuleType
 
 
 def copy_module(old_module):
@@ -42,10 +37,7 @@ def make_cell(value):
     # and grabbing the cell object out of the function we create.
     fn = (lambda x: lambda: x)(value)
     # pylint: disable=no-else-return
-    if PYTHON3:
-        return fn.__closure__[0]
-    else:
-        return fn.func_closure[0]
+    return fn.__closure__[0]
 
 
 # It might be the case that this is more useful in Python 2.x

@@ -9,7 +9,6 @@
 
 import inspect
 import logging
-from typing import Tuple
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE, version_tuple_to_str
 
@@ -183,7 +182,7 @@ class ByteOp311(ByteOp310):
                     isinstance(init_fn, Function)
                     or self.is_pypy
                     or self.version_info[:2] != PYTHON_VERSION_TRIPLE[:2]
-                ) and PYTHON_VERSION_TRIPLE >= (3, 3):
+                ):
                     # 3.3+ __build_class__() works only on bytecode
                     # that matches the CPython interpreter, so use
                     # Darius' version instead.  Down the line we will
