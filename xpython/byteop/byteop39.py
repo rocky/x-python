@@ -88,7 +88,7 @@ class ByteOp39(ByteOp38):
             self.vm.push(TOS1 is TOS)
         pass
 
-    def JUMP_IF_NOT_EXC_MATCH(self, target):
+    def JUMP_IF_NOT_EXC_MATCH(self, target: int) -> None:
         """Tests whether the second value on the stack is an exception
         matching TOS, and jumps if it is not.  Pops two values from
         the stack.
