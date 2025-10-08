@@ -9,7 +9,6 @@
 
 import inspect
 import logging
-from typing import Tuple
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE, version_tuple_to_str
 
@@ -71,7 +70,7 @@ class ByteOp311(ByteOp310):
 
         # FIXME: put this in a separate routine.
         if inspect.isbuiltin(func):
-            log.debug(f"handling built-in function {func.__name__}")
+            log.debug("handling built-in function %s" % func.__name__)
             if func == globals:
                 # Use the frame's globals(), not the interpreter's
                 self.vm.push(frame.f_globals)
@@ -228,7 +227,7 @@ class ByteOp311(ByteOp310):
             inspect.isfunction(func)
             and self.version_info[:2] == PYTHON_VERSION_TRIPLE[:2]
         ):
-            log.debug(f"calling native function {func.__name__}")
+            log.debug("calling native function %s" % func.__name__)
         elif inspect.isclass(func):
             if func.__name__ == "super":
                 pos_args = [self.vm.frame] + pos_args
@@ -348,7 +347,7 @@ class ByteOp311(ByteOp310):
             frame.f_locals[name] = frame.cells[name].get()
         return
 
-    def KW_NAMES(self, names: Tuple[str]):
+    def KW_NAMES(self, names):
         """
         Prefixes CALL. Stores a reference to co_consts[consti] into an internal frame variable
         call_shape.
