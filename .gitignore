@@ -12,6 +12,7 @@
 /.venv-3.11
 /.venv-3.3
 /.venv-3.6
+/ChangeLog-spell-corrected
 /activate
 /build
 /dist
