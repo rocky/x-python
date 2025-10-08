@@ -20,8 +20,8 @@ from __pkginfo__ import (
 major = sys.version_info[0]
 minor = sys.version_info[1]
 
-if major != 3 or not 1 <= minor < 3:
-    sys.stderr.write("This installation medium is only for Python 3.1 .. 3.2. You are running Python %s.%s.\n" % (major, minor))
+if major != 2 or minor != 7:
+    sys.stderr.write("This installation medium is only for Python 2.7. You are running Python %s.%s.\n" % (major, minor))
 
 if major == 3 and minor > 10:
     sys.stderr.write("Please install using xpython-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
@@ -32,8 +32,8 @@ elif major == 3 and 6 <= minor <= 10:
 if major == 3 and 3 <= minor < 6:
     sys.stderr.write("Please install using xpython_33-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
     sys.exit(1)
-elif major == 2:
-    sys.stderr.write("Please install using xpython_24-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
+elif major == 3 and 1 <= minor < 2:
+    sys.stderr.write("Please install using xpython_31-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
     sys.exit(1)
 
 

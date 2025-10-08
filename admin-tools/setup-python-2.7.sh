@@ -1,5 +1,6 @@
 #!/bin/bash
 # Check out python-2.7 and dependent development branches.
+PYTHON_VERSION=2.7
 pyenv local $PYTHON_VERSION
 
 bs=${BASH_SOURCE[0]}
@@ -8,7 +9,6 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=2.7
 
 xpython_owd=$(pwd)
 mydir=$(dirname $bs)
