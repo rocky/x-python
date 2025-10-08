@@ -1,6 +1,586 @@
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* ChangeLog, ChangeLog-spell-corrected.diff, Makefile,
+	admin-tools/git2cl, xpython/version.py: Get ready for release 1.5.3
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* .github/workflows/osx.yml, .github/workflows/ubuntu.yml,
+	.github/workflows/windows.yml: Try to fix workflows CI
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* admin-tools/checkout_common.sh: Admin shell coding woes.
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* admin-tools/checkout_common.sh: Setup python local on branch
+	change
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* .circleci/config.yml: Try to fix CircleCI testing
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* .circleci/config.yml, README.rst, setup.py: Packaging tweaks
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode files
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* Makefile, admin-tools/check-newest-versions.sh, pyproject.toml,
+	setup.py: Changes in prepration for release.
+
+2025-10-07  rocky <rby@dusytfeet.com>
+
+	* admin-tools/make-dist-3.6-3.10.sh, pyproject.toml,
+	xpython/byteop/byteop.py, xpython/byteop/byteop26.py,
+	xpython/byteop/byteop311.py, xpython/pyobj.py,
+	xpython/stdlib/types34.py, xpython/vm.py: Misc cleanup before
+	release
+
+2025-10-03  rocky <rby@dusytfeet.com>
+
+	* : Regularize some PyPy test directories
+
+2025-10-03  rocky <rby@dusytfeet.com>
+
+	* test/test-single-version.sh, xpython/byteop/__init__.py,
+	xpython/byteop/byteop38pypy.py, xpython/byteop/byteop39pypy.py:
+	Better PyPy handling
+
+2025-09-11  rocky <rby@dusytfeet.com>
+
+	* .circleci/config.yml: CircleCI yet again
+
+2025-09-11  rocky <rby@dusytfeet.com>
+
+	* .circleci/config.yml, .github/workflows/osx.yml,
+	.github/workflows/ubuntu.yml, .github/workflows/windows.yml: get
+	CircleCI working?
+
+2025-09-11  rocky <rby@dusytfeet.com>
+
+	* .github/workflows/ubuntu.yml: 3.9..3.11 work
+
+2025-09-11  rocky <rby@dusytfeet.com>
+
+	* __pkginfo__.py, xpython/__main__.py, xpython/byteop/byteop39.py,
+	xpython/byteop/byteoppypy.py, xpython/pyobj.py,
+	xpython/stdlib/builtins.py, xpython/stdlib/inspect2.py,
+	xpython/stdlib/inspectfor32.py, xpython/vmtrace.py: Try pyrefly
+
+2025-08-11  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py, xpython/pyobj.py, xpython/vm.py,
+	xpython/vmtrace.py: Improve 3.11 working with cells and free vars This is not quite correct though.
+
+2025-07-26  rocky <rby@dusytfeet.com>
+
+	* test/examples/data/{test_constant.py => 001_test_constant.py},
+	test/test_data.py, test/vmtest.py: Move another test program
+
+2025-07-26  rocky <rby@dusytfeet.com>
+
+	* .github/workflows/osx.yml, .github/workflows/ubuntu.yml,
+	.github/workflows/windows.yml, __pkginfo__.py: Adjust because xdis
+	has been released
+
+2025-07-15  rocky <rby@dusytfeet.com>
+
+	* : Remove dup bytecode test
+
+2025-07-13  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop.py, xpython/byteop/byteop24.py,
+	xpython/byteop/byteop311.py, xpython/byteop/byteop312.py,
+	xpython/vm.py: Handle 3.12 FOR_ITER and 3.11 CALL with self
+
+2025-07-11  rocky <rby@dusytfeet.com>
+
+	* : Implement 3.11 CALL more correctly Handle NULL vs self method more correctly.
+
+2025-07-10  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop24.py: Small tweak to 2.4 DUP_TOPX
+
+2025-07-10  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop31.py, xpython/byteop/byteop32.py: Improve
+	Python 3.1 bytecode interpreting
+
+2025-07-10  rocky <rby@dusytfeet.com>
+
+	* admin-tools/merge-for-3.3.sh: Administrivia
+
+2025-07-09  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/__init__.py, xpython/byteop/byteop31.py,
+	xpython/byteop/byteop32.py, xpython/execfile.py,
+	xpython/version_info.py: Add 3.1 opcodes
+
+2025-07-09  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py, xpython/byteop/byteop39.py,
+	xpython/vm.py, xpython/vmtrace.py: Correct 3.11 PUSH_EXC_INFO and
+	3.9 RERAISE with >0 Interestingly, for 3.9 RERAISE, we hadn't come across opargs != 0.
+
+2025-07-06  rocky <rby@dusytfeet.com>
+
+	* : Merge stuff
+
+2025-07-06  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode
+
+2025-07-06  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop312.py: Implement STORE_SLICE, update
+	bytecode
+
+2025-07-05  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py, xpython/vm.py: Correct 3.11 SWAP
+	bytecode
+
+2025-07-03  rocky <rby@dusytfeet.com>
+
+	* admin-tools/setup-python-3.1.sh: Administrivia
+
+2025-07-03  rocky <rby@dusytfeet.com>
+
+	* : Merge stuff
+
+2025-07-03  rocky <rby@dusytfeet.com>
+
+	* xpython/version_info.py: Start support for 3.1
+
+2025-07-03  rocky <rby@dusytfeet.com>
+
+	* test/examples/exceptions/{10_test_reraise.py =>
+	010_test_reraise.py}, xpython/byteop/byteop.py: More bytecode
+	update/reorganization
+
+2025-07-01  rocky <rby@dusytfeet.com>
+
+	* test/examples/exceptions/10_test_reraise.py,
+	test/examples/expressions/009_test_eval.py: More test files
+
+2025-07-01  rocky <rby@dusytfeet.com>
+
+	* : Bytecode updates
+
+2025-07-01  rocky <rby@dusytfeet.com>
+
+	* test/examples/functions/{test_closures.py =>
+	080_test_closures.py}, xpython/byteop/byteop.py, xpython/vm.py:
+	Correct eval() using byteocde interpreter A prior change messed up eval() via compile and running bytecode
+
+2025-06-30  rocky <rby@dusytfeet.com>
+
+	* test/test-3.6-3.10-bytecode.sh, test/test-all-bytecode.sh,
+	test/test-newest-bytecode.sh: Revise testing yet again.  test-all-bytecode.sh from the 3.6 branch is test-3.6-3.10-bytecode.
+	test-all-bytecode.sh merged into test-newest-bytecode.
+
+2025-06-30  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py: Clarify use of "delta"; use parameter
+	named offset.  Since vm.py adjusts relative delta into an offset, in the JREL
+	opcodes change the parameter name from "delta" to "offset". But keep
+	the docstring comment to "delta" to match the 3.11 opcode
+	descriptions.
+
+2025-06-29  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py, xpython/vm.py: Correct 3.11+ relative
+	backward jumps
+
+2025-06-26  rocky <rby@dusytfeet.com>
+
+	* test/examples/expressions/test_eval.py,
+	test/examples/stmts/008_test_exec.py,
+	test/examples/stmts/011_test_eval.py, xpython/byteop/byteop312.py:
+	Bang on exec/eval tests
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* test/test_data.py, test/vmtest.py: Revise tests
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* : Bytecode adjusting
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* : Bytecode adjustments
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* test/examples/exceptions/test_reraise.py,
+	xpython/byteop/byteop.py, xpython/byteop/byteop24.py,
+	xpython/byteop/byteop39.py, xpython/execfile.py, xpython/vm.py: Go
+	over 3.9ish exception handling
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop.py: Tolerance for messed-up stack in opcode
+	fmt
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* test/examples/stmts/008_test_exec.py, xpython/byteop/byteop24.py,
+	xpython/byteop/byteop311.py, xpython/byteop/byteop312.py,
+	xpython/vm.py: Correct 3.12 LOAD_ATTR, and LOAD_GLOBAL formatting
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* admin-tools/setup-python-3.6.sh: Administrivia
+
+2025-06-24  rocky <rby@dusytfeet.com>
+
+	* admin-tools/pyenv-3.6-3.10-versions,
+	admin-tools/pyenv-newest-versions, admin-tools/setup-master.sh,
+	test/add-single-test.sh, test/add-test.sh,
+	test/examples/functions/{test_locals_and_globals.py =>
+	006_test_locals_and_globals.py}: Administrivia
+
+2025-06-23  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode
+
+2025-06-20  rocky <rby@dusytfeet.com>
+
+	* : Update 3.11 & 3.12 bytecode
+
+2025-06-18  rocky <rby@dusytfeet.com>
+
+	* test/examples/{test_strange_sequence_ops.py =>
+	007_test_stange_sequence_ops.py},
+	test/examples/expressions/{test_comparisons.py =>
+	006_test_comparisions.py},
+	test/examples/expressions/{test_comprehensions.py =>
+	008_test_comprehesions.py}, test/examples/stmts/{test_global.py =>
+	005_test_global.py}, test/examples/stmts/{test_while.py =>
+	006_test_while.py}, test/examples/stmts/{test_exec.py =>
+	008_test_exec.py}, test/examples/stmts/{test_for_loop.py =>
+	009_test_for_loop.py}, test/test_basic.py, test/test_stmts.py,
+	xpython/byteop/byteop.py: Reorganize tests more Do more using test/bytecode and less using unit test.  Test now run okay for Python 3.11
+
+2025-06-18  rocky <rby@dusytfeet.com>
+
+	* test/examples/stmts/001_pass.py,
+	test/examples/stmts/{01_test_assign.py => 002_test_assign.py},
+	test/examples/stmts/002_test_module_docstring.py,
+	test/examples/stmts/test_docstring.py,
+	test/examples/stmts/test_pass.py: Adjust and order more bytecode
+	tests
+
+2025-06-15  rocky <rby@dusytfeet.com>
+
+	* : Remove renamed bytecode
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop32.py: Docstring change
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : Bytecode update
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : Merge hell
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : Bytecode updates
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : Bytecode hell
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* test/examples/stmts/{test_assign.py => 01_test_assign.py},
+	xpython/byteop/byteop24.py, xpython/byteop/byteop312.py,
+	xpython/byteop/byteop32.py, xpython/vm.py: More refactor & Start 1st
+	3.12 test * Correct 3.12 COMPARE_OP * Start using numbers to influence test run order * Start adding to docstrings when an op changes or will change.
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py: Lint
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* test/examples/data/test_fstring.py, xpython/byteop/byteop311.py,
+	xpython/vm.py, xpython/vmtrace.py: Correct for weird SWAP behavior New 3.11 SWAP seems to count TOS from 1 rather than 0?
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* xpython/vm.py, xpython/vmtrace.py: Fix up 3.11+ BINARY_SUBSCR and
+	vmtrace exceptions
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : More bytecode
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : More bytecode
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* : More bytecode tests
+
+2025-06-14  rocky <rby@dusytfeet.com>
+
+	* test/examples/expressions/test_comparisons.py,
+	xpython/byteop/byteop27.py, xpython/byteop/byteop311.py: Get
+	test_comparisons working on 3.11 It's the same as the Python 2.7 version.
+
+2025-06-13  rocky <rby@dusytfeet.com>
+
+	* : Update bytecode
+
+2025-06-13  rocky <rby@dusytfeet.com>
+
+	* : More tests in self-checking form
+
+2025-06-13  rocky <rby@dusytfeet.com>
+
+	* test/examples/exceptions/test_catching_exceptions.py,
+	test/examples/exceptions/test_coverage_issue_92.py,
+	test/examples/test_defining_functions_with_args_kwargs.py,
+	test/examples/with/test_break_in_with.py: Revise more test to be
+	self checking
+
+2025-06-13  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop.py, xpython/vm.py: Small changes...  Reduce cammelCase functions Add more 3.10 and 3.11 bytecode tests.
+	Start isolating those that need fixing.
+
+2025-06-10  rocky <rby@dusytfeet.com>
+
+	* test/test_basic.py, xpython/byteop/byteop.py: Improve handling
+	3.11 inplace operator bytecode
+
+2025-06-09  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py, xpython/vm.py, xpython/vmtrace.py:
+	Bang on exception handling for 3.11
+
+2025-06-09  rocky <rby@dusytfeet.com>
+
+	* test/test_basic.py: Remove old-style test...  If it is to be reinstantated, it will be in the newer easier to
+	debug format
+
+2025-06-09  rocky <rby@dusytfeet.com>
+
+	* test/test_exceptions.py, xpython/stdlib/builtins.py: Merge changes
+	from 3.3 branch
+
+2025-06-09  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop.py, xpython/byteop/byteop24.py,
+	xpython/byteop/byteop25.py, xpython/byteop/byteop26.py,
+	xpython/vm.py: Work on exception handling Previously, we were relying on the interpreter's exception handling
+	and routines too much in the interpreter's sys (as opposed to the
+	bytecode-version sys).
+
+2025-06-06  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop24.py, xpython/pyobj.py, xpython/vm.py: WIP -
+	Better tracebacks More work on separating exception mechanisms in different Python
+	versions.  Exception handling is not done right for at least 3.11
+
+2025-06-06  rocky <rby@dusytfeet.com>
+
+	* test/examples/basic/test_object_attrs_not-shared_with_class.py:
+	Align tests a little bit
+
+2025-06-06  rocky <rby@dusytfeet.com>
+
+	* test/test_basic.py, xpython/byteop/byteop24.py, xpython/pyobj.py:
+	Start to handle exceptions more correctly...  Don't rely on builtin-exception handling matching interpreter
+	exception handling. This shortcut works best when interpreter is
+	same as the same as the bytecode version, but gets worse and worse
+	as the two get farther apart in changes. Because Python's exception
+	handling changs.  The exception objects can be different and the error messages can be
+	different.
+
+2025-06-04  rocky <rby@dusytfeet.com>
+
+	* test/test_basic.py: Convert another test
+
+2025-06-04  rocky <rby@dusytfeet.com>
+
+	* test/examples/basic/test_deleting_names.py, test/test_basic.py,
+	xpython/vm.py: Convert another test
+
+2025-06-04  rocky <rby@dusytfeet.com>
+
+	* test/test_basic.py: Start removing older style tests
+
+2025-06-04  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/__init__.py, xpython/byteop/byteop.py,
+	xpython/byteop/byteop312.py, xpython/vm.py: Start 3.12 opcode
+	handling
+
+2025-06-04  rocky <rby@dusytfeet.com>
+
+	* : More 3.11 tests
+
+2025-06-04  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py, xpython/vm.py: Correct 3.11
+	LOAD_GLOBAL
+
+2025-06-02  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop24.py, xpython/pyobj.py: Small changes
+
+2025-06-02  rocky <rby@dusytfeet.com>
+
+	* .gitignore: More ignore
+
+2025-06-02  rocky <rby@dusytfeet.com>
+
+	* test/test-3.1-3.2-bytecode.sh, test/test-3.3-3.5-bytecode.sh,
+	test/test-3.6-3.10-bytecode.sh, test/test-newest-bytecode.sh: Revise
+	tests..  Don't try to change versions. Just use Python version in effect.  In other words, cross interpretation is the default On the outside we'll need more mechanism to filter what can't be
+	done cross-version.
+
+2025-06-02  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop.py, xpython/byteop/byteop24.py: Small tweaks
+
+2025-06-02  rocky <rby@dusytfeet.com>
+
+	* admin-tools/setup-python-3.3.sh: Administrivia
+
+2025-06-02  rocky <rby@dusytfeet.com>
+
+	* .gitignore, admin-tools/.gitignore, pyproject.toml,
+	xpython/byteop/byteop24.py, xpython/byteop/byteop311.py,
+	xpython/byteop/byteop36.py, xpython/byteop/byteop37.py: Lint and
+	administrivia
+
+2025-06-01  rocky <rby@dusytfeet.com>
+
+	* .gitignore, admin-tools/setup-python-2.7.sh: Administrivia
+
+2025-06-01  rocky <rby@dusytfeet.com>
+
+	* admin-tools/check-3.3-3.5-versions.sh: Administrivia
+
+2025-06-01  rocky <rby@dusytfeet.com>
+
+	* admin-tools/check-3.6-3.10-versions.sh,
+	admin-tools/pyenv-3.6-3.10-versions,
+	admin-tools/pyenv-newest-versions: Administrivia Add checking for 3.6-3.10 versions and latest version
+
+2025-06-01  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop35.py, xpython/byteop/byteop37.py: 3.7+
+	LOAD_METHOD and CALL_METHOD fixes
+
+2025-06-01  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py, xpython/byteop/byteop37.py: Add NULL.
+	Start to address LOAD_METHOD
+
+2025-05-31  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop.py, xpython/byteop/byteop24.py,
+	xpython/byteop/byteop25.py, xpython/byteop/byteop27.py,
+	xpython/byteop/byteop311.py, xpython/byteop/byteop32.py,
+	xpython/byteop/byteop33.py, xpython/byteop/byteop35.py,
+	xpython/byteop/byteop36.py, xpython/pyobj.py, xpython/vm.py:
+	Implement KW_NAMES add property decorator to vm.top.  Add vm.is_stack_empty property
+
+2025-05-31  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py: Work on 3.11 PRECALL and CALL
+
+2025-05-31  rocky <rby@dusytfeet.com>
+
+	* admin-tools/checkout_common.sh, admin-tools/setup-master.sh,
+	admin-tools/setup-python-3.6.sh: Administrivia
+
+2025-05-31  rocky <rby@dusytfeet.com>
+
+	* admin-tools/merge-for-3.6.sh: Code to merge master branch into 3.6
+	branch
+
+2025-05-31  rocky <rby@dusytfeet.com>
+
+	* admin-tools/checkout_common.sh, admin-tools/setup-python-3.6.sh:
+	Start 3.11+ seperatation as master
+
+2024-08-26  rocky <rby@dusytfeet.com>
+
+	* xpython/byteop/byteop311.py: correct MAKE_FUNCTION for Python 3.11
+
+2024-07-24  rocky <rby@dusytfeet.com>
+
+	* admin-tools/make-dist-2.7.sh, admin-tools/setup-python-2.7.sh:
+	Administrivia
+
+2024-07-24  rocky <rby@dusytfeet.com>
+
+	* admin-tools/make-dist-3.1-3.2.sh,
+	admin-tools/make-dist-3.3-3.5.sh: Administrivia
+
+2024-07-23  rocky <rby@dusytfeet.com>
+
+	* admin-tools/make-dist-2.7.sh, admin-tools/make-dist-3.1-3.2.sh,
+	admin-tools/make-dist-3.3-3.5.sh: Administrivia
+
 2024-07-22  rocky <rby@dusytfeet.com>
 
-	* __pkginfo__.py, xpython/version.py: Get ready for release 1.5.2
+	* admin-tools/make-newest-dist.sh: More administrivia
+
+2024-07-22  rocky <rby@dusytfeet.com>
+
+	* admin-tools/make-newest-dist.sh,
+	admin-tools/pyenv-newest-versions: Administrivia
+
+2024-07-22  rocky <rby@dusytfeet.com>
+
+	* xpython/version.py: Bump to dev
+
+2024-07-22  rocky <rby@dusytfeet.com>
+
+	* admin-tools/checkout_common.sh, admin-tools/merge-for-2.7.sh,
+	admin-tools/merge-for-3.1.sh, admin-tools/merge-for-3.3.sh,
+	admin-tools/setup-master.sh, admin-tools/setup-python-2.7.sh,
+	admin-tools/setup-python-3.1.sh, admin-tools/setup-python-3.3.sh:
+	Administrivia
+
+2024-07-22  rocky <rby@dusytfeet.com>
+
+	* ChangeLog, NEWS.md, __pkginfo__.py, xpython/version.py: Get ready
+	for release 1.5.2
 
 2024-05-26  rocky <rby@dusytfeet.com>
 
@@ -53,7 +633,7 @@
 
 2024-03-25  rocky <rby@dusytfeet.com>
 
-	* admin-tools/merge-for-2.7.sh, admin-tools/merge-for-3.1.sh: 
+	* admin-tools/merge-for-2.7.sh, admin-tools/merge-for-3.1.sh:
 	Administrivia
 
 2024-03-25  rocky <rby@dusytfeet.com>
@@ -91,7 +671,7 @@
 
 2024-02-12  rocky <rby@dusytfeet.com>
 
-	* admin-tools/merge-for-3.1.sh, admin-tools/merge-for-3.3.sh: 
+	* admin-tools/merge-for-3.1.sh, admin-tools/merge-for-3.3.sh:
 	Administrivia
 
 2024-02-12  rocky <rby@dusytfeet.com>
@@ -106,7 +686,7 @@
 
 2024-02-12  rocky <rby@dusytfeet.com>
 
-	* admin-tools/setup-master.sh, admin-tools/setup-python-3.3.sh: 
+	* admin-tools/setup-master.sh, admin-tools/setup-python-3.3.sh:
 	Admnistrivia
 
 2024-02-11  rocky <rby@dusytfeet.com>
@@ -246,7 +826,7 @@
 
 2023-06-10  rocky <rb@dustyfeet.com>
 
-	* admin-tools/pyenv-newest-versions, admin-tools/setup-master.sh: 
+	* admin-tools/pyenv-newest-versions, admin-tools/setup-master.sh:
 	Bump testing versions
 
 2023-05-28  rocky <rby@dusytfeet.com>
@@ -258,7 +838,7 @@
 	xpython/byteop/byteop32.py, xpython/byteop/byteop33.py,
 	xpython/byteop/byteop34.py, xpython/execfile.py, xpython/pyobj.py,
 	xpython/stdlib/builtins.py, xpython/stdlib/inspect2.py,
-	xpython/stdlib/inspect3.py, xpython/vm.py, xpython/vmtrace.py: 
+	xpython/stdlib/inspect3.py, xpython/vm.py, xpython/vmtrace.py:
 	flake, isort, & black
 
 2023-05-28  rocky <rby@dusytfeet.com>
@@ -277,7 +857,7 @@
 
 2023-03-20  rocky <rby@dusytfeet.com>
 
-	* xpython/stdlib/types34.py: Repalce PYTHON_VERSION with
+	* xpython/stdlib/types34.py: Replace PYTHON_VERSION with
 	PYTHON_VERSION_TRIPLE
 
 2023-01-30  rocky <rby@dusytfeet.com>
@@ -441,7 +1021,7 @@
 2022-04-01  rocky <rby@dusytfeet.com>
 
 	* xpython/execfile.py, xpython/stdlib/builtins.py: Add cmp() builtin
-	compatibility ...  more generally start to allow builtin compatability between Python
+	compatibility ...  more generally start to allow builtin compatibility between Python
 	versions
 
 2022-04-01  rocky <rby@dusytfeet.com>
@@ -452,7 +1032,7 @@
 
 	* xpython/byteop/byteop24.py, xpython/byteop/byteop26.py,
 	xpython/stdlib/__init__.py, xpython/stdlib/itertools.py: 3.x
-	Compatibility for izip_longest and 2.x compatability for zip_longest
+	Compatibility for izip_longest and 2.x compatibility for zip_longest
 
 2022-03-31  rocky <rby@dusytfeet.com>
 
@@ -461,12 +1041,12 @@
 
 2022-03-31  rocky <rby@dusytfeet.com>
 
-	* Makefile, xpython/byteop/byteop24.py, xpython/byteop/byteop27.py: 
+	* Makefile, xpython/byteop/byteop24.py, xpython/byteop/byteop27.py:
 	LIST_APPEND() changes between 2.6 and 2.7...  Add some more self-checking bytecode
 
 2022-03-30  rocky <rby@dusytfeet.com>
 
-	* test/examples/stmts/test_import.py, xpython/byteop/byteop.py: 
+	* test/examples/stmts/test_import.py, xpython/byteop/byteop.py:
 	implement BINARY_DIVIDE (2.x) Add import test
 
 2022-03-16  rocky <rby@dusytfeet.com>
@@ -499,7 +1079,7 @@
 
 2021-11-28  rocky <rby@dusytfeet.com>
 
-	* admin-tools/setup-master.sh, admin-tools/setup-python-3.3.sh: 
+	* admin-tools/setup-master.sh, admin-tools/setup-python-3.3.sh:
 	Administrivia
 
 2021-11-25  rocky <rby@dusytfeet.com>
@@ -551,7 +1131,7 @@
 	* admin-tools/pyenv-newest-versions,
 	test/examples/basic/test_callback.py,
 	xpython/byteop/byteop37pypy.py: More complete PyPY 3.7
-	LOOKUP_METHOD_KW handles postional args now
+	LOOKUP_METHOD_KW handles positional args now
 
 2021-11-22  rocky <rby@dusytfeet.com>
 
@@ -570,13 +1150,13 @@
 
 2021-11-20  rocky <rby@dusytfeet.com>
 
-	* xpython/byteop/byteop37pypy.py: PyPy stuff Note CALL_METHOD_KW is not implemented Move pypy compiled files ot a
+	* xpython/byteop/byteop37pypy.py: PyPy stuff Note CALL_METHOD_KW is not implemented Move pypy compiled files to a
 	more natural place
 
 2021-11-20  rocky <rby@dusytfeet.com>
 
 	* admin-tools/check-3.3-3.5-versions.sh,
-	admin-tools/check-newest-versions.sh, admin-tools/check-versions.sh: 
+	admin-tools/check-newest-versions.sh, admin-tools/check-versions.sh:
 	Administrivia
 
 2021-11-20  rocky <rby@dusytfeet.com>
@@ -638,7 +1218,7 @@
 
 	* test/compile-file.py, xpython/byteop/byteop27.py,
 	xpython/byteop/byteop310.py, xpython/vm.py: Adjust relative jumps
-	for 3.10 Rmove duplicate 2.7 JUMP_ABSOLUTE
+	for 3.10 Remove duplicate 2.7 JUMP_ABSOLUTE
 
 2021-11-11  rocky <rby@dusytfeet.com>
 
@@ -664,7 +1244,7 @@
 	xpython/byteop/byteop36pypy.py, xpython/byteop/byteop37.py,
 	xpython/byteop/byteop37pypy.py, xpython/byteop/byteop38.py,
 	xpython/byteop/byteop38pypy.py, xpython/byteop/byteop39.py,
-	xpython/byteop/byteoppypy.py, xpython/pyobj.py, xpython/vm.py: 
+	xpython/byteop/byteoppypy.py, xpython/pyobj.py, xpython/vm.py:
 	Remove from __future__
 
 2021-11-10  rocky <rby@dusytfeet.com>
@@ -730,7 +1310,7 @@
 
 2021-11-09  rocky <rby@dusytfeet.com>
 
-	* xpython/byteop/byteop.py, xpython/execfile.py: Two tweaks...  * Check for older source code and warn * Give warning about cros interpet for eval and exec once
+	* xpython/byteop/byteop.py, xpython/execfile.py: Two tweaks...  * Check for older source code and warn * Give warning about cross interpret for eval and exec once
 
 2021-11-08  rocky <rby@dusytfeet.com>
 
@@ -760,7 +1340,7 @@
 
 2021-11-07  rocky <rocky@dusytfeet.com>
 
-	* admin-tools/setup-master.sh, admin-tools/setup-python-3.5.sh: 
+	* admin-tools/setup-master.sh, admin-tools/setup-python-3.5.sh:
 	Administrivia
 
 2021-11-07  R. Bernstein <rocky@users.noreply.github.com>
@@ -1163,7 +1743,7 @@
 
 	* .pre-commit-config.yaml, __pkginfo__.py, test/add-test.sh,
 	test/vmtest.py, xpython/__main__.py, xpython/byteop/__init__.py,
-	xpython/byteop/byteop39.py, xpython/execfile.py, xpython/version.py: 
+	xpython/byteop/byteop39.py, xpython/execfile.py, xpython/version.py:
 	Start 3.9 bytecode
 
 2021-02-13  rocky <rocky@dusytfeet.com>
@@ -1200,7 +1780,7 @@
 
 2020-07-28  rocky <rocky@dusytfeet.com>
 
-	* test/examples/basic/test_building_stuff.py, test/test_basic.py: 
+	* test/examples/basic/test_building_stuff.py, test/test_basic.py:
 	Add More 3.8 tests.  Make test_building_stuff.py self checking
 
 2020-07-28  rocky <rocky@dusytfeet.com>
@@ -1287,7 +1867,7 @@
 
 2020-06-28  rocky <rocky@dusytfeet.com>
 
-	* ChangeLog, Makefile, NEWS.md, __pkginfo__.py, xpython/version.py: 
+	* ChangeLog, Makefile, NEWS.md, __pkginfo__.py, xpython/version.py:
 	Get ready for release 1.3.4
 
 2020-06-23  rocky <rocky@dusytfeet.com>
@@ -1316,13 +1896,13 @@
 
 2020-06-20  rocky <rb@dustyfeet.com>
 
-	* test/examples/functions/test_closures.py, test/test_functions.py: 
+	* test/examples/functions/test_closures.py, test/test_functions.py:
 	More tests converted and expanded coverage
 
 2020-06-20  rocky <rocky@dusytfeet.com>
 
 	* test/examples/functions/test_partial.py,
-	test/examples/functions/test_recursion.py, test/test_functions.py: 
+	test/examples/functions/test_recursion.py, test/test_functions.py:
 	Convert a couple of existing test cases...  to newer test framework
 
 2020-06-18  rocky <rb@dustyfeet.com>
@@ -1372,7 +1952,7 @@
 
 2020-06-11  rocky <rb@dustyfeet.com>
 
-	* test/test_compat.py: 3.4 compatability running 3.5+...  Allow testing against pyobj.Generator. Disable coroutine test in
+	* test/test_compat.py: 3.4 compatibility running 3.5+...  Allow testing against pyobj.Generator. Disable coroutine test in
 	GET_YIELD_FROM_ITER.
 
 2020-06-10  rocky <rocky@dusytfeet.com>
@@ -1385,7 +1965,7 @@
 2020-06-08  rocky <rocky@dusytfeet.com>
 
 	* test/stdlib/3.6-exclude.sh, test/test_compat.py,
-	xpython/byteop/byteop.py: Update compatibilty...  If we use a later xdis, some of the problems with bytestrings goes
+	xpython/byteop/byteop.py: Update compatibility...  If we use a later xdis, some of the problems with bytestrings goes
 	away.
 
 2020-06-07  rocky <rocky@dusytfeet.com>
@@ -1399,8 +1979,8 @@
 2020-06-06  rocky <rocky@dusytfeet.com>
 
 	* test/stdlib/2.7-exclude.sh, test/stdlib/3.6-exclude.sh,
-	test/test_compat.py, xpython/byteop/byteop.py, xpython/pyobj.py: 
-	Fill in more Method fields...  update stdlib exclusions, and compatability matrix
+	test/test_compat.py, xpython/byteop/byteop.py, xpython/pyobj.py:
+	Fill in more Method fields...  update stdlib exclusions, and compatibility matrix
 
 2020-06-06  rocky <rocky@dusytfeet.com>
 
@@ -1471,7 +2051,7 @@
 
 2020-06-03  rocky <rb@dustyfeet.com>
 
-	* test/examples/functions/test_wraps.py, test/test_functions.py: 
+	* test/examples/functions/test_wraps.py, test/test_functions.py:
 	Split out test in prepration for freeops fixup
 
 2020-06-03  rocky <rb@dustyfeet.com>
@@ -1496,12 +2076,12 @@
 	xpython/pyobj.py, xpython/stdlib/inspect3.py: Fix inspect3 bug in
 	getting kwonly signatures...  This allows us to expand the compatibility matrix, but in general
 	this the matrix is kind of sketchy since some things we list as
-	compatible are only largely compatbile, and many tests between
+	compatible are only largely compatible, and many tests between
 	"incompatible" versions does ineed work.  Add more Python 2.4 tests
 
 2020-06-02  rocky <rocky@dusytfeet.com>
 
-	* README.rst, test/test_functions.py, xpython/byteop/byteop24.py: 
+	* README.rst, test/test_functions.py, xpython/byteop/byteop24.py:
 	Note what's up with closure test..  where a cell variable name might appear more than once.  Need to comment out our closure test for now until this is
 	straightened out.
 
@@ -1528,7 +2108,7 @@
 2020-06-01  rocky <rocky@dusytfeet.com>
 
 	* xpython/byteop/byteop25.py, xpython/vm.py: Improved operator
-	formating and ...  more pre 2.7 tests
+	formatting and ...  more pre 2.7 tests
 
 2020-06-01  rocky <rb@dustyfeet.com>
 
@@ -1607,12 +2187,12 @@
 2020-05-30  rocky <rocky@dusytfeet.com>
 
 	* README.rst, xpython/pyobj.py, xpython/stdlib/inspect2.py,
-	xpython/stdlib/inspect3.py: Get Python 2.x signatures from 3.x...  and go over README.rst since log infomation has been improved.
+	xpython/stdlib/inspect3.py: Get Python 2.x signatures from 3.x...  and go over README.rst since log infomartion has been improved.
 
 2020-05-29  rocky <rocky@dusytfeet.com>
 
 	* xpython/byteop/byteop27.py: cross-version interpreter
-	compatability...  in SETUP_WITH
+	compatibility...  in SETUP_WITH
 
 2020-05-29  rocky <rocky@dusytfeet.com>
 
@@ -1746,7 +2326,7 @@
 
 2020-05-24  rocky <rocky@dusytfeet.com>
 
-	* test/examples/exceptions/test_reraise.py, test/test_exceptions.py: 
+	* test/examples/exceptions/test_reraise.py, test/test_exceptions.py:
 	Separate and comment out test_reraise.py until ...  We understand how to do properly.  byterun uses six.raise which requires a real traceback and LOAD_NAME
 	raises NameError which makes six.raise work.  However down the line we really want to separate interpreter
 	exceptions from interpreted exceptions.  Right now, we can't do that - sigh.
@@ -1777,7 +2357,7 @@
 
 2020-05-23  rocky <rocky@dusytfeet.com>
 
-	* xpython/buildclass.py, xpython/byteop/byteop.py, xpython/vm.py: 
+	* xpython/buildclass.py, xpython/byteop/byteop.py, xpython/vm.py:
 	Slightly better cross-version interpreting...  Todo: need to see if we can convert code objects between versions
 
 2020-05-22  rocky <rocky@dusytfeet.com>
@@ -1812,7 +2392,7 @@
 
 2020-05-20  rocky <rocky@dusytfeet.com>
 
-	* xpython/execfile.py, xpython/vm.py, xpython/vmtrace.py: 
+	* xpython/execfile.py, xpython/vm.py, xpython/vmtrace.py:
 	format_instruction handled as callback...  so we can replace it with something that colorizes.  One callback signature mismatched was fixed too.
 
 2020-05-19  rocky <rocky@dusytfeet.com>
@@ -1889,7 +2469,7 @@
 2020-05-13  rocky <rocky@dusytfeet.com>
 
 	* test/stdlib/3.3-exclude.sh, test/stdlib/3.4-exclude.sh,
-	test/stdlib/3.5-exclude.sh, xpython/execfile.py, xpython/pyobj.py: 
+	test/stdlib/3.5-exclude.sh, xpython/execfile.py, xpython/pyobj.py:
 	Go over tests...  For now don't use docstring in Module since that is getting picked
 	up in Python's stdlib unit tests
 
@@ -1922,7 +2502,7 @@
 
 2020-05-13  rocky <rb@dustyfeet.com>
 
-	* xpython/__main__.py, xpython/execfile.py, xpython/vmtrace.py: 
+	* xpython/__main__.py, xpython/execfile.py, xpython/vmtrace.py:
 	Revise trace callback API...  to take account into additional arguments needed by
 	instruction_info().
 
@@ -1939,7 +2519,7 @@
 
 	* test/compile-file.py, test/test_with.py, test/vmtest.py,
 	xpython/buildclass.py, xpython/byteop/byteop25.py: More pypy
-	complient. Use inspect.isfunction()
+	compliant. Use inspect.isfunction()
 
 2020-05-12  rocky <rocky@dusytfeet.com>
 
@@ -1965,7 +2545,7 @@
 2020-05-12  rocky <rb@dustyfeet.com>
 
 	* xpython/__main__.py, xpython/execfile.py, xpython/vm.py: Exception
-	handling..  * Exception names have changed * Catch uncaught execptions at the end when no tracing * Lint-like fixes R# with '#' will be ignored, and an empty message aborts the commit.
+	handling..  * Exception names have changed * Catch uncaught exceptions at the end when no tracing * Lint-like fixes R# with '#' will be ignored, and an empty message aborts the commit.
 
 2020-05-12  rocky <rocky@dusytfeet.com>
 
@@ -1979,8 +2559,8 @@
 	xpython/__main__.py, xpython/byteop/byteop25.py,
 	xpython/execfile.py, xpython/pyobj.py, xpython/vm.py,
 	xpython/vmtrace.py: accurate f_lasti and f_lineno * Added YIELD event type in vmtrace * "return" returns returned
-	value to trace program * *except" returns execption to trace
-	program.  * Have to back off later Python 3.x-isms like FileNotFoundError and   anotation signatures.
+	value to trace program * *except" returns exception to trace
+	program.  * Have to back off later Python 3.x-isms like FileNotFoundError and   annotation signatures.
 
 2020-05-10  rocky <rb@dustyfeet.com>
 
@@ -2007,7 +2587,7 @@
 
 2020-05-08  rocky <rocky@dusytfeet.com>
 
-	* Makefile, xpython/byteop/byteop25.py: Smal tweaks to logging and
+	* Makefile, xpython/byteop/byteop25.py: Small tweaks to logging and
 	Makefile
 
 2020-05-08  rocky <rocky@dusytfeet.com>
@@ -2085,7 +2665,7 @@
 2020-05-07  rocky <rocky@dusytfeet.com>
 
 	* xpython/byteop/byteop25.py, xpython/byteop/byteop32.py,
-	xpython/byteop/byteop36.py, xpython/pyobj.py, xpython/pyvm2.py: 
+	xpython/byteop/byteop36.py, xpython/pyobj.py, xpython/pyvm2.py:
 	Revise comprehension handling...
 
 2020-05-07  rocky <rocky@dusytfeet.com>
@@ -2121,7 +2701,7 @@
 
 2020-05-07  rocky <rocky@dusytfeet.com>
 
-	* README.rst, xpython/byteop/byteop36.py: Add exmaple in README.rst
+	* README.rst, xpython/byteop/byteop36.py: Add example in README.rst
 	and ..  tolerate built-in function creation failures
 
 2020-05-07  rocky <rocky@dusytfeet.com>
@@ -2158,14 +2738,14 @@
 	xpython/byteop/byteop36.py: Remove "version" attribute in
 	functions...  We needed that to figure out in byteops if we were cross-version
 	interpreting before we all byteops converted/moved to the byteops
-	class.  Now all converion is done, we can get the interpreted version from
+	class.  Now all conversion is done, we can get the interpreted version from
 	the object or from self.vm.version
 
 2020-05-06  rocky <rocky@dusytfeet.com>
 
 	* xpython/byteop/byteop25.py, xpython/byteop/byteop33.py,
-	xpython/byteop/byteop36.py, xpython/pyobj.py, xpython/pyvm2.py: 
-	Cleanup; print no-arg excpetions better
+	xpython/byteop/byteop36.py, xpython/pyobj.py, xpython/pyvm2.py:
+	Cleanup; print no-arg exceptions better
 
 2020-05-06  rocky <rocky@dusytfeet.com>
 
@@ -2350,7 +2930,7 @@
 
 2020-05-03  rocky <rocky@dusytfeet.com>
 
-	* test/examples/test_map_unpack.py, xpython/byteop/byteop36.py: 
+	* test/examples/test_map_unpack.py, xpython/byteop/byteop36.py:
 	Finish docstrings for new 3.6 opcodes
 
 2020-05-03  rocky <rocky@dusytfeet.com>
@@ -2378,7 +2958,7 @@
 
 	* test/stdlib/.python-version, test/stdlib/2.7-exclude.sh,
 	test/stdlib/3.3-exclude.sh, test/stdlib/runtests.sh,
-	xpython/byteop/byteop25.py, xpython/execfile.py, xpython/pyobj.py: 
+	xpython/byteop/byteop25.py, xpython/execfile.py, xpython/pyobj.py:
 	Some bug fixes.
 
 2020-05-03  rocky <rb@dustyfeet.com>
@@ -2406,7 +2986,7 @@
 
 2020-05-03  rocky <rb@dustyfeet.com>
 
-	* test/test_with.py, xpython/byteop/byteop35.py, xpython/pyvm2.py: 
+	* test/test_with.py, xpython/byteop/byteop35.py, xpython/pyvm2.py:
 	Possibly fix some bugs in 3.5 WITH_CLEANUP* ...  and 3.5 END_FINALLY.  Investigate 3.5 END_FINALLY is different than before, right?
 
 2020-05-03  rocky <rb@dustyfeet.com>
@@ -2415,8 +2995,8 @@
 
 2020-05-03  rocky <rocky@dusytfeet.com>
 
-	* test/test_basic_compat.py, test/test_compat.py, test/vmtest.py: 
-	Start testing cross-version compatability
+	* test/test_basic_compat.py, test/test_compat.py, test/vmtest.py:
+	Start testing cross-version compatibility
 
 2020-05-03  rocky <rocky@dusytfeet.com>
 
@@ -2484,7 +3064,7 @@
 2020-05-02  rocky <rocky@dusytfeet.com>
 
 	* ChangeLog, MANIFEST.in, NEWS.md, __pkginfo__.py,
-	admin-tools/how-to-make-a-release.md, setup.py, xpython/version.py: 
+	admin-tools/how-to-make-a-release.md, setup.py, xpython/version.py:
 	Get ready for release 1.0.1
 
 2020-05-02  rocky <rocky@dusytfeet.com>
@@ -2512,7 +3092,7 @@
 	test/examples/test_at_context_manager_complete.py,
 	test/examples/test_at_context_manager_simplified.py,
 	test/test_functions.py, test/test_with.py, test/vmtest.py,
-	xpython/__main__.py, xpython/byteop/byteop32.py, xpython/pyvm2.py: 
+	xpython/__main__.py, xpython/byteop/byteop32.py, xpython/pyvm2.py:
 	Fix some 3.2 bugs and add testing
 
 2020-05-02  rocky <rocky@dusytfeet.com>
@@ -2529,7 +3109,7 @@
 
 2020-05-02  rocky <rocky@dusytfeet.com>
 
-	* Makefile, xpython/byteop/byteop33.py, xpython/byteop/byteop35.py: 
+	* Makefile, xpython/byteop/byteop33.py, xpython/byteop/byteop35.py:
 	Something weird happened...  Some code in byteop3{3,5} got deleted. Reinstate that.
 
 2020-05-02  rocky <rocky@dusytfeet.com>
@@ -2586,7 +3166,7 @@
 	admin-tools/pyenv-versions, test/examples/runtests.sh,
 	test/examples/test_continue_in_with.py, test/test_with.py,
 	xpython/byteop/byteop26.py, xpython/byteop/byteop33.py,
-	xpython/byteop/byteop35.py, xpython/pyobj.py, xpython/pyvm2.py: 
+	xpython/byteop/byteop35.py, xpython/pyobj.py, xpython/pyvm2.py:
 	split out another test. Administrivia Add much-needed cool check-versions script and runtests.sh
 
 2020-05-01  rocky <rb@dustyfeet.com>
@@ -2631,18 +3211,18 @@
 
 2020-05-01  rocky <rocky@dusytfeet.com>
 
-	* tests/examples/test_simple_context_manager.py, tests/test_with.py: 
+	* tests/examples/test_simple_context_manager.py, tests/test_with.py:
 	Split out "test_with"
 
 2020-04-30  rocky <rocky@dusytfeet.com>
 
 	* README.rst, xpython/byteop/byteop26.py,
-	xpython/byteop/byteop27.py, xpython/pyobj.py, xpython/pyvm2.py: 
+	xpython/byteop/byteop27.py, xpython/pyobj.py, xpython/pyvm2.py:
 	Better execution trace info on an exception.
 
 2020-04-30  rocky <rocky@dusytfeet.com>
 
-	* __pkginfo__.py, setup.py, xpython/__main__.py, xpython/version.py: 
+	* __pkginfo__.py, setup.py, xpython/__main__.py, xpython/version.py:
 	Convert to click, and packaging administrivia
 
 2020-04-30  rocky <rocky@dusytfeet.com>
@@ -2661,7 +3241,7 @@
 	tests/test_functions.py, xpython/byteop/byteop26.py,
 	xpython/byteop/byteop27.py, xpython/byteop/byteop33.py,
 	xpython/byteop/byteop34.py, xpython/pyvm2.py: Fix MAKE_FUNCTION for
-	Python 3.4...  Split out anohter test into its own file.  Pull out MAKE_FUNCTION
+	Python 3.4...  Split out another test into its own file.  Pull out MAKE_FUNCTION
 	from pyvm2.py
 
 2020-04-30  rocky <rocky@dusytfeet.com>
@@ -2670,7 +3250,7 @@
 	tests/examples/test_attribute_access.py, tests/test_basic.py,
 	tests/vmtest.py, xpython/byteop/byteop26.py,
 	xpython/byteop/byteop27.py, xpython/byteop/byteop33.py,
-	xpython/byteop/byteop34.py, xpython/execfile.py, xpython/pyvm2.py: 
+	xpython/byteop/byteop34.py, xpython/execfile.py, xpython/pyvm2.py:
 	Start Handling 3.4 opcodes...  Note: this isn't complete.  building classes changes so we need to deal with that.  Also
 	LOAD_CLASSDEREF isn't complete.
 
@@ -2747,7 +3327,7 @@
 
 	* .gitignore, tests/.gitignore, tests/examples/.gitignore,
 	tests/examples/create-bytecode.sh, tests/examples/test_slice.py,
-	tests/test_basic.py, tests/test_basic_compat.py, tests/vmtest.py: 
+	tests/test_basic.py, tests/test_basic_compat.py, tests/vmtest.py:
 	One more test put into a file...  * vmtest.py: tweak separate line: show filename * create-bytecode.sh: script to create get compiled bytecode and add
 	to * test_basic_compat.py test_basic.py: move another test into a file
 
@@ -2788,7 +3368,7 @@
 	* tests/examples/.gitignore, tests/examples/compile-file.py,
 	tests/examples/test_decorator.py,
 	tests/examples/test_different_globals_may_have_different_builtins.p
-	y, tests/examples/test_for.py, tests/examples/test_for_loop.py: 
+	y, tests/examples/test_for.py, tests/examples/test_for_loop.py:
 	Start to put test programs in separate files...  and save bytecode files.  program to byte-compile file
 
 2020-04-28  rocky <rocky@dusytfeet.com>
@@ -2880,7 +3460,7 @@
 
 2014-08-19  Allison Kaptur <allison.kaptur@gmail.com>
 
-	* byterun/pyobj.py, byterun/pyvm2.py, tests/test_functions.py: 
+	* byterun/pyobj.py, byterun/pyvm2.py, tests/test_functions.py:
 	Implement YIELD_FROM with @paultag
 
 2014-08-15  Allison Kaptur <allison.kaptur@gmail.com>
@@ -3500,4 +4080,3 @@
 2013-01-13  Ned Batchelder <ned@nedbatchelder.com>
 
 	* Ignore stuff
-

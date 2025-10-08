@@ -64,8 +64,7 @@ INPLACE_OPERATORS = frozenset(
     ]
 )
 
-if PYTHON_VERSION_TRIPLE >= (3, 5):
-    BINARY_OPERATORS["MATRIX_MULTIPLY"] = operator.matmul
+# BINARY_OPERATORS["MATRIX_MULTIPLY"] = operator.matmul
 
 
 def fmt_binary_op(vm: PyVM, arg=None, repr=repr):
@@ -275,7 +274,7 @@ class ByteOpBase(object):
                         )
                         self.cross_bytecode_eval_warning_shown = True
 
-            elif PYTHON_VERSION_TRIPLE >= (3, 0) and func == __build_class__:
+            elif func == __build_class__:
                 assert len(pos_args) > 0, (
                     "__build_class__() should have at least one argument, an "
                     "__init__() function."
@@ -285,7 +284,7 @@ class ByteOpBase(object):
                     isinstance(init_fn, Function)
                     or self.is_pypy
                     or self.version_info[:2] != PYTHON_VERSION_TRIPLE[:2]
-                ) and PYTHON_VERSION_TRIPLE >= (3, 3):
+                ):
                     # 3.3+ __build_class__() works only on bytecode
                     # that matches the CPython interpreter, so use
                     # Darius' version instead.  Down the line we will

@@ -106,9 +106,16 @@ def get_byteop(vm, python_version, is_pypy):
                     byteop = ByteOp38(vm)
 
             elif python_version == (3, 9):
-                from xpython.byteop.byteop39 import ByteOp39
 
-                byteop = ByteOp39(vm)
+                if is_pypy:
+                    from xpython.byteop.byteop39pypy import ByteOp39PyPy
+
+                    byteop = ByteOp39PyPy(vm)
+                else:
+                    from xpython.byteop.byteop39 import ByteOp39
+
+                    byteop = ByteOp39(vm)
+
 
             elif python_version == (3, 10) or python_version == (4, 0):
                 from xpython.byteop.byteop310 import ByteOp310

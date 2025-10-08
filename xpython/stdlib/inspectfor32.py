@@ -140,7 +140,7 @@ class Parameter:
     def kind(self):
         return self._kind
 
-    def replace(self, name, kind=_void, annotation=_void, default=_void):
+    def replace(self, name=_void, kind=_void, annotation=_void, default=_void):
         """Creates a customized copy of the Parameter."""
 
         if name is _void:

@@ -19,6 +19,13 @@ fi
 
 [[ -f test/.python-version ]] && rm -v test/.python-version
 for version in $PYVERSIONS; do
+    case $version in
+	"3.12" | "3.13")
+	    echo "Skipping tests because $version opcodes not done"
+	    continue
+	    ;;
+       esac
+
     echo --- $version ---
     if ! pyenv local $version ; then
 	exit $?
