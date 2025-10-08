@@ -20,7 +20,7 @@ from __pkginfo__ import (
 major = sys.version_info[0]
 minor = sys.version_info[1]
 
-if major != 3 or not minor >= 11:
+if major != 3 or not 6 <= minor < 11:
     sys.stderr.write("This installation medium is only for Python 3.6 .. 3.10. You are running Python %s.%s.\n" % (major, minor))
 
 if major == 3 and minor > 10:
