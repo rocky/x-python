@@ -64,7 +64,7 @@ INPLACE_OPERATORS = frozenset(
     ]
 )
 
-BINARY_OPERATORS["MATRIX_MULTIPLY"] = operator.matmul
+# BINARY_OPERATORS["MATRIX_MULTIPLY"] = operator.matmul
 
 
 def fmt_binary_op(vm: PyVM, arg=None, repr=repr):

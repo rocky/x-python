@@ -1,5 +1,4 @@
 from xpython.stdlib.types34 import ModuleType
-from types import ModuleType
 """Implementations of Python fundamental objects for xpython."""
 
 import collections
