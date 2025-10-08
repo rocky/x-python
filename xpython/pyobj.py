@@ -1,6 +1,4 @@
 """Implementations of Python fundamental objects for xpython."""
-from xpython.stdlib.types34 import ModuleType
-"""Implementations of Python fundamental objects for xpython."""
 from __future__ import print_function
 
 import collections
@@ -17,8 +15,6 @@ from xpython.stdlib.types34 import _AsyncGeneratorWrapper
 
 import xpython.stdlib.inspect2 as inspect2
 import xpython.stdlib.inspect3 as inspect3
-
-from xpython.stdlib.types34 import ModuleType
 
 
 def copy_module(old_module):

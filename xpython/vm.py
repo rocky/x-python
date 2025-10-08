@@ -10,15 +10,12 @@ import os
 import sys
 from types import TracebackType
 
-import six
-from six.moves import reprlib
 
 from xdis import (
     code2num,
     CO_NEWLOCALS,
     IS_PYPY,
     PYTHON_VERSION_TRIPLE,
-    IS_PYPY,
     op_has_argument,
     next_offset,
 )
