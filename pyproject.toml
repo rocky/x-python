@@ -19,7 +19,7 @@ dependencies = [
     "xdis >= 6.0.3,<6.3",
 ]
 readme = "README.rst"
-license = "GPL-3.0-or-later"
+license = "MIT"
 keywords = ["Python bytecode", "bytecode", "disassembler"]
 classifiers = [
     "Intended Audience :: Developers",
