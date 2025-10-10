@@ -60,6 +60,8 @@ jobs:
 
     # Test
     #   This would typically be a build job when using workflows, possibly combined with build
+    # Older branches need older branch of xdis
+    - run: pip install git+https://github.com/rocky/python-xdis@python-3.6-to-3.10#egg=xdis
     - run: pip install -e .
     - run: pip install -r requirements-dev.txt
     - run: make check

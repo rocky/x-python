@@ -21,9 +21,9 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        # Older branches need older branch of xdis
+        pip install git+https://github.com/rocky/python-xdis@python-3.6-to-3.10#egg=xdis
         pip install -e .
-        # Until the next xdis release
-        # pip install git+https://github.com/rocky/python-xdis#egg=xdis
         pip install -r requirements-dev.txt
     - name: Test xpython
       run: |
