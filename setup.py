@@ -12,11 +12,11 @@ if major != 3 or not minor >= 11:
 if major == 3 and 6 <= minor <= 10:
     sys.stderr.write("Please install using xpython-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
     sys.exit(1)
-elif major == 3 and 3 <= minor <= 5:
-    sys.stderr.write("Please install using xpython_33-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
+elif major == 3 and 6 <= minor <= 10:
+    sys.stderr.write("Please install using xpython_36-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
     sys.exit(1)
-if major == 3 and 1 <= minor <= 2:
-    sys.stderr.write("Please install using xpython_31-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
+if major == 3 and 3 <= minor < 6:
+    sys.stderr.write("Please install using xpython_33-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
     sys.exit(1)
 elif major == 2:
     sys.stderr.write("Please install using xpython_2.4-x.y.z.tar.gz from https://github.com/rocky/x-python/releases\n")
