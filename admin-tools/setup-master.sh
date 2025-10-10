@@ -19,5 +19,5 @@ fi
 
 . $x_python_fulldir/checkout_common.sh
 
-(cd $x_python_fulldir/../../../rocky && setup_version python-xdis master)
+setup_version python-xdis master
 checkout_finish master
