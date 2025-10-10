@@ -1,6 +1,6 @@
 #!/bin/bash
 # Check out python-2.7 and dependent development branches.
-pyenv local $PYTHON_VERSION
+PYTHON_VERSION=2.7
 
 bs=${BASH_SOURCE[0]}
 if [[ $0 == $bs ]] ; then
@@ -8,11 +8,14 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=2.7
-
 xpython_owd=$(pwd)
 mydir=$(dirname $bs)
-fulldir=$(readlink -f $mydir)
+x_python_fulldir=$(readlink -f $mydir)
+
+if ! source $x_python_fulldir/../admin-tools/pyenv-2.7-versions ; then
+    exit $?
+fi
+
 cd $mydir
 . ./checkout_common.sh
 (cd $fulldir/.. && setup_version python-xdis python-2.4)
