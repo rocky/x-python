@@ -3,10 +3,10 @@
 PYTHON_VERSION=3.6
 
 bs=${BASH_SOURCE[0]}
-# if [[ $0 == $bs ]] ; then
-#     echo "This script should be *sourced* rather than run directly through bash"
-#     exit 1
-# fi
+if [[ $0 == $bs ]] ; then
+    echo "This script should be *sourced* rather than run directly through bash"
+    exit 1
+fi
 
 xpython_owd=$(pwd)
 mydir=$(dirname $bs)
