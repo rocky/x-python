@@ -16,7 +16,9 @@ function checkout_finish {
     branch=$1
     cd $x_python_fulldir/..
     git checkout $branch && pyenv local $PYTHON_VERSION && git pull
-    cd $xpython_owd
+    if [[-n ${xpython_owd} ]] && [[ -d $xpyton_owd ]]; then
+	cd $xpython_owd
+    fi
     rc=$?
     return $rc
 }
