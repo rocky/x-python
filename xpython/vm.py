@@ -448,7 +448,7 @@ class PyVM(object):
                 self.last_traceback.print_tb()
             if self.last_exception is not None:
                 print(
-                    f"{self.last_exception[0].__name__}:", *self.last_exception[1].args
+                    f"{self.last_exception[0].__name__}:", *self.last_exception[1]
                 )
             return 1
 

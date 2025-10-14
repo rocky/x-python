@@ -9,7 +9,6 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-xpython_owd=$(pwd)
 mydir=$(dirname $bs)
 x_python_fulldir=$(readlink -f $mydir)
 
@@ -17,7 +16,7 @@ if ! source $x_python_fulldir/../admin-tools/pyenv-newest-versions ; then
     exit $?
 fi
 
-. $x_python_fulldir/checkout_common.sh
+. ${x_python_fulldir}/checkout_common.sh
 
-setup_version python-xdis master
+(cd ${x_python_fulldir}/../.. && setup_version python-xdis master)
 checkout_finish master
