@@ -23,7 +23,7 @@ jobs:
       run: |
         pip install -e .
         # Until the next xdis release
-        # pip install git+https://github.com/rocky/python-xdis#egg=xdis
+        pip install git+https://github.com/rocky/python-xdis#egg=xdis
         pip install -r requirements-dev.txt
     - name: Test xpython
       run: |

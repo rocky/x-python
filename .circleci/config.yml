@@ -39,8 +39,10 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v2-dependencies-
 
+    # Until the next xdis release
+    - run: pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
     - run:
-        command: | # Use pip to install dependengcies
+        command: | # Use pip to install dependencies
           sudo pip install --user --upgrade setuptools
           pip install --user -e .
           pip install --user -r requirements-dev.txt
