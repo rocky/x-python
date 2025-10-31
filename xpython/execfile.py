@@ -224,6 +224,7 @@ def run_python_file(
                     is_pypy,
                     source_size,
                     sip_hash,
+                    _file_offsets,
                 ) = load_module(filename)
                 supported_versions, mess = get_supported_versions(
                     is_pypy, is_bytecode=True

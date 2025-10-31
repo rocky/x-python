@@ -180,6 +180,7 @@ class VmTestCase(unittest.TestCase):
                 pypy,
                 source_size,
                 sip_hash,
+                file_offsets,
             ) = load_module(path_or_code)
         else:
             self.version_pair = PYTHON_VERSION_TRIPLE[:2]
