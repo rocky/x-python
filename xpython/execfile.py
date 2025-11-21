@@ -210,7 +210,7 @@ def run_python_file(
     else:
         sys.path[0] = osp.abspath(osp.dirname(filename))
 
-    is_pypy = IS_PYPY
+    python_implementation = PYTHON_IMPLEMENTATION
     try:
         # Open the source or bytecode file.
         try:
@@ -279,7 +279,7 @@ def run_python_file(
             code,
             main_mod.__dict__,
             python_version,
-            is_pypy,
+            python_implementation,
             callback,
             format_instruction=format_instruction,
         )
