@@ -8,7 +8,7 @@ import unittest
 from io import StringIO
 
 from xdis import load_module
-from xdis.version_info import IS_PYPY, PYTHON_VERSION_TRIPLE, version_tuple_to_str
+from xdis.version_info import IS_PYPY, PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, PythonImplementation, version_tuple_to_str
 
 from xpython.vm import PyVM, PyVMError
 
@@ -58,9 +58,8 @@ class VmTestCase(unittest.TestCase):
         self.version_pair = PYTHON_VERSION_TRIPLE[:2]
         assert self.version_pair in supported_versions
 
-        platform = "pypy" if IS_PYPY else ""
         basename = parent_function_name()
-        if IS_PYPY:
+        if PYTHON_IMPLEMENTATION is PythonImplementation.PyPy:
             version = version_tuple_to_str(end=2, delimiter="")
             platform = "pypy"
             path = osp.join(
@@ -94,9 +93,10 @@ class VmTestCase(unittest.TestCase):
                 timestamp,
                 magic_int,
                 code,
-                pypy,
+                python_implemention,
                 source_size,
                 sip_hash,
+                _
             ) = load_module(path_or_code)
         else:
             self.version_pair = PYTHON_VERSION_TRIPLE[:2]
@@ -177,7 +177,7 @@ class VmTestCase(unittest.TestCase):
                 timestamp,
                 magic_int,
                 code,
-                pypy,
+                python_implementation,
                 source_size,
                 sip_hash,
                 file_offsets,

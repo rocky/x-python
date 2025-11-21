@@ -12,6 +12,7 @@ from typing import Any, List
 from xdis import (
     CO_NEWLOCALS,
     IS_PYPY,
+    PYTHON_IMPLEMENTATION,
     PYTHON_VERSION_TRIPLE,
     code2num,
     next_offset,
@@ -21,6 +22,7 @@ from xdis.bytecode import parse_exception_table
 from xdis.cross_types import UnicodeForPython3
 from xdis.op_imports import get_opcode_module
 from xdis.opcodes.opcode_311 import _nb_ops
+from xdis.version_info import PythonImplementation
 
 from xpython.byteop import get_byteop
 from xpython.pyobj import Block, Frame, Traceback, traceback_from_frame
@@ -139,7 +141,7 @@ class PyVM(object):
     def __init__(
         self,
         python_version=PYTHON_VERSION_TRIPLE,
-        is_pypy=IS_PYPY,
+        python_implementation=PYTHON_IMPLEMENTATION,
         vmtest_testing=False,
         format_instruction_func=format_instruction,
     ):
@@ -152,7 +154,7 @@ class PyVM(object):
         self.last_traceback_limit = None
         self.last_traceback = None
         self.version = python_version
-        self.is_pypy = is_pypy
+        self.is_pypy = python_implementation is PythonImplementation.PyPy
         self.format_instruction = format_instruction_func
 
         self.null_ops = []
@@ -178,13 +180,8 @@ class PyVM(object):
         # pulled out of this file
         self.PyVMError = PyVMError
 
-        variant = "pypy" if is_pypy else None
-
-        if is_pypy:
-            python_version = tuple(python_version[:2])
-
-        self.opc = get_opcode_module(python_version, variant)
-        self.byteop = get_byteop(self, python_version, is_pypy)
+        self.opc = get_opcode_module(python_version, python_implementation)
+        self.byteop = get_byteop(self, python_version, python_implementation)
 
     def exception_handling_311(self):
         """In Python 3.11 exception handling blocks are handled off

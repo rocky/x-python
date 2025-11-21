@@ -3,20 +3,23 @@
 # a lot and we are interested in supporting (some) historical versions
 # of Python.
 
+from xdis.version_info import PYTHON_IMPLEMENTATION, PythonImplementation
 
-def get_byteop(vm, python_version, is_pypy):
+
+def get_byteop(vm, python_version, python_implementation):
     """Get Python byteop for given integer Python version, e.g. 2.7,
-    3.2, 3.5..., and the platform is_pypy. vm.VMError will be raised
+    3.2, 3.5..., and the python_implementation. vm.VMError will be raised
     if we can't find a suitable version.
 
     """
     if type(python_version) is not tuple:
         python_version = (int(str(python_version)[0]), int(str(python_version)[2]))
     python_version = python_version[:2]
+    is_pypy = python_implementation is PythonImplementation.PyPy
     if python_version < (3, 0):
         if python_version >= (2, 6):
             if python_version == (2, 7):
-                if is_pypy:
+                if python_implementation is PythonImlementation.PyPy:
                     from xpython.byteop.byteop27pypy import ByteOp27PyPy
 
                     byteop = ByteOp27PyPy(vm)

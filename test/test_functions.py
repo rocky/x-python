@@ -5,7 +5,7 @@ try:
 except ImportError:
     from . import vmtest
 
-from xdis.version_info import PYTHON_VERSION_TRIPLE
+from xdis.version_info import PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION
 
 if PYTHON_VERSION_TRIPLE >= (3, 10):
     print("Test not gone over yet for >= 3.10")

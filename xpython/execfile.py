@@ -11,7 +11,7 @@ import warnings
 from typing import Optional
 
 from xdis import load_module
-from xdis.version_info import IS_PYPY, PYTHON_VERSION_TRIPLE, version_tuple_to_str
+from xdis.version_info import IS_PYPY, PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, PythonImplementation, version_tuple_to_str
 
 from xpython.stdlib.builtins import make_compatible_builtins
 from xpython.version_info import SUPPORTED_BYTECODE, SUPPORTED_PYPY, SUPPORTED_PYTHON
@@ -69,7 +69,7 @@ def exec_code_object(
     code,
     env,
     python_version=PYTHON_VERSION_TRIPLE,
-    is_pypy=IS_PYPY,
+    python_implementation=PYTHON_IMPLEMENTATION,
     callback=None,
     format_instruction=format_instruction,
 ) -> int:
@@ -78,7 +78,7 @@ def exec_code_object(
         vm = PyVMTraced(
             callback,
             python_version,
-            is_pypy,
+            python_implementation,
             format_instruction_func=format_instruction,
         )
         try:
@@ -93,7 +93,7 @@ def exec_code_object(
     else:
         if python_version != PYTHON_VERSION_TRIPLE[:2]:
             make_compatible_builtins(BUILTINS.__dict__, python_version)
-        vm = PyVM(python_version, is_pypy, format_instruction_func=format_instruction)
+        vm = PyVM(python_version, python_implementation, format_instruction_func=format_instruction)
         try:
             rc = vm.run_code(code, f_globals=env)
         except PyVMUncaughtException:
@@ -221,13 +221,13 @@ def run_python_file(
                     timestamp,
                     magic_int,
                     code,
-                    is_pypy,
+                    python_implementation,
                     source_size,
                     sip_hash,
-                    _file_offsets,
+                    _
                 ) = load_module(filename)
                 supported_versions, mess = get_supported_versions(
-                    is_pypy, is_bytecode=True
+                    python_implementation, is_bytecode=True
                 )
                 if python_version[:2] not in supported_versions:
                     raise WrongBytecodeError(
@@ -256,7 +256,7 @@ def run_python_file(
                     source_file.close()
 
                 supported_versions, mess = get_supported_versions(
-                    IS_PYPY, is_bytecode=False
+                    PYTHON_IMPLEMENTATION, is_bytecode=False
                 )
                 if PYTHON_VERSION_TRIPLE[:2] not in supported_versions:
                     raise CannotCompileError(
