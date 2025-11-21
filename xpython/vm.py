@@ -11,7 +11,6 @@ from typing import Any, List
 
 from xdis import (
     CO_NEWLOCALS,
-    IS_PYPY,
     PYTHON_IMPLEMENTATION,
     PYTHON_VERSION_TRIPLE,
     code2num,
