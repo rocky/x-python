@@ -43,8 +43,9 @@ jobs:
     - run: pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
     - run:
         command: | # Use pip to install dependencies
+          pip install git+https://github.com/rocky/python-xdis@python-3.6-to-3.10#egg=xdis
           sudo pip install --user --upgrade setuptools
-          pip install --user -e .
+          pip install -e .
           pip install --user -r requirements-dev.txt
 
     # Save dependency cache
@@ -63,9 +64,6 @@ jobs:
     # Test
     #   This would typically be a build job when using workflows, possibly combined with build
     # Older branches need older branch of xdis
-    - run: pip install git+https://github.com/rocky/python-xdis@python-3.6-to-3.10#egg=xdis
-    - run: pip install -e .
-    - run: pip install -r requirements-dev.txt
     - run: make check
     # Teardown
     #   If you break your build into multiple jobs with workflows, you will probably want to do the parts of this that are relevant in each

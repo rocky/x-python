@@ -1,4 +1,4 @@
-name: xpython (osx)
+name: xpython (macos)
 
 on:
   push:
