@@ -16,7 +16,7 @@ name = "x-python"
 description = "Python cross-version byte-code interpeter"
 dependencies = [
     "click",
-    "xdis > 6.1.8,<6.3",
+    "xdis > 6.2",
 ]
 readme = "README.rst"
 license = "MIT"
