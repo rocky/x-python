@@ -3,7 +3,7 @@
 # a lot and we are interested in supporting (some) historical versions
 # of Python.
 
-from xdis.version_info import PYTHON_IMPLEMENTATION, PythonImplementation
+from xdis.version_info import PythonImplementation
 
 
 def get_byteop(vm, python_version, python_implementation):
@@ -19,12 +19,12 @@ def get_byteop(vm, python_version, python_implementation):
     if python_version < (3, 0):
         if python_version >= (2, 6):
             if python_version == (2, 7):
-                if python_implementation is PythonImlementation.PyPy:
+                if python_implementation is PythonImplementation.PyPy:
                     from xpython.byteop.byteop27pypy import ByteOp27PyPy
 
                     byteop = ByteOp27PyPy(vm)
                 else:
-                    from xpython.byteop.byteop27 import ByteOp27
+                    from xpython.byteop.opcode_2x.byteop27 import ByteOp27
 
                     byteop = ByteOp27(vm)
             else:

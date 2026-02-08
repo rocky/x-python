@@ -9,7 +9,7 @@ from inspect import ismethod
 
 # For the kinds of specific opcode use we need,
 # all 2.x opcodes are compatible with what is in 2.7
-import xdis.opcodes.opcode_27 as opc
+import xdis.opcodes.opcode_2x.opcode_27 as opc
 from xdis import COMPILER_FLAG_BIT, iscode
 
 ArgSpec = namedtuple("ArgSpec", "args varargs keywords defaults")

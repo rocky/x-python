@@ -20,7 +20,7 @@ from xdis import (
 from xdis.bytecode import parse_exception_table
 from xdis.cross_types import UnicodeForPython3
 from xdis.op_imports import get_opcode_module
-from xdis.opcodes.opcode_311 import _nb_ops
+from xdis.opcodes.opcode_3x.opcode_311 import _nb_ops
 from xdis.version_info import PythonImplementation
 
 from xpython.byteop import get_byteop

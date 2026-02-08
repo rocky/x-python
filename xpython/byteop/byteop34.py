@@ -4,7 +4,7 @@
 import inspect
 import types
 
-from xdis.opcodes.opcode_3x import parse_fn_counts_30_35
+from xdis.opcodes.opcode_3x.opcode_3x import parse_fn_counts_30_35
 from xdis.version_info import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 from xpython.byteop.byteop24 import Version_info

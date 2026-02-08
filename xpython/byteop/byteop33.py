@@ -2,7 +2,7 @@
 """Byte Interpreter operations for Python 3.3
 """
 
-from xdis.opcodes.opcode_3x import parse_fn_counts_30_35
+from xdis.opcodes.opcode_3x.opcode_3x import parse_fn_counts_30_35
 from xpython.byteop.byteop24 import Version_info
 from xpython.byteop.byteop32 import ByteOp32
 from xpython.pyobj import Function, Generator
